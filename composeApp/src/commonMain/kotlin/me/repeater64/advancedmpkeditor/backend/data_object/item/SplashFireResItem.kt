@@ -5,4 +5,9 @@ class SplashFireResItem : MinecraftItem {
     override val displayName = "Potion of Fire Resistance"
     override val amount = 1
     override val iconFile = "fire_res.png"
+
+    companion object : MinecraftItemFactory<SplashFireResItem> {
+        override val pattern = "splash_potion"
+        override fun create(command: String) = SplashFireResItem()
+    }
 }

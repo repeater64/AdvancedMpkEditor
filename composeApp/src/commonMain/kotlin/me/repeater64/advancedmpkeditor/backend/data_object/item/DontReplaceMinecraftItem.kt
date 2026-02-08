@@ -5,4 +5,9 @@ class DontReplaceMinecraftItem : MinecraftItem {
     override val commandString = "intentionally_invalid_command"
     override val displayName = "Available for Random Items"
     override val iconFile = "blank.png"
+
+    companion object : MinecraftItemFactory<DontReplaceMinecraftItem> {
+        override val pattern = "intentionally_invalid_command"
+        override fun create(command: String) = DontReplaceMinecraftItem()
+    }
 }

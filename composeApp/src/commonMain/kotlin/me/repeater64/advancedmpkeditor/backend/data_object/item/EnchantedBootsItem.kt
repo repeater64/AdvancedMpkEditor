@@ -21,7 +21,7 @@ data class EnchantedBootsItem(
         }
     }
 
-    companion object {
+    companion object : MinecraftItemFactory<EnchantedBootsItem> {
         fun integer123ToRomanNumerals(integer: Int) : String {
             return when (integer) {
                 1 -> "I"
@@ -30,6 +30,10 @@ data class EnchantedBootsItem(
                 else -> "INVALID LEVEL"
             }
         }
+
+
+        override val pattern = "soul_speed"
+        override fun create(command: String) = EnchantedBootsItem(command.contains("iron"), command.split("lvl:")[1].split(",")[0].toInt())
     }
 
 }

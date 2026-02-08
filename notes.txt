@@ -58,6 +58,8 @@ Randomiser links:
 Any given item can EITHER trigger a label, or depend on a/some label(s).
 Need to not allow any kind of randomiser links to be set up in a case where there is only one option.
 Don't allow exclamation marks in randomiser links...
+Important note: If a player puts duplicate entries into any weighted list (ie same option, same randomiser links, could be different weights) then auto combine them into
+one option with the summed weights when they close that popup.
 
 
 Item selector popup

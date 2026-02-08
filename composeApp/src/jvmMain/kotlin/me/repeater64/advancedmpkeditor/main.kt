@@ -6,26 +6,21 @@ import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.BootsSlotD
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.ChestplateSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.HelmetSlotData
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.HotbarSlotData
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.LeggingsSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.OffhandSlotData
-import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.PracticeTypeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
-import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.AirItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.CommandBlockItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbar
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
+import me.repeater64.advancedmpkeditor.backend.*
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.util.prettyPrintDataClass
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -42,20 +37,6 @@ fun mainTemp() = application {
     }
 }
 
-fun item(id: String, weight: Int = 1, amount: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList()): WeightedOption<MinecraftItem> {
-    return WeightedOption(SimpleMinecraftItem("minecraft:$id", amount), weight, label, conditions)
-}
-
-fun condition(label: String) = listOf(RandomiserCondition(label, false))
-fun invCondition(label: String) = listOf(RandomiserCondition(label, true))
-fun hotbarSlot(pos: Int, items: WeightedOptionList<MinecraftItem>) = HotbarSlotData(pos, items)
-fun invSlot(pos: Int, items: WeightedOptionList<MinecraftItem>) = InventorySlotData(pos, false, items)
-fun emptyInvSlot(pos: Int) = InventorySlotData(pos, true, WeightedOptionList(mutableListOf()))
-fun emptyItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(ForcedEmptyMinecraftItem(), weight, label, conditions)
-fun availableItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(DontReplaceMinecraftItem(), weight, label, conditions)
-
-fun optionList(vararg options: WeightedOption<MinecraftItem>) = WeightedOptionList(options.toMutableList())
-
 fun main() {
     val fixedSlotsData = FixedSlotsData(
         OffhandSlotData(optionList(
@@ -67,7 +48,7 @@ fun main() {
         arrayOf(
             hotbarSlot(0, optionList(
                 item("iron_axe", 2),
-                item("stone_axe", 1),
+                item("stone_axe", 1, label="stone_axe"),
             )),
             hotbarSlot(1, optionList(
                 item("iron_pickaxe", 8),
@@ -81,13 +62,13 @@ fun main() {
             )),
             hotbarSlot(3, optionList(
                 item("oak_boat", 12, label="oak_boat"),
-                item("birch_boat", 4),
+                item("birch_boat", 4, label="oak_boat"),
                 item("acacia_boat", 6),
                 item("dark_oak_boat", 2),
                 item("jungle_boat", 1),
                 item("spruce_boat", 2),
-                item("glowstone", 10, label="anchors"),
-                item("glowstone", 10, label="anchors"),
+                item("glowstone", 10, 3, label="anchors"),
+                item("glowstone", 10, 4, label="anchors"),
             )),
             hotbarSlot(4, optionList(
                 item("soul_sand", 1, 55),
@@ -107,9 +88,9 @@ fun main() {
                 item("nether_bricks", 1, 55),
             )),
             hotbarSlot(6, optionList(
-                item("obsidian", 2, 1),
+                item("obsidian", 2, 1, label="eye"),
                 item("obsidian", 2, 3),
-                emptyItem(3)
+                emptyItem(3, label="eye")
             )),
             hotbarSlot(7, optionList(
                 item("ender_pearl", amount = 13)
@@ -122,9 +103,34 @@ fun main() {
         arrayOf(
             invSlot(0, optionList(item("fire_charge", amount=23))),
             invSlot(1, optionList(
-                item("coal", conditions=listOf(RandomiserCondition("oak_boat"), RandomiserCondition("eye", true))),
+                item("coal", conditions=listOf(RandomiserCondition("oak_boat"), RandomiserCondition("eye", false), RandomiserCondition("stone_axe", true))),
                 availableItem()
-            ))
+            )),
+            invSlot(2, optionList(availableItem())),
+            invSlot(3, optionList(availableItem())),
+            invSlot(4, optionList(availableItem())),
+            invSlot(5, optionList(availableItem())),
+            invSlot(6, optionList(availableItem())),
+            invSlot(7, optionList(availableItem())),
+            invSlot(8, optionList(availableItem())),
+            invSlot(9, optionList(availableItem())),
+            invSlot(10, optionList(availableItem())),
+            invSlot(11, optionList(availableItem())),
+            invSlot(12, optionList(availableItem())),
+            invSlot(13, optionList(availableItem())),
+            invSlot(14, optionList(availableItem())),
+            invSlot(15, optionList(availableItem())),
+            invSlot(16, optionList(availableItem())),
+            invSlot(17, optionList(availableItem())),
+            invSlot(18, optionList(availableItem())),
+            invSlot(19, optionList(availableItem())),
+            invSlot(20, optionList(availableItem())),
+            invSlot(21, optionList(availableItem())),
+            invSlot(22, optionList(availableItem())),
+            invSlot(23, optionList(availableItem())),
+            invSlot(24, optionList(availableItem())),
+            invSlot(25, optionList(availableItem())),
+            invSlot(26, optionList(availableItem()))
         ),
         HelmetSlotData(optionList(
             item("golden_helmet", 6),
@@ -170,11 +176,14 @@ fun main() {
         8 to SavedHotbar.emptyHotbar(),
     ))
 
-//    val savedHotbars = loadNbtFile("hotbar.nbt")
-    prettyPrintDataClass(savedHotbars.toString())
+    val savedHotbarsLoaded = loadNbtFile("hotbar.nbt")
+    prettyPrintDataClass(savedHotbarsLoaded.toString())
+
+    println(savedHotbars == savedHotbarsLoaded)
 
 
     saveNbtFile("hotbar.nbt", savedHotbars)
+    saveNbtFile("hotbarRecreated.nbt", savedHotbarsLoaded)
 }
 
 fun saveNbtFile(path: String, savedHotbars: SavedHotbars) {

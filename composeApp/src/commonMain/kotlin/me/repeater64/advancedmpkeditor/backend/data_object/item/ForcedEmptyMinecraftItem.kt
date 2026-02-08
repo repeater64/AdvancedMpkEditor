@@ -9,7 +9,10 @@ class ForcedEmptyMinecraftItem : MinecraftItem {
     override val displayName = "Forced Empty Slot"
     override val iconFile = "barrier.png"
 
-    companion object {
-        var identifier: Int = 1
+    companion object : MinecraftItemFactory<ForcedEmptyMinecraftItem> {
+        var identifier: Int = 100
+
+        override val pattern = "barrier{"
+        override fun create(command: String) = ForcedEmptyMinecraftItem()
     }
 }
