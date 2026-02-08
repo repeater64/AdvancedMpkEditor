@@ -1,0 +1,67 @@
+Top
+======
+
+dropdown for the different saved hotbars
+
+Then a display that shows the 9 hotbar slots, with the name of the presets or Empty, or something to indicate the command block slot, and you should be able to drag to swap these
+
+
+Main section at the top
+========================
+
+Simple section that lets the user choose from the basic MPK options. This would just be a series of dropdowns:
+Practice Type: - End Enter, Stronghold Enter, Fortress, Bastion, Nether Enter, Blind, BT, Shipwreck, Monument
+Gamemode: - Creative, Survival, Adventure, Spectator
+Difficulty:
+
+
+Main section - Inventory view (Fixed Slot Items)
+=================================================
+
+A view of a Minecraft inventory + hotbar incl offhand and armor slots.
+
+Each slot renders the baseline item icon if there is only one item in that slot. If there are 2/3/4, use a 2x2 sub-grid in each slot to show them all. If there are more than 4,
+use the sub grid to show the most likely 3, then a "+X" test in the 4th subgrid slot.
+
+Slots can be dragged around to swap them
+
+Clicking on a slot brings up a popup to edit that slot. This will be a menu where you can select all the items, their probability weights (with calculated percentages
+shown from the entered weights), and optionally select "randomiser links". The top of that popup should have a clear all button, and a "use preset" button where you can select from
+builtin presets made by me (which mostly act as examples). To edit individual items, you click on the icon (or the slot where the icon goes) and it brings up a top level item
+selector popup. There should also be buttons to set the slot as "Force Empty" (as opposed to the default empty state of "Available for random items"
+
+Note, only inventory (not hotbar or offhand) slots would be able to be available for random items. Build this restriction into the GUI.
+
+
+Main Section - Randomised Position Item Sets
+============================================
+
+Would display as a list of page-wide segements. Each contains a horizontal list of item displays, separated by text "or". If any given option has too many items, it displays just the
+first few then an item slot with "+X". If there are too many options, just display the most likely few then say "and X more sets" at the end.
+Each segment also has an editable title. And below the segment list there would be a blank segment where you can click to add a new one. Each segment would say click to edit
+somewhere and clicking it would bring up a top level popup.
+
+That popup would have a vertical list of each of the options. Each of the options would have a section on the left that is just item slots where you can select all the items.
+Then there'd be a weight for each option, and the randomiser links stuff, and clear all buttons where applicable etc.
+
+
+Other sections that would exist but don't need from the start:
+
+- Health and saturation
+- Fire resistance (or generalised to other status effects?)
+
+
+
+
+Randomiser links:
+
+Any given item can EITHER trigger a label, or depend on a/some label(s).
+Need to not allow any kind of randomiser links to be set up in a case where there is only one option.
+Don't allow exclamation marks in randomiser links...
+
+
+Item selector popup
+=====================
+
+Can start with a simple search thing. But ideal menu would have multiple tabs. A search tab where you can access any item, then some tabs with common items nicely organised
+(eg piglin barters tab, tools/weapons tab).
