@@ -43,23 +43,19 @@ object CommandsManager {
                 topLeftInvPosition++
             }
 
+            // This bit is pretty weird. The way we handle this, broadly speaking, is to move the (random) item currently in the target slot to the top left of the inventory,
+            // where it will be replacing a barrier (put there by HotbarFillingChest). Then we can safely /replaceitem the target slot with the wanted item.
+            // The way we actually do this is to spawn an item at the player's location, modify its data so that it's a copy of the item in the target slot, then
+            // clear the top left slot that we want to put it in, so that it gets picked up by the player the next tick in that slot. (we can also /replaceitem the target slot as soon as we've copied the data away)
+
+            // These first 3 commands will be the same regardless of which option is chosen, can add them as unconditional commands
+            processedCommandsAtEnd.add(Pair("execute at @p run summon item ~ ~ ~ {Tags:[\"temp_item${tempItemIndex}\"],Item:{id:\"minecraft:stone\",Count:1b},PickupDelay:0s}", emptySet()))
+            processedCommandsAtEnd.add(Pair("execute at @p run data modify entity @e[type=item,tag=temp_item${tempItemIndex},limit=1,sort=nearest] Item set from entity @p Inventory[{Slot:${fixedSlotData.inventoryPosition+9}b}]", emptySet()))
+            processedCommandsAtEnd.add(Pair("replaceitem entity @p container.${topLeftInvPosition+9} minecraft:air", emptySet()))
+            tempItemIndex++
+
             currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
-                {
-                    val commands = mutableListOf<String>()
-
-                    // This bit is pretty weird. The way we handle this, broadly speaking, is to move the (random) item currently in the target slot to the top left of the inventory,
-                    // where it will be replacing a barrier (put there by HotbarFillingChest). Then we can safely /replaceitem the target slot with the wanted item.
-                    // The way we actually do this is to spawn an item at the player's location, modify its data so that it's a copy of the item in the target slot, then
-                    // clear the top left slot that we want to put it in, so that it gets picked up by the player the next tick in that slot. (we can also /replaceitem the target slot as soon as we've copied the data away)
-                    commands.add("execute at @p run summon item ~ ~ ~ {Tags:[\"temp_item${tempItemIndex}\"],Item:{id:\"minecraft:stone\",Count:1b},PickupDelay:0s}")
-                    commands.add("execute at @p run data modify entity @e[type=item,tag=temp_item${tempItemIndex},limit=1,sort=nearest] Item set from entity @p Inventory[{Slot:${fixedSlotData.inventoryPosition+9}b}]")
-                    commands.add("replaceitem entity @p ${fixedSlotData.minecraftSlotID} ${it.option.commandString}")
-                    commands.add("replaceitem entity @p container.${topLeftInvPosition+9} minecraft:air")
-
-                    tempItemIndex++
-
-                    return@handleWeightedList commands
-                } ,
+                { listOf("replaceitem entity @p ${fixedSlotData.minecraftSlotID} ${it.option.commandString}") } ,
                 "Warning - fixed slot data with no item options ($fixedSlotData)",
                 randomisers, randomiserConditionsMap, processedCommandsAtEnd, currentRandomiserIndex) // Note we pass in processedCommandsAtEnd instead of processedCommands so we get these executing at the end
 
@@ -168,6 +164,8 @@ object CommandsManager {
     }
 
     fun simplifyCommand(command: String): String {
+        // TODO also look for adjacent score ranges that could be merged
+
         // Separate the conditions from the rest of the command
         val runMatch = Regex("""\srun\s""").find(command) ?: return command
         val runIndex = runMatch.range.first
