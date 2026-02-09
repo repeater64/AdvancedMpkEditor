@@ -1,5 +1,6 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.randomiser
 
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import kotlin.math.pow
 
 data class WeightedOptionList<T>(val options: MutableList<WeightedOption<T>>) {
@@ -43,5 +44,26 @@ data class WeightedOptionList<T>(val options: MutableList<WeightedOption<T>>) {
         }
 
         return toReturn
+    }
+
+    companion object  : BookSerializable<WeightedOptionList<Any>> {
+        override val className = "WeightedOptionList"
+
+        override fun serializeToPages(it: WeightedOptionList<Any>): List<String> {
+            return BookSerializable.serializeList(it.options, WeightedOption)
+        }
+
+        override fun deserializeFromPages(pages: List<String>): WeightedOptionList<Any> {
+            val list = BookSerializable.getListAndRemainingPages(pages, WeightedOption).first
+            return WeightedOptionList(list.toMutableList())
+        }
+    }
+
+    fun <P: Comparable<P>> getMaximumPossibleProperty(propertyGetter: (T) -> P): P {
+        return options.maxOf { propertyGetter(it.option) }
+    }
+
+    fun <P: Comparable<P>> getMinimumPossibleProperty(propertyGetter: (T) -> P): P {
+        return options.minOf { propertyGetter(it.option) }
     }
 }

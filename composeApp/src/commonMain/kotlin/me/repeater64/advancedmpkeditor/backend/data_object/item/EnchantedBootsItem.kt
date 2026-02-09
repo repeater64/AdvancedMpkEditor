@@ -1,5 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.item
 
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
+
 data class EnchantedBootsItem(
     val iron: Boolean,
     val ssLevel: Int,
@@ -20,8 +22,10 @@ data class EnchantedBootsItem(
             else -> "golden_boots_ss3.png"
         }
     }
+    override val companion = Companion as BookSerializable<MinecraftItem>
+    override val numStacks = 1
 
-    companion object : MinecraftItemFactory<EnchantedBootsItem> {
+    companion object : BookSerializable<EnchantedBootsItem> {
         fun integer123ToRomanNumerals(integer: Int) : String {
             return when (integer) {
                 1 -> "I"
@@ -32,8 +36,15 @@ data class EnchantedBootsItem(
         }
 
 
-        override val pattern = "soul_speed"
-        override fun create(command: String) = EnchantedBootsItem(command.contains("iron"), command.split("lvl:")[1].split(",")[0].toInt())
+        override val className = "EnchantedBootsItem"
+
+        override fun serializeToPages(it: EnchantedBootsItem): List<String> {
+            return listOf(it.iron.toString(), it.ssLevel.toString())
+        }
+
+        override fun deserializeFromPages(pages: List<String>): EnchantedBootsItem {
+            return EnchantedBootsItem(pages[0].toBoolean(), pages[1].toInt())
+        }
     }
 
 }

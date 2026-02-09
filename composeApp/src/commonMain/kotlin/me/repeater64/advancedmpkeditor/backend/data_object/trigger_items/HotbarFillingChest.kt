@@ -7,7 +7,7 @@ import net.benwoodworth.knbt.put
 import net.benwoodworth.knbt.putNbtCompound
 import net.benwoodworth.knbt.putNbtList
 
-object HotbarFillingChest : TriggerItem {
+data class HotbarFillingChest(val numTopLeftInvSlotsToInclude: Int) : TriggerItem {
     override fun getNbt(slot: Int): NbtCompound {
         return buildNbtCompound {
             put("Slot", slot.toByte())
@@ -17,7 +17,7 @@ object HotbarFillingChest : TriggerItem {
                 putNbtCompound("BlockEntityTag") {
                     put("id", "minecraft:chest")
                     putNbtList("Items") {
-                        for (inChestSlot in 0..8) {
+                        for (inChestSlot in 0..8 + numTopLeftInvSlotsToInclude) {
                             addNbtCompound {
                                 put("Slot", inChestSlot.toByte())
                                 put("Count", 1.toByte())

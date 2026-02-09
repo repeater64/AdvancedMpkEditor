@@ -20,7 +20,11 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.CommandB
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbar
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
 import me.repeater64.advancedmpkeditor.backend.*
+import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
+import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.util.prettyPrintDataClass
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -55,20 +59,28 @@ fun main() {
                 item("diamond_pickaxe", 1),
             )),
             hotbarSlot(2, optionList(
-                item("iron_shovel", 1, conditions = invCondition("anchors")),
-                item("stone_shovel", 1, conditions = invCondition("anchors")),
-                item("respawn_anchor", 1, 2, conditions = condition("anchors")),
-                item("respawn_anchor", 1, 3, conditions = condition("anchors")),
+                item("iron_shovel", 1, label="0a"),
+                item("stone_shovel", 1, label="0a"),
+                item("respawn_anchor", 2, 1, label="1a"),
+                item("respawn_anchor", 3, 2, label="2a"),
+                item("respawn_anchor", 2, 3, label="3a"),
+                item("respawn_anchor", 1, 4, label="4a"),
             )),
             hotbarSlot(3, optionList(
-                item("oak_boat", 12, label="oak_boat"),
-                item("birch_boat", 4, label="oak_boat"),
-                item("acacia_boat", 6),
-                item("dark_oak_boat", 2),
-                item("jungle_boat", 1),
-                item("spruce_boat", 2),
-                item("glowstone", 10, 3, label="anchors"),
-                item("glowstone", 10, 4, label="anchors"),
+                item("oak_boat", 12, conditions=condition("0a")),
+                item("birch_boat", 4, conditions=condition("0a")),
+                item("acacia_boat", 6, conditions=condition("0a")),
+                item("dark_oak_boat", 2, conditions=condition("0a")),
+                item("jungle_boat", 1, conditions=condition("0a")),
+                item("spruce_boat", 2, conditions=condition("0a")),
+                item("glowstone", 3, 1, conditions=condition("1a")),
+                item("glowstone", 1, 2, conditions=condition("1a")),
+                item("glowstone", 3, 2, conditions=condition("2a")),
+                item("glowstone", 1, 3, conditions=condition("2a")),
+                item("glowstone", 3, 3, conditions=condition("3a")),
+                item("glowstone", 1, 4, conditions=condition("3a")),
+                item("glowstone", 3, 4, conditions=condition("4a")),
+                item("glowstone", 1, 5, conditions=condition("4a")),
             )),
             hotbarSlot(4, optionList(
                 item("soul_sand", 1, 55),
@@ -88,9 +100,9 @@ fun main() {
                 item("nether_bricks", 1, 55),
             )),
             hotbarSlot(6, optionList(
-                item("obsidian", 2, 1, label="eye"),
+                item("obsidian", 2, 1),
                 item("obsidian", 2, 3),
-                emptyItem(3, label="eye")
+                emptyItem(3)
             )),
             hotbarSlot(7, optionList(
                 item("ender_pearl", amount = 13)
@@ -101,12 +113,9 @@ fun main() {
             )),
         ),
         arrayOf(
-            invSlot(0, optionList(item("fire_charge", amount=23))),
-            invSlot(1, optionList(
-                item("coal", conditions=listOf(RandomiserCondition("oak_boat"), RandomiserCondition("eye", false), RandomiserCondition("stone_axe", true))),
-                availableItem()
-            )),
-            invSlot(2, optionList(availableItem())),
+            invSlot(0, optionList(item("fire_charge", amount=23), item("fire_charge", amount=15))),
+            invSlot(1, optionList(availableItem())),
+            invSlot(2, optionList(item("ender_pearl", amount=16))),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
@@ -127,10 +136,10 @@ fun main() {
             invSlot(20, optionList(availableItem())),
             invSlot(21, optionList(availableItem())),
             invSlot(22, optionList(availableItem())),
-            invSlot(23, optionList(availableItem())),
-            invSlot(24, optionList(availableItem())),
-            invSlot(25, optionList(availableItem())),
-            invSlot(26, optionList(availableItem()))
+            invSlot(23, optionList(item("snowball", amount=4, conditions=condition("eye")),item("diamond", amount=4, conditions=invCondition("eye")))),
+            invSlot(24, optionList(item("redstone_block", amount=5, label="5redstone"),item("redstone_block", amount=64))),
+            invSlot(25, optionList(item("redstone_torch", amount=5, conditions=condition("5redstone")),item("redstone_torch", amount=64, conditions=invCondition("5redstone")))),
+            invSlot(26, optionList(item("glowstone_dust", amount=7)))
         ),
         HelmetSlotData(optionList(
             item("golden_helmet", 6),
@@ -160,9 +169,115 @@ fun main() {
         )),
     )
 
+    val randomSlotsData = RandomSlotsData(
+        listOf(
+            RandomSlotOptionsSet(
+                "Beds",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("white_bed", 5), weight=1, conditions=condition("0a")),
+                    itemList(rawItem("white_bed", 6), weight=3, conditions=condition("0a")),
+                    itemList(rawItem("white_bed", 7), weight=2, conditions=condition("0a")),
+                    itemList(rawItem("white_bed", 8), weight=1, conditions=condition("0a")),
+
+                    itemList(rawItem("white_bed", 4), weight=2, conditions=condition("1a")),
+                    itemList(rawItem("white_bed", 5), weight=8, conditions=condition("1a")),
+                    itemList(rawItem("white_bed", 6), weight=6, conditions=condition("1a")),
+                    itemList(rawItem("white_bed", 7), weight=2, conditions=condition("1a")),
+                    itemList(rawItem("white_bed", 8), weight=1, conditions=condition("1a")),
+
+                    itemList(rawItem("white_bed", 3), weight=1, conditions=condition("2a")),
+                    itemList(rawItem("white_bed", 4), weight=3, conditions=condition("2a")),
+                    itemList(rawItem("white_bed", 5), weight=2, conditions=condition("2a")),
+                    itemList(rawItem("white_bed", 6), weight=1, conditions=condition("2a")),
+
+                    itemList(rawItem("white_bed", 2), weight=2, conditions=condition("3a")),
+                    itemList(rawItem("white_bed", 3), weight=4, conditions=condition("3a")),
+                    itemList(rawItem("white_bed", 4), weight=3, conditions=condition("3a")),
+                    itemList(rawItem("white_bed", 5), weight=2, conditions=condition("3a")),
+                    itemList(rawItem("white_bed", 6), weight=1, conditions=condition("3a")),
+
+                    itemList(rawItem("white_bed", 1), weight=1, conditions=condition("4a")),
+                    itemList(rawItem("white_bed", 2), weight=3, conditions=condition("4a")),
+                    itemList(rawItem("white_bed", 3), weight=2, conditions=condition("4a")),
+                    itemList(rawItem("white_bed", 4), weight=1, conditions=condition("4a")),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Bow",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("bow"), weight=3),
+                    itemList(rawItem("crossbow"), weight=2),
+                    itemList(availableItem().option, weight=1)
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Arrows",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("arrow", 6), weight=3),
+                    itemList(rawItem("arrow", 12), weight=2),
+                    itemList(rawItem("arrow", 20), rawItem("spectral_arrow", 13), weight=2),
+                    itemList(rawItem("arrow", 34), weight=1),
+                    itemList(rawItem("arrow", 50), weight=1),
+                    itemList(rawItem("arrow", 64), weight=2),
+                    itemList(rawItem("arrow", 64), rawItem("spectral_arrow", 30), weight=1),
+                    itemList(availableItem().option, weight=3)
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Spare Building Blocks",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("gravel", 110), rawItem("oak_planks", 4), rawItem("crying_obsidian", 6), rawItem("soul_sand", 64), weight=5),
+                    itemList(rawItem("gravel", 64), rawItem("oak_planks", 30), rawItem("crying_obsidian", 5), weight=2),
+                    itemList(rawItem("gravel", 36), rawItem("oak_planks", 3), rawItem("crying_obsidian", 24), weight=1),
+                    itemList(rawItem("gravel", 144), rawItem("oak_planks", 5), rawItem("crying_obsidian", 31), weight=1),
+                    itemList(rawItem("gravel", 40), rawItem("oak_planks", 3), rawItem("crying_obsidian", 4), rawItem("netherrack", 53), weight=3),
+                    itemList(rawItem("gravel", 53), rawItem("oak_planks", 4), rawItem("crying_obsidian", 3), rawItem("netherrack", 64), rawItem("netherrack", 30), weight=1),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Sticks",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("stick", 1), weight=1),
+                    itemList(rawItem("stick", 2), weight=1),
+                    itemList(availableItem().option, weight=1)
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Bucket",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("lava_bucket"), weight=6),
+                    itemList(rawItem("water_bucket"), weight=1),
+                    itemList(availableItem().option, weight=2)
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Boat",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("oak_boat"), weight=12, conditions=invCondition("0a")),
+                    itemList(rawItem("birch_boat"), weight=4, conditions=invCondition("0a")),
+                    itemList(rawItem("acacia_boat"), weight=6, conditions=invCondition("0a")),
+                    itemList(rawItem("dark_oak_boat"), weight=2, conditions=invCondition("0a")),
+                    itemList(rawItem("jungle_boat"), weight=1, conditions=invCondition("0a")),
+                    itemList(rawItem("spruce_boat"), weight=2, conditions=invCondition("0a")),
+                    itemList(availableItem().option, conditions=condition("0a"))
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Shovel",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("iron_shovel"), weight=1, conditions=invCondition("0a")),
+                    itemList(rawItem("stone_shovel"), weight=1, conditions=invCondition("0a")),
+                    itemList(availableItem().option, conditions=condition("0a"))
+                ))
+            ),
+        )
+    )
+
+    println(CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData)).first.joinToString("\n"))
+
     val savedHotbars = SavedHotbars(hashMapOf(
         0 to SavedHotbar(arrayOf(
-            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.CREATIVE, DifficultyOption.EASY, fixedSlotsData),
+            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.CREATIVE, DifficultyOption.EASY, fixedSlotsData, randomSlotsData),
             AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),
             CommandBlockItem()
         )),
@@ -176,15 +291,29 @@ fun main() {
         8 to SavedHotbar.emptyHotbar(),
     ))
 
+
     val savedHotbarsLoaded = loadNbtFile("hotbar.nbt")
-    prettyPrintDataClass(savedHotbarsLoaded.toString())
+//    prettyPrintDataClass(savedHotbarsLoaded.toString())
 
     println(savedHotbars == savedHotbarsLoaded)
 
 
+    println("Available slots: ${fixedSlotsData.numAvailableForRandomInvSlots()}")
+    println("Max random slots: ${randomSlotsData.totalMaxNumStacks()}")
+
     saveNbtFile("hotbar.nbt", savedHotbars)
     saveNbtFile("hotbarRecreated.nbt", savedHotbarsLoaded)
+
+//    quicktest()
 }
+
+//fun quicktest() {
+//    val rawCommand = "execute if score @p m matches 12..15 if score @p h matches 1 unless score @p h matches 2..3 unless score @p h matches 4..6 unless score @p h matches 7..8 unless score @p h matches 9 run replaceitem entity @p hotbar.3 minecraft:birch_boat 1"
+//
+//    val simplified = CommandsManager.simplifyCommand(rawCommand)
+//    println("Original:   $rawCommand")
+//    println("Simplified: $simplified")
+//}
 
 fun saveNbtFile(path: String, savedHotbars: SavedHotbars) {
     val okioPath = path.toPath()

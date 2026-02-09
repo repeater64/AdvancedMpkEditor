@@ -13,6 +13,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOp
 fun item(id: String, weight: Int = 1, amount: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList()): WeightedOption<MinecraftItem> {
     return WeightedOption(SimpleMinecraftItem("minecraft:$id", amount), weight, label, conditions)
 }
+fun rawItem(id: String, amount: Int = 1) = SimpleMinecraftItem("minecraft:$id", amount)
 fun condition(label: String) = listOf(RandomiserCondition(label, false))
 fun invCondition(label: String) = listOf(RandomiserCondition(label, true))
 fun hotbarSlot(pos: Int, items: WeightedOptionList<MinecraftItem>) = HotbarSlotData(pos, items)
@@ -20,3 +21,4 @@ fun invSlot(pos: Int, items: WeightedOptionList<MinecraftItem>) = InventorySlotD
 fun emptyItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(ForcedEmptyMinecraftItem(), weight, label, conditions)
 fun availableItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(DontReplaceMinecraftItem(), weight, label, conditions)
 fun optionList(vararg options: WeightedOption<MinecraftItem>) = WeightedOptionList(options.toMutableList())
+fun itemList(vararg items: MinecraftItem, weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption(items.toList(), weight, label, conditions)

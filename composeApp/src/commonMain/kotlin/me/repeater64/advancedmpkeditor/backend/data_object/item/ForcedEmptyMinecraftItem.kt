@@ -1,6 +1,10 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.item
 
-class ForcedEmptyMinecraftItem : MinecraftItem {
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializableNoAttributes
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.NoAttributesDataClass
+
+class ForcedEmptyMinecraftItem : NoAttributesDataClass(), MinecraftItem {
     override val amount: Int = 1
     override val commandString: String
         get() {
@@ -8,11 +12,13 @@ class ForcedEmptyMinecraftItem : MinecraftItem {
         }
     override val displayName = "Forced Empty Slot"
     override val iconFile = "barrier.png"
+    override val numStacks = 1
+    override val companion = Companion as BookSerializable<MinecraftItem>
 
-    companion object : MinecraftItemFactory<ForcedEmptyMinecraftItem> {
+    companion object : BookSerializableNoAttributes<ForcedEmptyMinecraftItem> {
+        override fun createObject() = ForcedEmptyMinecraftItem()
+        override val className = "ForcedEmptyMinecraftItem"
+
         var identifier: Int = 100
-
-        override val pattern = "barrier{"
-        override fun create(command: String) = ForcedEmptyMinecraftItem()
     }
 }

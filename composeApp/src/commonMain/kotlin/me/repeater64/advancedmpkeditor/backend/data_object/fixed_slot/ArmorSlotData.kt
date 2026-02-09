@@ -10,30 +10,30 @@ open class ArmorSlotData(armorSlot: String, override val itemOptions: WeightedOp
 }
 
 data class HelmetSlotData(override val itemOptions: WeightedOptionList<MinecraftItem>) : ArmorSlotData("head", itemOptions) {
-    companion object : FixedSlotDataFactory<HelmetSlotData> {
-        override val slotStringPatternToLookFor = "armor.head"
-        override fun create(slotString: String) = HelmetSlotData(WeightedOptionList(mutableListOf()))
-        override fun empty(slotNum: Int) = HelmetSlotData(optionList(emptyItem()))
+    companion object : SingleSpecificFixedSlotCompanion<HelmetSlotData> {
+        override val className = "HelmetSlotData"
+        override fun empty() = HelmetSlotData(optionList(emptyItem()))
+        override fun create(list: WeightedOptionList<MinecraftItem>) = HelmetSlotData(list)
     }
 }
 data class ChestplateSlotData(override val itemOptions: WeightedOptionList<MinecraftItem>) : ArmorSlotData("chest", itemOptions) {
-    companion object : FixedSlotDataFactory<ChestplateSlotData> {
-        override val slotStringPatternToLookFor = "armor.chest"
-        override fun create(slotString: String) = ChestplateSlotData(WeightedOptionList(mutableListOf()))
-        override fun empty(slotNum: Int) = ChestplateSlotData(optionList(emptyItem()))
+    companion object : SingleSpecificFixedSlotCompanion<ChestplateSlotData> {
+        override val className = "ChestplateSlotData"
+        override fun empty() = ChestplateSlotData(optionList(emptyItem()))
+        override fun create(list: WeightedOptionList<MinecraftItem>) = ChestplateSlotData(list)
     }
 }
 data class LeggingsSlotData(override val itemOptions: WeightedOptionList<MinecraftItem>) : ArmorSlotData("legs", itemOptions) {
-    companion object : FixedSlotDataFactory<LeggingsSlotData> {
-        override val slotStringPatternToLookFor = "armor.legs"
-        override fun create(slotString: String) = LeggingsSlotData(WeightedOptionList(mutableListOf()))
-        override fun empty(slotNum: Int) = LeggingsSlotData(optionList(emptyItem()))
+    companion object : SingleSpecificFixedSlotCompanion<LeggingsSlotData> {
+        override val className = "LeggingsSlotData"
+        override fun empty() = LeggingsSlotData(optionList(emptyItem()))
+        override fun create(list: WeightedOptionList<MinecraftItem>) = LeggingsSlotData(list)
     }
 }
 data class BootsSlotData(override val itemOptions: WeightedOptionList<MinecraftItem>) : ArmorSlotData("feet", itemOptions) {
-    companion object : FixedSlotDataFactory<BootsSlotData> {
-        override val slotStringPatternToLookFor = "armor.feet"
-        override fun create(slotString: String) = BootsSlotData(WeightedOptionList(mutableListOf()))
-        override fun empty(slotNum: Int) = BootsSlotData(optionList(emptyItem()))
+    companion object : SingleSpecificFixedSlotCompanion<BootsSlotData> {
+        override val className = "BootsSlotData"
+        override fun empty() = BootsSlotData(optionList(emptyItem()))
+        override fun create(list: WeightedOptionList<MinecraftItem>) = BootsSlotData(list)
     }
 }

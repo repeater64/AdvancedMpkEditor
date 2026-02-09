@@ -7,7 +7,7 @@ import net.benwoodworth.knbt.put
 import net.benwoodworth.knbt.putNbtCompound
 import net.benwoodworth.knbt.putNbtList
 
-object InventoryFillingShulker : TriggerItem {
+data class InventoryFillingShulker(val numItems: Int) : TriggerItem {
     override fun getNbt(slot: Int): NbtCompound {
         return buildNbtCompound {
             put("Slot", slot.toByte())
@@ -16,13 +16,13 @@ object InventoryFillingShulker : TriggerItem {
             putNbtCompound("tag") {
                 putNbtCompound("BlockEntityTag") {
                     putNbtList("Items") {
-                        for (inShulkerSlot in 0..26) {
+                        for (inShulkerSlot in 0 until numItems) {
                             addNbtCompound {
                                 put("Slot", inShulkerSlot.toByte())
                                 put("Count", 1.toByte())
                                 put("id", "minecraft:bedrock")
                                 putNbtCompound("tag") {
-                                    put("a", inShulkerSlot.toByte()) // To make each of the bedrock items distinct
+                                    put("a", inShulkerSlot) // To make each of the bedrock items distinct
                                 }
                             }
                         }

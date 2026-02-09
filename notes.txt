@@ -32,11 +32,15 @@ selector popup. There should also be buttons to set the slot as "Force Empty" (a
 
 Note, only inventory (not hotbar or offhand) slots would be able to be available for random items. Build this restriction into the GUI.
 
+Note - inventory slots that are set up with fixed item data can't ever have the option to either contain something or be available for random items.
+(ie 50% chance to have something specific, 50% chance to be available for random isn't allowed).
+(from the perspective of this restriction, being forced empty is treated as if having an item (since force empty involves putting a barrier there)
+
 
 Main Section - Randomised Position Item Sets
 ============================================
 
-Would display as a list of page-wide segements. Each contains a horizontal list of item displays, separated by text "or". If any given option has too many items, it displays just the
+Would display as a list of page-wide segments. Each contains a horizontal list of item displays, separated by text "or". If any given option has too many items, it displays just the
 first few then an item slot with "+X". If there are too many options, just display the most likely few then say "and X more sets" at the end.
 Each segment also has an editable title. And below the segment list there would be a blank segment where you can click to add a new one. Each segment would say click to edit
 somewhere and clicking it would bring up a top level popup.
@@ -50,6 +54,9 @@ Other sections that would exist but don't need from the start:
 - Health and saturation
 - Fire resistance (or generalised to other status effects?)
 
+Note:
+
+fixedSlotsData.numAvailableForRandomInvSlots() must be greater than randomSlotsData.totalMaxNumStacks()
 
 
 

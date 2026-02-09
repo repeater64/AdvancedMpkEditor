@@ -1,34 +1,36 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.item
 
+import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
+
 interface MinecraftItem {
     val commandString: String
     val displayName: String
     val amount: Int
     val iconFile: String
+    val companion: BookSerializable<MinecraftItem>
 
-    companion object {
-        private val registry by lazy { listOf(
-            FireResItem,
-            SplashFireResItem,
-            DontReplaceMinecraftItem,
-            ForcedEmptyMinecraftItem,
-            EnchantedBootsItem,
+    val numStacks: Int
 
-            SimpleMinecraftItem // Check this last, as it will match all patterns
-        ) }
+    companion object : BookSerializable<MinecraftItem> {
+        override val className = "MinecraftItem"
 
-        fun fromCommandString(commandString: String): MinecraftItem {
-            val factory = registry.find { it.matches(commandString) }
-                ?: throw IllegalArgumentException("No item class found for command string: $commandString")
+        val registry = mapOf(
+            DontReplaceMinecraftItem.className to DontReplaceMinecraftItem,
+            SimpleMinecraftItem.className to SimpleMinecraftItem,
+            ForcedEmptyMinecraftItem.className to ForcedEmptyMinecraftItem,
+            FireResItem.className to FireResItem,
+            SplashFireResItem.className to SplashFireResItem,
+            EnchantedBootsItem.className to EnchantedBootsItem
+        )
 
-            return factory.create(commandString)
+        override fun serializeToPages(it: MinecraftItem): List<String> {
+            return listOf(it.companion.className) + it.companion.serializeToPages(it)
+        }
+
+        override fun deserializeFromPages(pages: List<String>): MinecraftItem {
+            val companion = registry[pages[0]] ?: throw IllegalArgumentException("Invalid serialized MinecraftItem type: ${pages[0]}!")
+
+            return companion.deserializeFromPages(pages.drop(1))
         }
     }
-}
-
-interface MinecraftItemFactory<out T : MinecraftItem> {
-    val pattern: String
-    fun create(command: String): T
-
-    fun matches(command: String): Boolean = command.contains(pattern)
 }
