@@ -105,6 +105,20 @@ object CommandsManager {
             removedBedrockIndex += maxStacks
         }
 
+        // JUNK
+        val junkSettings = settings.junkSettings
+        if (junkSettings.enableJunk) {
+            var i = 0
+            for (bedrockIndex in 0..addedBedrockIndex) {
+                val junkItem = junkSettings.junkList[i % junkSettings.junkList.size]
+
+                processedCommands.add(Pair("clear @p minecraft:bedrock{a:$bedrockIndex}", emptySet()))
+                processedCommands.add(Pair("give @p ${if (junkSettings.makeJunkNonStackable) junkItem.getCommandStringNonStackable(i) else junkItem.commandString}", emptySet()))
+
+                i++
+            }
+        }
+
 
         val commands = mutableListOf<String>()
 

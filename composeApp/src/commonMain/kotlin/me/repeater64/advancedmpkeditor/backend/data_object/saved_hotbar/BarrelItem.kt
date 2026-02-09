@@ -3,6 +3,7 @@ package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 import me.repeater64.advancedmpkeditor.backend.CommandsManager
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
+import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.ItemBasedOptionEnum
@@ -27,12 +28,13 @@ data class BarrelItem(
     val gamemodeOption: GamemodeOption,
     val difficultyOption: DifficultyOption,
     val fixedSlotsData: FixedSlotsData,
-    val randomSlotsData: RandomSlotsData
+    val randomSlotsData: RandomSlotsData,
+    val junkSettings: JunkSettings
 )
     : SavedHotbarItem() {
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData))
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings))
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -76,7 +78,7 @@ data class BarrelItem(
 
             val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
 
-            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData)
+            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings)
         }
     }
 }

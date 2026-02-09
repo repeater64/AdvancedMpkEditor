@@ -21,7 +21,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHot
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
 import me.repeater64.advancedmpkeditor.backend.*
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
@@ -115,11 +118,11 @@ fun main() {
         arrayOf(
             invSlot(0, optionList(item("fire_charge", amount=23), item("fire_charge", amount=15))),
             invSlot(1, optionList(availableItem())),
-            invSlot(2, optionList(item("ender_pearl", amount=16))),
+            invSlot(2, optionList(availableItem())),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
-            invSlot(6, optionList(availableItem())),
+            invSlot(6, optionList(item("ender_pearl", amount=16))),
             invSlot(7, optionList(availableItem())),
             invSlot(8, optionList(availableItem())),
             invSlot(9, optionList(availableItem())),
@@ -136,10 +139,10 @@ fun main() {
             invSlot(20, optionList(availableItem())),
             invSlot(21, optionList(availableItem())),
             invSlot(22, optionList(availableItem())),
-            invSlot(23, optionList(item("snowball", amount=4, conditions=condition("eye")),item("diamond", amount=4, conditions=invCondition("eye")))),
-            invSlot(24, optionList(item("redstone_block", amount=5, label="5redstone"),item("redstone_block", amount=64))),
-            invSlot(25, optionList(item("redstone_torch", amount=5, conditions=condition("5redstone")),item("redstone_torch", amount=64, conditions=invCondition("5redstone")))),
-            invSlot(26, optionList(item("glowstone_dust", amount=7)))
+            invSlot(23, optionList(availableItem())),
+            invSlot(24, optionList(availableItem())),
+            invSlot(25, optionList(availableItem())),
+            invSlot(26, optionList(availableItem()))
         ),
         HelmetSlotData(optionList(
             item("golden_helmet", 6),
@@ -273,12 +276,35 @@ fun main() {
         )
     )
 
-    println(CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData)).first.joinToString("\n"))
+    val junkSettings = JunkSettings(true, true, listOf(
+        rawItem("string", 2),
+        rawItem("iron_ingot", 4),
+        rawItem("iron_nugget", 40),
+        SplashFireResItem(),
+        rawItem("gold_ingot", 2),
+        rawItem("golden_boots", 1),
+        rawItem("leather", 64),
+        SplashFireResItem(),
+        rawItem("glowstone_dust", 3),
+        rawItem("cracked_stone_bricks", 1),
+        FireResItem(),
+        rawItem("mossy_stone_bricks", 1),
+        rawItem("tnt", 1),
+        FireResItem(),
+        rawItem("leather", 64),
+        rawItem("nether_brick", 3),
+        rawItem("dirt", 4),
+        rawItem("nether_brick_fence", 1),
+        EnchantedBootsItem(true, 1),
+    ))
+
+    println(CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings)).first.joinToString("\n"))
 
     val savedHotbars = SavedHotbars(hashMapOf(
         0 to SavedHotbar(arrayOf(
-            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.CREATIVE, DifficultyOption.EASY, fixedSlotsData, randomSlotsData),
-            AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),
+            AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),
+            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings),
+            AirItem(),
             CommandBlockItem()
         )),
         1 to SavedHotbar.emptyHotbar(),

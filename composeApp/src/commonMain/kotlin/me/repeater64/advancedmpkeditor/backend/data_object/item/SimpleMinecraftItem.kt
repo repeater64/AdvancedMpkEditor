@@ -14,6 +14,7 @@ data class SimpleMinecraftItem(private val id: String, override val amount: Int)
             return amount / maxStackSize + if (amount % maxStackSize > 0) 1 else 0
         }
 
+    override fun getCommandStringNonStackable(num: Int) = "${id}{a:$num} $amount"
     private val maxStackSize: Int
         get() {
             val item = id.removePrefix("minecraft:")

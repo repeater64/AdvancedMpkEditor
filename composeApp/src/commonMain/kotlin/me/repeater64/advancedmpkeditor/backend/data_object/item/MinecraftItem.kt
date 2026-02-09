@@ -11,17 +11,19 @@ interface MinecraftItem {
 
     val numStacks: Int
 
+    fun getCommandStringNonStackable(num: Int): String = commandString
+
     companion object : BookSerializable<MinecraftItem> {
         override val className = "MinecraftItem"
 
-        val registry = mapOf(
+        val registry by lazy { mapOf(
             DontReplaceMinecraftItem.className to DontReplaceMinecraftItem,
             SimpleMinecraftItem.className to SimpleMinecraftItem,
             ForcedEmptyMinecraftItem.className to ForcedEmptyMinecraftItem,
             FireResItem.className to FireResItem,
             SplashFireResItem.className to SplashFireResItem,
             EnchantedBootsItem.className to EnchantedBootsItem
-        )
+        ) }
 
         override fun serializeToPages(it: MinecraftItem): List<String> {
             return listOf(it.companion.className) + it.companion.serializeToPages(it)
