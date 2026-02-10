@@ -74,3 +74,8 @@ Item selector popup
 
 Can start with a simple search thing. But ideal menu would have multiple tabs. A search tab where you can access any item, then some tabs with common items nicely organised
 (eg piglin barters tab, tools/weapons tab).
+
+
+TODO
+Look into reworking mpk order to make the items stuff all happen first, then a few ticks delay before teleporting anywhere.
+Test thoroughly.

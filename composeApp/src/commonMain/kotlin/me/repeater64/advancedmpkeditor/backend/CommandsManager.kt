@@ -108,12 +108,15 @@ object CommandsManager {
         // JUNK
         val junkSettings = settings.junkSettings
         if (junkSettings.enableJunk) {
+            // Create scoreboard objective to store clear command result
+            processedCommands.add(Pair("scoreboard objectives add clear dummy", emptySet()))
+
             var i = 0
             for (bedrockIndex in 0..addedBedrockIndex) {
                 val junkItem = junkSettings.junkList[i % junkSettings.junkList.size]
 
-                processedCommands.add(Pair("clear @p minecraft:bedrock{a:$bedrockIndex}", emptySet()))
-                processedCommands.add(Pair("give @p ${if (junkSettings.makeJunkNonStackable) junkItem.getCommandStringNonStackable(i) else junkItem.commandString}", emptySet()))
+                processedCommands.add(Pair("execute store result score @p clear run clear @p minecraft:bedrock{a:$bedrockIndex}", emptySet()))
+                processedCommands.add(Pair("execute unless score @p clear matches 0 run give @p ${if (junkSettings.makeJunkNonStackable) junkItem.getCommandStringNonStackable(i) else junkItem.commandString}", emptySet()))
 
                 i++
             }
