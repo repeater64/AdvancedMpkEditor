@@ -122,6 +122,14 @@ object CommandsManager {
             }
         }
 
+        // HEALTH+HUNGER
+        val healthHungerSettings = settings.healthHungerSettings
+        processedCommands.add(Pair("scoreboard objectives add extradmg dummy", emptySet()))
+        processedCommands.add(Pair("scoreboard players set @p extradmg 0", emptySet()))
+        currentRandomiserIndex = handleWeightedList(healthHungerSettings.options,
+            {it.option.healthOption.commands + it.option.hungerOption.commands},
+            "Warning - Health hunger options has no options set", randomisers, randomiserConditionsMap, processedCommands, currentRandomiserIndex)
+
 
         val commands = mutableListOf<String>()
 

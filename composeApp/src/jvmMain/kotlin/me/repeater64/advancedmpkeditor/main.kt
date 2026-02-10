@@ -21,6 +21,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHot
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
 import me.repeater64.advancedmpkeditor.backend.*
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerOption
+import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
+import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
@@ -47,10 +51,10 @@ fun mainTemp() = application {
 fun main() {
     val fixedSlotsData = FixedSlotsData(
         OffhandSlotData(optionList(
-            item("bread", 3, 3),
-            item("cooked_porkchop", 2, 1),
-            item("rotten_flesh", 2, 4),
-            emptyItem(1)
+            item("bread", 1, 3, label="bread"),
+            item("cooked_porkchop", 1, 1, label="pork"),
+            item("rotten_flesh", 1, 4, label="flesh"),
+            emptyItem(1, label="nofood")
         )),
         arrayOf(
             hotbarSlot(0, optionList(
@@ -298,12 +302,20 @@ fun main() {
         EnchantedBootsItem(true, 1),
     ))
 
-    println(CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings)).first.joinToString("\n"))
+    val healthHungerSettings = HealthHungerSettings(WeightedOptionList(mutableListOf(
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, conditions=condition("nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, conditions=condition("nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, conditions=condition("flesh")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, conditions=condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, conditions=condition("pork")),
+    )))
+
+    println(CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings)).first.joinToString("\n"))
 
     val savedHotbars = SavedHotbars(hashMapOf(
         0 to SavedHotbar(arrayOf(
             AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),AirItem(),
-            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings),
+            BarrelItem("Test Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings),
             AirItem(),
             CommandBlockItem()
         )),
