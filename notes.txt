@@ -76,6 +76,3 @@ Can start with a simple search thing. But ideal menu would have multiple tabs. A
 (eg piglin barters tab, tools/weapons tab).
 
 
-TODO
-Look into reworking mpk order to make the items stuff all happen first, then a few ticks delay before teleporting anywhere.
-Test thoroughly.
