@@ -2,7 +2,6 @@ package me.repeater64.advancedmpkeditor.gui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -11,13 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,10 +21,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,9 +47,10 @@ import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
 import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftItemIcon
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
+import me.repeater64.advancedmpkeditor.gui.component.SimpleDropdown
 import me.repeater64.advancedmpkeditor.gui.component.verticalColumnScrollbar
 import me.repeater64.advancedmpkeditor.gui.platform.HotbarNbtFileManager
-import me.repeater64.advancedmpkeditor.util.getPrettyPrintedDataClass
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.BarrelEditor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class) // Needed for ExposedDropdownMenuBox
 @Composable
@@ -136,59 +130,6 @@ fun EditorScreen(
             }
         }
 
-        @Composable
-        fun BoxScope.hotbarSelectorDropdown() {
-            Box(
-                modifier = Modifier.width(300.dp).align(Alignment.Center),
-                contentAlignment = Alignment.Center
-            ) {
-                OutlinedTextField(
-                    value = "Hotbar ${selectedHotbarIndex + 1}",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Select Hotbar") },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Select Hotbar",
-                            modifier = Modifier.clickable { chooseHotbarDropdownExpanded = !chooseHotbarDropdownExpanded }
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(interactionSource = null, indication = null) {
-                            chooseHotbarDropdownExpanded = true
-                        }, // Make the whole field clickable
-                    enabled = false, // Disables typing
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-
-
-                DropdownMenu(
-                    expanded = chooseHotbarDropdownExpanded,
-                    onDismissRequest = { chooseHotbarDropdownExpanded = false },
-                    modifier = Modifier.width(300.dp)
-                ) {
-                    for (i in hotbars.hotbars.keys) {
-
-                        DropdownMenuItem(
-                            text = { Text("Hotbar ${i + 1}") },
-                            onClick = {
-                                selectedHotbarIndex = i
-                                chooseHotbarDropdownExpanded = false
-                                currentlyEditingItemIndex = -1
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
         Spacer(Modifier.height(5.dp))
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -198,7 +139,13 @@ fun EditorScreen(
             unsavedChangesText()
 
             // Hotbar selector dropdown
-            hotbarSelectorDropdown()
+            key(selectedHotbarIndex) {SimpleDropdown(
+                modifier = Modifier.width(300.dp).align(Alignment.Center),
+                label = "Select Hotbar",
+                selectedValue = "Hotbar ${selectedHotbarIndex + 1}",
+                options = hotbars.hotbars.keys.map { "Hotbar ${it + 1}" },
+                optionSelected = { selectedHotbarIndex = it; currentlyEditingItemIndex = -1 },
+            )}
 
             // Save all button
             Row(modifier = Modifier.align(Alignment.CenterEnd)) { saveButton(); Spacer(Modifier.width(50.dp)) }
@@ -211,8 +158,6 @@ fun EditorScreen(
                 val srcData = hotbar.hotbarItems[srcKey]
                 hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
                 hotbar.hotbarItems[destKey] = srcData
-                hotbarItemNumChanges++
-                isSaved = false
 
                 if (currentlyEditingItemIndex == srcKey && srcData is BarrelItem) {
                     // We moved the currently editing barrel to destKey. Follow it
@@ -221,6 +166,9 @@ fun EditorScreen(
                     // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
                     currentlyEditingItemIndex = srcKey
                 }
+
+                hotbarItemNumChanges++
+                isSaved = false
             },
             emptyChecker = {hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[it] is AirItem}
         ) {
@@ -234,17 +182,19 @@ fun EditorScreen(
                             dropdownExpanded = true
                         } else if (savedHotbarItem is BarrelItem) {
                             currentlyEditingItemIndex = i
+                            hotbarItemNumChanges++
                         }
                     }
                     val onRightClick = {
                         if (savedHotbarItem !is AirItem) {
                             val deleteAction = {
                                 selectedHotbarItems[i] = AirItem()
-                                hotbarItemNumChanges++
 
                                 if (currentlyEditingItemIndex == i) {
                                     currentlyEditingItemIndex = -1
                                 }
+
+                                hotbarItemNumChanges++
                             }
                             if (savedHotbarItem is BarrelItem) {
                                 showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
@@ -270,6 +220,7 @@ fun EditorScreen(
                                 }
                             }
                         },
+                        highlighted = currentlyEditingItemIndex == i,
                         modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
                             .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
                     )
@@ -289,9 +240,9 @@ fun EditorScreen(
                                     // Add barrel to i slot
                                     selectedHotbarItems[i] = BlankBarrel.barrel
                                     isSaved = false
-                                    hotbarItemNumChanges++
                                     dropdownExpanded = false
                                     currentlyEditingItemIndex = i
+                                    hotbarItemNumChanges++
                                 }
                             )
                             Spacer(Modifier.height(8.dp))
@@ -330,7 +281,7 @@ fun EditorScreen(
 
             key(currentlyEditingItemIndex) { Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 val currentlyEditingItem = currentlyEditingItem()
-                if (currentlyEditingItem is AirItem) {
+                if (currentlyEditingItem !is BarrelItem) {
                     Spacer(Modifier.height(100.dp))
                     Text(
                         text = "Click on a barrel (or add one) to edit its configuration!",
@@ -339,10 +290,10 @@ fun EditorScreen(
                     )
                 }
                 else {
-                    Text(
-                        text = getPrettyPrintedDataClass(currentlyEditingItem),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyMedium
+                    BarrelEditor(
+                        inputBarrelItem = currentlyEditingItem,
+                        barrelItemObjectChanged = {hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[currentlyEditingItemIndex] = it}, // Update SavedHotbars to reflect the change
+                        nameChanged = {hotbarItemNumChanges++} // Need to recompose the hotbar view since the hover text will change
                     )
                 }
             }}

@@ -1,9 +1,11 @@
 package me.repeater64.advancedmpkeditor.gui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TooltipAnchorPosition
@@ -22,14 +24,14 @@ data class MinecraftSlotDisplay(val minecraftItem: MinecraftItem,
                                 val size: Int,
                                 val modifier: Modifier = Modifier,
                                 val tooltipContents: @Composable TooltipScope.() -> Unit = {},
+                                val highlighted: Boolean = false
     ) {
     @Composable
     fun SlotDisplay(showContents: Boolean = true) {
         Surface(
             modifier = modifier.size(size.dp),
             shape = RoundedCornerShape((size / 6.0f).dp),
-//        color = MaterialTheme.colorScheme.secondary,
-//        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        border = if (highlighted) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null
         ) {
             val tooltipState = rememberTooltipState()
 
