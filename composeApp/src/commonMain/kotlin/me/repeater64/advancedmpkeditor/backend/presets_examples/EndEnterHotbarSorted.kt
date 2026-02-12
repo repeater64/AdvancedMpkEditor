@@ -34,7 +34,7 @@ object EndEnterHotbarSorted {
                 emptyItem(1, label = "nofood")
             )
         ),
-        arrayOf(
+        listOf(
             hotbarSlot(
                 0, optionList(
                     item("iron_axe", 2),
@@ -115,7 +115,7 @@ object EndEnterHotbarSorted {
                 )
             ),
         ),
-        arrayOf(
+        listOf(
             invSlot(0, optionList(item("fire_charge", amount = 23), item("fire_charge", amount = 15))),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),

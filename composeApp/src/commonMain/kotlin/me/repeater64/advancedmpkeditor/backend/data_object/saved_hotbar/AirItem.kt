@@ -1,11 +1,13 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
+import androidx.compose.runtime.Stable
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.buildNbtCompound
 import net.benwoodworth.knbt.put
 
+@Stable
 class AirItem : SavedHotbarItem() {
     override fun getTag(): NbtCompound {
         return buildNbtCompound {

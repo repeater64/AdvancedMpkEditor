@@ -27,7 +27,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelIt
 object BlankBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(optionList(emptyItem())),
-        arrayOf(
+        listOf(
             hotbarSlot(0, optionList(emptyItem())),
             hotbarSlot(1, optionList(emptyItem())),
             hotbarSlot(2, optionList(emptyItem())),
@@ -38,7 +38,7 @@ object BlankBarrel {
             hotbarSlot(7, optionList(emptyItem())),
             hotbarSlot(8, optionList(emptyItem())),
         ),
-        arrayOf(
+        listOf(
             invSlot(0, optionList(availableItem())),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),

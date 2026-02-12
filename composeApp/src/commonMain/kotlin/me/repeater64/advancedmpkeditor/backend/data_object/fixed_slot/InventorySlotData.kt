@@ -1,12 +1,20 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 
-data class InventorySlotData(val inventoryPosition: Int, override val itemOptions: WeightedOptionList<MinecraftItem>)
-    : FixedSlotData("container.${inventoryPosition+9}", itemOptions) {
+@Stable
+class InventorySlotData(_inventoryPosition: Int, _itemOptions: WeightedOptionList<MinecraftItem>)
+    : FixedSlotData("container.${_inventoryPosition+9}", _itemOptions) {
+    val inventoryPosition by mutableStateOf(_inventoryPosition)
+    override var itemOptions by mutableStateOf(_itemOptions)
+
 
     fun isAvailableForRandomItems(): Boolean = itemOptions.options.size == 1 && itemOptions.options[0].option is DontReplaceMinecraftItem
 

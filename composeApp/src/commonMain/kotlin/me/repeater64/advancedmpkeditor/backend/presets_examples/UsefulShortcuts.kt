@@ -25,4 +25,4 @@ fun emptyItem(weight: Int = 1, label: String? = null, conditions: List<Randomise
 fun availableItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(DontReplaceMinecraftItem(), weight, label, conditions)
 fun optionList(vararg options: WeightedOption<MinecraftItem>) = WeightedOptionList(options.toMutableList())
 fun itemList(vararg items: MinecraftItem, weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption(items.toList(), weight, label, conditions)
-fun emptyHotbar() = SavedHotbar(Array(9) { AirItem() })
+fun emptyHotbar() = SavedHotbar(List(9) { AirItem() })

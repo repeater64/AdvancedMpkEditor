@@ -1,11 +1,17 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.fire_res
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 
-data class FireResSettings(
-    val options: WeightedOptionList<Int> // Int is number of seconds of fire res
+@Stable
+class FireResSettings(
+    _options: WeightedOptionList<Int> // Int is number of seconds of fire res
 ) {
+    val options by mutableStateOf(_options)
+
     companion object : BookSerializable<FireResSettings> {
         override val className = "FireResSettings"
 

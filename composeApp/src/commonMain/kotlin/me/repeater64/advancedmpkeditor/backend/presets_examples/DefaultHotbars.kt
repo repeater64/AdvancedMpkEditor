@@ -7,31 +7,31 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHot
 
 object DefaultHotbars {
     val exampleTemplate
-        get() = SavedHotbars(hashMapOf(
-        0 to SavedHotbar(arrayOf(
+        get() = SavedHotbars(listOf(
+        SavedHotbar(listOf(
             EndEnterHotbarSorted.barrel, AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), CommandBlockItem()
         )),
-        1 to emptyHotbar(),
-        2 to emptyHotbar(),
-        3 to emptyHotbar(),
-        4 to emptyHotbar(),
-        5 to emptyHotbar(),
-        6 to emptyHotbar(),
-        7 to emptyHotbar(),
-        8 to emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
     ))
     val blankTemplate
-        get() = SavedHotbars(hashMapOf(
-        0 to SavedHotbar(arrayOf(
+        get() = SavedHotbars(listOf(
+        SavedHotbar(listOf(
             BlankBarrel.barrel, AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), CommandBlockItem()
         )),
-        1 to emptyHotbar(),
-        2 to emptyHotbar(),
-        3 to emptyHotbar(),
-        4 to emptyHotbar(),
-        5 to emptyHotbar(),
-        6 to emptyHotbar(),
-        7 to emptyHotbar(),
-        8 to emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
+        emptyHotbar(),
     ))
 }

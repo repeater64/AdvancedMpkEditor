@@ -1,8 +1,12 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.random_slot
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 
-data class RandomSlotsData(val optionsSets: List<RandomSlotOptionsSet>) {
+@Stable
+class RandomSlotsData(_optionsSets: List<RandomSlotOptionsSet>) {
+    val optionsSets = _optionsSets.toMutableStateList()
 
     fun totalMaxNumStacks() = optionsSets.sumOf { it.maxNumStacks }
 

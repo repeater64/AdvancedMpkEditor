@@ -1,9 +1,13 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.randomiser
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import kotlin.math.pow
 
-data class WeightedOptionList<T>(val options: MutableList<WeightedOption<T>>) {
+@Stable
+class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) {
+    val options = _options.toMutableStateList()
     val optionsSortedByWeight = options.sorted()
 
     fun generateAllConditionLists(): Map<Set<RandomiserCondition>, UnconditionalWeightedList<T>> {

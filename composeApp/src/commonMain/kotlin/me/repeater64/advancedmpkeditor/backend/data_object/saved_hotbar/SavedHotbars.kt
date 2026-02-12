@@ -1,5 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.io.NBT.nbt
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
@@ -9,9 +11,12 @@ import net.benwoodworth.knbt.put
 import net.benwoodworth.knbt.putNbtCompound
 import okio.Sink
 import okio.Source
-import kotlin.collections.iterator
+import kotlin.collections.forEach
 
-data class SavedHotbars(val hotbars: MutableMap<Int, SavedHotbar> = hashMapOf()) {
+@Stable
+class SavedHotbars(_hotbars: List<SavedHotbar> = emptyList()) {
+    val hotbars = _hotbars.toMutableStateList()
+
     @OptIn(OkioApi::class)
     fun encodeToNbtSink(sink: Sink) {
         nbt.encodeToSink(NbtCompound.serializer(), getTag(), sink)
@@ -20,7 +25,7 @@ data class SavedHotbars(val hotbars: MutableMap<Int, SavedHotbar> = hashMapOf())
     private fun getTag(): NbtCompound {
         return buildNbtCompound {
             putNbtCompound("") {
-                for ((index, hotbar) in hotbars) {
+                for ((index, hotbar) in hotbars.withIndex()) {
                      put(index.toString(), hotbar.getTag())
                 }
                 put("DataVersion", 2567)
@@ -36,9 +41,9 @@ data class SavedHotbars(val hotbars: MutableMap<Int, SavedHotbar> = hashMapOf())
 
         private fun fromTag(tag: NbtCompound) : SavedHotbars {
             val actualTag = tag[""] as NbtCompound
-            val map = mutableMapOf<Int, SavedHotbar>()
-            actualTag.forEach { (key, value) -> if (key != "DataVersion") map[key.toInt()] = SavedHotbar.fromTag(value as NbtList<NbtCompound>) }
-            return SavedHotbars(map)
+            val list = MutableList(9) {SavedHotbar(emptyList())}
+            actualTag.forEach { (key, value) -> if (key != "DataVersion") list[key.toInt()] = SavedHotbar.fromTag(value as NbtList<NbtCompound>) }
+            return SavedHotbars(list)
         }
     }
 }

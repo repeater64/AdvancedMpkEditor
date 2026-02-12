@@ -75,7 +75,6 @@ fun EditorScreen(
     var generalWarningProceedAction by remember { mutableStateOf<() -> Any>({}) }
 
     var selectedHotbarIndex by remember { mutableStateOf(0) }
-    var chooseHotbarDropdownExpanded by remember { mutableStateOf(false) }
 
     var currentlyEditingItemIndex by remember { mutableStateOf(-1) }
     fun currentlyEditingItem(): SavedHotbarItem = if (currentlyEditingItemIndex >= 0) hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[currentlyEditingItemIndex] else AirItem()
@@ -144,7 +143,7 @@ fun EditorScreen(
                 modifier = Modifier.width(300.dp).align(Alignment.Center),
                 label = "Select Hotbar",
                 selectedValue = "Hotbar ${selectedHotbarIndex + 1}",
-                options = hotbars.hotbars.keys.map { "Hotbar ${it + 1}" },
+                options = hotbars.hotbars.indices.map { "Hotbar ${it + 1}" },
                 optionSelected = { selectedHotbarIndex = it; currentlyEditingItemIndex = -1 },
             )}
 
@@ -292,9 +291,7 @@ fun EditorScreen(
                 }
                 else {
                     BarrelEditor(
-                        inputBarrelItem = currentlyEditingItem,
-                        barrelItemObjectChanged = {hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[currentlyEditingItemIndex] = it}, // Update SavedHotbars to reflect the change
-                        nameChanged = {hotbarItemNumChanges++} // Need to recompose the hotbar view since the hover text will change
+                        barrelItem = currentlyEditingItem
                     )
                 }
             }}

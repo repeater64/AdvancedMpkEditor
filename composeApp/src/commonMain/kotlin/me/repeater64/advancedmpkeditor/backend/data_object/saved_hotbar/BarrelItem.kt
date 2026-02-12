@@ -1,5 +1,9 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import me.repeater64.advancedmpkeditor.backend.CommandsManager
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
@@ -26,18 +30,29 @@ import net.benwoodworth.knbt.put
 import net.benwoodworth.knbt.putNbtCompound
 import net.benwoodworth.knbt.putNbtList
 
-data class BarrelItem(
-    val name: String,
-    val practiceTypeOption: PracticeTypeOption,
-    val gamemodeOption: GamemodeOption,
-    val difficultyOption: DifficultyOption,
-    val fixedSlotsData: FixedSlotsData,
-    val randomSlotsData: RandomSlotsData,
-    val junkSettings: JunkSettings,
-    val healthHungerSettings: HealthHungerSettings,
-    val fireResSettings: FireResSettings
+@Stable
+class BarrelItem(
+    _name: String,
+    _practiceTypeOption: PracticeTypeOption,
+    _gamemodeOption: GamemodeOption,
+    _difficultyOption: DifficultyOption,
+    _fixedSlotsData: FixedSlotsData,
+    _randomSlotsData: RandomSlotsData,
+    _junkSettings: JunkSettings,
+    _healthHungerSettings: HealthHungerSettings,
+    _fireResSettings: FireResSettings
 )
     : SavedHotbarItem() {
+
+    var name by mutableStateOf(_name)
+    var practiceTypeOption by mutableStateOf(_practiceTypeOption)
+    var gamemodeOption by mutableStateOf(_gamemodeOption)
+    var difficultyOption by mutableStateOf(_difficultyOption)
+    val fixedSlotsData by mutableStateOf(_fixedSlotsData)
+    val randomSlotsData by mutableStateOf(_randomSlotsData)
+    val junkSettings by mutableStateOf(_junkSettings)
+    val healthHungerSettings by mutableStateOf(_healthHungerSettings)
+    val fireResSettings by mutableStateOf(_fireResSettings)
 
     override fun getGuiRepresentationItem(): MinecraftItem {
         return SimpleMinecraftItem("barrel", 1)

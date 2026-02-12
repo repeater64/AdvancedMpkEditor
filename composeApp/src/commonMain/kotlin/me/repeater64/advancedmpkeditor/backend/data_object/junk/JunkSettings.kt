@@ -1,13 +1,22 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.junk
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 
-data class JunkSettings(
-    val enableJunk: Boolean,
-    val makeJunkNonStackable: Boolean,
-    val junkList: List<MinecraftItem>
+@Stable
+class JunkSettings(
+    _enableJunk: Boolean,
+    _makeJunkNonStackable: Boolean,
+    _junkList: List<MinecraftItem>
 ) {
+    val enableJunk by mutableStateOf(_enableJunk)
+    val makeJunkNonStackable by mutableStateOf(_makeJunkNonStackable)
+    val junkList = _junkList.toMutableStateList()
+
     companion object : BookSerializable<JunkSettings> {
         override val className = "JunkSettings"
 
