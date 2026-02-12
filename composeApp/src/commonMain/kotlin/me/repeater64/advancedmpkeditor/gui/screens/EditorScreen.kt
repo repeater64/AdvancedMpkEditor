@@ -64,8 +64,6 @@ fun EditorScreen(
     onCancelNavigation: () -> Unit
 ) {
 
-    var hotbarItemNumChanges by remember {mutableStateOf(0)} // Counter that causes the hotbar items to be redrawn (incremented on swap/item addition/deletion)
-
     var isSaving by remember { mutableStateOf(false) }
     var isSaved by remember { mutableStateOf(true) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
@@ -77,7 +75,7 @@ fun EditorScreen(
     var selectedHotbarIndex by remember { mutableStateOf(0) }
 
     var currentlyEditingItemIndex by remember { mutableStateOf(-1) }
-    fun currentlyEditingItem(): SavedHotbarItem = if (currentlyEditingItemIndex >= 0) hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[currentlyEditingItemIndex] else AirItem()
+    fun currentlyEditingItem(): SavedHotbarItem = if (currentlyEditingItemIndex >= 0) hotbars.hotbars[selectedHotbarIndex].hotbarItems[currentlyEditingItemIndex] else AirItem()
 
 
 
@@ -167,12 +165,11 @@ fun EditorScreen(
                     currentlyEditingItemIndex = srcKey
                 }
 
-                hotbarItemNumChanges++
                 isSaved = false
             },
             emptyChecker = {hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[it] is AirItem}
         ) {
-            key(hotbarItemNumChanges){ Row {
+            Row {
                 val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems
                 for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
                     var dropdownExpanded by remember {mutableStateOf(false)}
@@ -182,7 +179,6 @@ fun EditorScreen(
                             dropdownExpanded = true
                         } else if (savedHotbarItem is BarrelItem) {
                             currentlyEditingItemIndex = i
-                            hotbarItemNumChanges++
                         }
                     }
                     val onRightClick = {
@@ -193,8 +189,6 @@ fun EditorScreen(
                                 if (currentlyEditingItemIndex == i) {
                                     currentlyEditingItemIndex = -1
                                 }
-
-                                hotbarItemNumChanges++
                             }
                             if (savedHotbarItem is BarrelItem) {
                                 showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
@@ -242,7 +236,6 @@ fun EditorScreen(
                                     isSaved = false
                                     dropdownExpanded = false
                                     currentlyEditingItemIndex = i
-                                    hotbarItemNumChanges++
                                 }
                             )
                             Spacer(Modifier.height(8.dp))
@@ -253,7 +246,6 @@ fun EditorScreen(
                                     // Add cmd block to i slot
                                     selectedHotbarItems[i] = CommandBlockItem()
                                     isSaved = false
-                                    hotbarItemNumChanges++
                                     dropdownExpanded = false
                                 }
                             )
@@ -261,7 +253,7 @@ fun EditorScreen(
                     }
                     Spacer(Modifier.width(2.dp))
                 }
-            }}
+            }
         }
 
         Spacer(Modifier.height(12.dp))
