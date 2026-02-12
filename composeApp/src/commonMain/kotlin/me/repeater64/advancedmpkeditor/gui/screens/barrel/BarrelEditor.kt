@@ -3,6 +3,7 @@ package me.repeater64.advancedmpkeditor.gui.screens.barrel
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,4 +66,7 @@ fun ColumnScope.BarrelEditor(
             optionSelected = { changeBarrelItemObject(barrelItem.copy(difficultyOption = DifficultyOption.entries[it])) }
         )
     }
+
+    Spacer(Modifier.height(50.dp))
+    FixedSlotsEditor(inputBarrelItem.fixedSlotsData)
 }

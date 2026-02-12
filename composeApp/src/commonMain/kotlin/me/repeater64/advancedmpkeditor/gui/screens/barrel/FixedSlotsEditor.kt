@@ -1,0 +1,158 @@
+package me.repeater64.advancedmpkeditor.gui.screens.barrel
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
+import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
+import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
+import me.repeater64.advancedmpkeditor.gui.component.UpdateCounterWrapper
+
+const val SLOT_SIZE = 75
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColumnScope.FixedSlotsEditor(
+    fixedSlotsData: FixedSlotsData,
+) {
+    Text("Fixed Slot Items", style = MaterialTheme.typography.headlineLarge)
+    Spacer(Modifier.height(15.dp))
+
+    val updateCounters = remember { List(41) { UpdateCounterWrapper() } } // Indexed by 0-8 is hotbar, 9+ is inv, 36 is offhand, 37-40 is armor
+
+    fun recomposeSlot(index: Int) {
+        updateCounters[index].numUpdates++
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row {
+            ArmorSlotDisplay(updateCounters[37], fixedSlotsData.helmetSlotData.itemOptions, "empty_helmet_slot")
+            Spacer(Modifier.width(10.dp))
+            ArmorSlotDisplay(updateCounters[38], fixedSlotsData.chestplateSlotData.itemOptions, "empty_chestplate_slot")
+            Spacer(Modifier.width(10.dp))
+            ArmorSlotDisplay(updateCounters[39], fixedSlotsData.leggingsSlotData.itemOptions, "empty_leggings_slot")
+            Spacer(Modifier.width(10.dp))
+            ArmorSlotDisplay(updateCounters[40], fixedSlotsData.bootsSlotData.itemOptions, "empty_boots_slot")
+        }
+        Spacer(Modifier.height(15.dp))
+
+        // Inventory and hotbar and offhand
+        // For the DragDropContainer, indexed by 0-8 is hotbar, 9+ is inv, 36 is offhand
+        DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
+            onSwap = { srcKey, destKey ->
+                val srcSlot = if (srcKey == 36) fixedSlotsData.offhandSlotData else if (srcKey < 9) fixedSlotsData.hotbarSlotsData[srcKey] else fixedSlotsData.inventorySlotsData[srcKey-9]
+                val destSlot = if (destKey == 36) fixedSlotsData.offhandSlotData else if (destKey < 9) fixedSlotsData.hotbarSlotsData[destKey] else fixedSlotsData.inventorySlotsData[destKey-9]
+
+                var srcItems = srcSlot.itemOptions.options.toList() // Copy it
+                var destItems = destSlot.itemOptions.options.toList() // Copy it
+
+                srcSlot.itemOptions.options.clear()
+                destSlot.itemOptions.options.clear()
+
+                if (srcSlot is InventorySlotData && destSlot !is InventorySlotData && srcItems.size == 1 && srcItems[0].option is DontReplaceMinecraftItem) {
+                    // Moving an "available for random items" slot out of the inventory, convert it to forced empty slot
+                    srcItems = listOf(WeightedOption(ForcedEmptyMinecraftItem(), 1))
+                } else if (destSlot is InventorySlotData && srcSlot !is InventorySlotData && destItems.size == 1 && destItems[0].option is DontReplaceMinecraftItem) {
+                    // Same story
+                    destItems = listOf(WeightedOption(ForcedEmptyMinecraftItem(), 1))
+                }
+
+                srcSlot.itemOptions.options.addAll(destItems)
+                destSlot.itemOptions.options.addAll(srcItems)
+
+                recomposeSlot(srcKey)
+                recomposeSlot(destKey)
+            },
+            emptyChecker = { key ->
+                val slot = if (key == 36) fixedSlotsData.offhandSlotData else if (key < 9) fixedSlotsData.hotbarSlotsData[key] else fixedSlotsData.inventorySlotsData[key-9]
+
+                (slot is InventorySlotData && slot.itemOptions.options.size == 1 && slot.itemOptions.options[0].option is DontReplaceMinecraftItem)
+            }
+        ) {Column{
+            for (row in 0 until 3) {
+                Row {
+                    Spacer(Modifier.width((SLOT_SIZE + 10).dp)) // To make up for the offhand slot
+                    for (col in 0 until 9) {
+                        Spacer(Modifier.width(2.dp))
+
+                        val invPosition = row*9 + col
+                        val slotData = fixedSlotsData.inventorySlotsData[invPosition]
+                        FixedSlotDisplay(updateCounters[invPosition+9].numUpdates, slotData.itemOptions, invPosition+9)
+
+                        Spacer(Modifier.width(2.dp))
+                    }
+                    Spacer(Modifier.width((SLOT_SIZE + 10).dp)) // Equivalent to the offhand slot again, to force the centering we want
+                }
+                Spacer(Modifier.height(4.dp))
+            }
+
+            // Space between inv and hotbar
+            Spacer(Modifier.height(8.dp))
+
+            Row {
+                // Offhand
+                val offhandSlotData = fixedSlotsData.offhandSlotData
+                FixedSlotDisplay(updateCounters[36].numUpdates, offhandSlotData.itemOptions, 36)
+
+                Spacer(Modifier.width(10.dp))
+
+                // Hotbar
+                for (hotbarSlot in 0 until 9) {
+                    Spacer(Modifier.width(2.dp))
+
+                    val slotData = fixedSlotsData.hotbarSlotsData[hotbarSlot]
+                    FixedSlotDisplay(updateCounters[hotbarSlot].numUpdates, slotData.itemOptions, hotbarSlot)
+
+                    Spacer(Modifier.width(2.dp))
+                }
+                Spacer(Modifier.width((SLOT_SIZE + 10).dp)) // Equivalent to the offhand slot again, to force the centering we want
+            }
+        }}
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RowScope.FixedSlotDisplay(updateCounter: Int, itemOptions: WeightedOptionList<MinecraftItem>, dragSwappableKey: Int) {
+    val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
+        options = itemOptions,
+        size = SLOT_SIZE,
+    )
+
+    key(updateCounter) {
+        DragSwappable(
+        key = dragSwappableKey,
+        ghostContent = {minecraftSlotDisplay.ContentsOnly()},
+        content = {isDragging -> minecraftSlotDisplay.SlotDisplay(!isDragging)}
+    )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RowScope.ArmorSlotDisplay(updateCounter: UpdateCounterWrapper, itemOptions: WeightedOptionList<MinecraftItem>, ifEmpty: String) {
+    key(updateCounter.numUpdates) { MinecraftSlotDisplayMulti(itemOptions, size=SLOT_SIZE, ifEmpty=ifEmpty, tooltipContents = {Text("Click to edit items", style = MaterialTheme.typography.bodyMedium)}).SlotDisplay() }
+}

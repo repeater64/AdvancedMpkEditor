@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.rememberScrollState
@@ -235,7 +236,7 @@ fun EditorScreen(
                         DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
                             DropdownMenuItem(
                                 text = { Text("Add Configuration Barrel") },
-                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1)) },
+                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
                                 onClick = {
                                     // Add barrel to i slot
                                     selectedHotbarItems[i] = BlankBarrel.barrel
@@ -248,7 +249,7 @@ fun EditorScreen(
                             Spacer(Modifier.height(8.dp))
                             DropdownMenuItem(
                                 text = { Text("Add MPK Command Block") },
-                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1)) },
+                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1), modifier=Modifier.size(50.dp)) },
                                 onClick = {
                                     // Add cmd block to i slot
                                     selectedHotbarItems[i] = CommandBlockItem()

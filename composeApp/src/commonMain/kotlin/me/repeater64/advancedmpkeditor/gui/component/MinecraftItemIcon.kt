@@ -3,8 +3,19 @@ package me.repeater64.advancedmpkeditor.gui.component
 import advancedmpkeditor.composeapp.generated.resources.Res
 import advancedmpkeditor.composeapp.generated.resources.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -14,15 +25,35 @@ fun MinecraftItemIcon(
     minecraftItem: MinecraftItem,
     modifier: Modifier = Modifier
 ) {
-    Image(
-        painter = painterResource(getItemResource(minecraftItem.iconFile)),
-        contentDescription = minecraftItem.displayName,
-        modifier = modifier
-    )
+    Box(modifier = modifier) {
+        Image(
+            painter = painterResource(getItemResource(minecraftItem.iconFile)),
+            contentDescription = minecraftItem.displayName,
+            modifier = Modifier.fillMaxSize()
+        )
+        if (minecraftItem.amount > 1) {
+            Text("${minecraftItem.amount}",
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = Color.White,
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(2f, 2f),
+                    blurRadius = 1f
+                )
+            ),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(2.dp))
+        }
+    }
 }
 
 fun getItemResource(filename: String): DrawableResource {
     return when (filename) {
+        "empty_helmet_slot.png" -> Res.drawable.empty_helmet_slot
+        "empty_chestplate_slot.png" -> Res.drawable.empty_chestplate_slot
+        "empty_leggings_slot.png" -> Res.drawable.empty_leggings_slot
+        "empty_boots_slot.png" -> Res.drawable.empty_boots_slot
         "plus_icon.png" -> Res.drawable.plus_icon
         "acacia_boat.png" -> Res.drawable.acacia_boat
         "acacia_button.png" -> Res.drawable.acacia_button
