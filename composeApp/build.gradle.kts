@@ -29,6 +29,7 @@ kotlin {
             implementation("net.benwoodworth.knbt:knbt:0.11.9")
             implementation("com.squareup.okio:okio:3.16.2")
             implementation("org.jetbrains.kotlin:kotlin-reflect")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

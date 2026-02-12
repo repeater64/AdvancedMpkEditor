@@ -1,6 +1,6 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
-import me.repeater64.advancedmpkeditor.backend.NBT.nbt
+import me.repeater64.advancedmpkeditor.backend.io.NBT.nbt
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.OkioApi

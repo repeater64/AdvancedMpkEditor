@@ -4,10 +4,6 @@ import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.Bo
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
-import me.repeater64.advancedmpkeditor.backend.emptyItem
-import me.repeater64.advancedmpkeditor.backend.hotbarSlot
-import me.repeater64.advancedmpkeditor.backend.invSlot
-import me.repeater64.advancedmpkeditor.backend.optionList
 
 data class InventorySlotData(val inventoryPosition: Int, override val itemOptions: WeightedOptionList<MinecraftItem>)
     : FixedSlotData("container.${inventoryPosition+9}", itemOptions) {

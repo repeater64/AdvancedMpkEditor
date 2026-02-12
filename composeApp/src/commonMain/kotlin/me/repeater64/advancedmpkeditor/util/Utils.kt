@@ -1,6 +1,10 @@
 package me.repeater64.advancedmpkeditor.util
 
 fun prettyPrintDataClass(input: Any, indentStep: String = "    ") {
+    println(getPrettyPrintedDataClass(input, indentStep))
+}
+
+fun getPrettyPrintedDataClass(input: Any, indentStep: String = "    "): String {
     val sb = StringBuilder()
     var level = 0
 
@@ -27,7 +31,7 @@ fun prettyPrintDataClass(input: Any, indentStep: String = "    ") {
         }
         i++
     }
-    println(sb.toString())
+    return sb.toString()
 }
 
 fun mapIntToAlpha(n: Int): String {

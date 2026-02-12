@@ -1,5 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.add
 import net.benwoodworth.knbt.buildNbtCompound
@@ -35,6 +37,12 @@ class CommandBlockItem : SavedHotbarItem() {
             }
         }
     }
+
+    override fun getGuiRepresentationItem(): MinecraftItem {
+        return SimpleMinecraftItem("repeating_command_block", 1)
+    }
+
+    override fun getGuiName() = "MPK Command Block"
 
     override fun equals(other: Any?): Boolean {
         // Check if the other object is exactly the same class as this instance

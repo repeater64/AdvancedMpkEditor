@@ -8,7 +8,7 @@ class DontReplaceMinecraftItem : NoAttributesDataClass(), MinecraftItem {
     override val amount: Int = 1
     override val commandString = "intentionally_invalid_command"
     override val displayName = "Available for Random Items"
-    override val iconFile = "blank.png"
+    override val iconFile = "air.png"
     override val numStacks = 0
     override val companion = Companion as BookSerializable<MinecraftItem>
 

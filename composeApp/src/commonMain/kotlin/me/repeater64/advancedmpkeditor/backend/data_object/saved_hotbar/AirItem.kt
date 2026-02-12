@@ -1,5 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.buildNbtCompound
 import net.benwoodworth.knbt.put
@@ -14,6 +16,12 @@ class AirItem : SavedHotbarItem() {
 //            }
         }
     }
+
+    override fun getGuiRepresentationItem(): MinecraftItem {
+        return SimpleMinecraftItem("plus_icon", 1)
+    }
+
+    override fun getGuiName() = "Empty Slot"
 
     override fun equals(other: Any?): Boolean {
         // Check if the other object is exactly the same class as this instance

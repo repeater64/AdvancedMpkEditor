@@ -2,8 +2,11 @@ package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
 import me.repeater64.advancedmpkeditor.backend.CommandsManager
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
@@ -31,12 +34,18 @@ data class BarrelItem(
     val fixedSlotsData: FixedSlotsData,
     val randomSlotsData: RandomSlotsData,
     val junkSettings: JunkSettings,
-    val healthHungerSettings: HealthHungerSettings
+    val healthHungerSettings: HealthHungerSettings,
+    val fireResSettings: FireResSettings
 )
     : SavedHotbarItem() {
 
+    override fun getGuiRepresentationItem(): MinecraftItem {
+        return SimpleMinecraftItem("barrel", 1)
+    }
+    override fun getGuiName() = name
+
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings))
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings))
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -80,7 +89,7 @@ data class BarrelItem(
 
             val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
 
-            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings)
+            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings)
         }
     }
 }

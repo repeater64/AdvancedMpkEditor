@@ -130,6 +130,12 @@ object CommandsManager {
             {it.option.healthOption.commands + it.option.hungerOption.commands},
             "Warning - Health hunger options has no options set", randomisers, randomiserConditionsMap, processedCommands, currentRandomiserIndex)
 
+        // FIRE RES
+        val fireResSettings = settings.fireResSettings
+        currentRandomiserIndex = handleWeightedList(fireResSettings.options,
+            {if (it.option > 0) listOf("effect give @p fire_resistance ${it.option} 0") else emptyList()},
+            "Warning - Fire res settings has no options set", randomisers, randomiserConditionsMap, processedCommands, currentRandomiserIndex)
+
 
         val commands = mutableListOf<String>()
 
