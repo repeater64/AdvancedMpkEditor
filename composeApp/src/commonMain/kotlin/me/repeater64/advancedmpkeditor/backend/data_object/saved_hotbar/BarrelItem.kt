@@ -21,6 +21,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.trigger_items.HotbarF
 import me.repeater64.advancedmpkeditor.backend.data_object.trigger_items.InventoryFillingShulker
 import me.repeater64.advancedmpkeditor.backend.data_object.trigger_items.WritableAutoBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.trigger_items.WrittenBookItem
+import me.repeater64.advancedmpkeditor.util.hash
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
@@ -53,6 +54,21 @@ class BarrelItem(
     val junkSettings by mutableStateOf(_junkSettings)
     val healthHungerSettings by mutableStateOf(_healthHungerSettings)
     val fireResSettings by mutableStateOf(_fireResSettings)
+
+
+    override fun contentHash(): Int {
+        return hash(
+            name,
+            practiceTypeOption,
+            gamemodeOption,
+            difficultyOption,
+            fixedSlotsData.contentHash(),
+            randomSlotsData.contentHash(),
+            junkSettings.contentHash(),
+            healthHungerSettings.contentHash(),
+            fireResSettings.contentHash(),
+        )
+    }
 
     override fun getGuiRepresentationItem(): MinecraftItem {
         return SimpleMinecraftItem("barrel", 1)

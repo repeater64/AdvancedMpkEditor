@@ -8,6 +8,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.Bo
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.util.hash
 
 @Stable
 class InventorySlotData(_inventoryPosition: Int, _itemOptions: WeightedOptionList<MinecraftItem>)
@@ -15,6 +16,9 @@ class InventorySlotData(_inventoryPosition: Int, _itemOptions: WeightedOptionLis
     val inventoryPosition by mutableStateOf(_inventoryPosition)
     override var itemOptions by mutableStateOf(_itemOptions)
 
+    override fun contentHash(): Int {
+        return hash(inventoryPosition, itemOptions.contentHash())
+    }
 
     fun isAvailableForRandomItems(): Boolean = itemOptions.options.size == 1 && itemOptions.options[0].option is DontReplaceMinecraftItem
 

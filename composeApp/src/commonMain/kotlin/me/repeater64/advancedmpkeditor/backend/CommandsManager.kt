@@ -273,8 +273,8 @@ object CommandsManager {
                 }
 
                 if (option.label != null) {
-                    val positiveCondition = RandomiserCondition(option.label, false)
-                    val negativeCondition = RandomiserCondition(option.label, true)
+                    val positiveCondition = RandomiserCondition(option.label!!, false)
+                    val negativeCondition = RandomiserCondition(option.label!!, true)
 
                     randomiserConditionsMap.getOrPut(positiveCondition) { mutableListOf() }.add("if score @p $randomiserIdentifier matches $weightRange")
                     randomiserConditionsMap.getOrPut(negativeCondition) { mutableListOf() }.add("unless score @p $randomiserIdentifier matches $weightRange")

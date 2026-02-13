@@ -53,3 +53,9 @@ fun mapIntToAlpha(n: Int): String {
 
     return result.reverse().toString()
 }
+
+fun hash(vararg values: Any?): Int {
+    return values.fold(0) { acc, value ->
+        31 * acc + (value?.hashCode() ?: 0)
+    }
+}

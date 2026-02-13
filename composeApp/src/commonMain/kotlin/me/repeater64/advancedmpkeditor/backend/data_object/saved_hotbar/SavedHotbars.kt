@@ -2,7 +2,9 @@ package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.toMutableStateList
+import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.io.NBT.nbt
+import me.repeater64.advancedmpkeditor.util.hash
 import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.OkioApi
@@ -14,8 +16,12 @@ import okio.Source
 import kotlin.collections.forEach
 
 @Stable
-class SavedHotbars(_hotbars: List<SavedHotbar> = emptyList()) {
+class SavedHotbars(_hotbars: List<SavedHotbar> = emptyList()) : ContentHashable {
     val hotbars = _hotbars.toMutableStateList()
+
+    override fun contentHash(): Int {
+        return hash(hotbars.map { it.contentHash() })
+    }
 
     @OptIn(OkioApi::class)
     fun encodeToNbtSink(sink: Sink) {

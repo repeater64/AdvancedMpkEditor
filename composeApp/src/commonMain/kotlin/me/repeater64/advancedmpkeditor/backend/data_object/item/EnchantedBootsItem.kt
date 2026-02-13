@@ -6,6 +6,8 @@ data class EnchantedBootsItem(
     val iron: Boolean,
     val ssLevel: Int,
 ) : MinecraftItem {
+    override fun contentHash() = hashCode() // Can use this for immutable data class
+
     override val commandString = "${if (iron) "iron" else "golden"}_boots{Enchantments:[{lvl:$ssLevel,id:soul_speed}]} 1"
     override val displayName = if (iron) "Iron Boots (Soul Speed ${integer123ToRomanNumerals(ssLevel)})" else "Golden Boots (Soul Speed ${integer123ToRomanNumerals(ssLevel)})"
     override val amount = 1

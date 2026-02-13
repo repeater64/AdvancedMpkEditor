@@ -2,12 +2,16 @@ package me.repeater64.advancedmpkeditor.backend.data_object.randomiser
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.toMutableStateList
+import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
+import me.repeater64.advancedmpkeditor.util.hash
 import kotlin.math.pow
 
 @Stable
-class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) {
+class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) : ContentHashable {
     val options = _options.toMutableStateList()
+    override fun contentHash() = hash(options.map { it.contentHash() })
+
     val optionsSortedByWeight = options.sorted()
 
     fun generateAllConditionLists(): Map<Set<RandomiserCondition>, UnconditionalWeightedList<T>> {

@@ -30,8 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
@@ -64,8 +66,14 @@ fun EditorScreen(
     onCancelNavigation: () -> Unit
 ) {
 
+    var savedHotbarsHash by remember { mutableStateOf(hotbars.contentHash()) }
+    val currentHotbarsHash by produceState(initialValue = savedHotbarsHash, key1 = hotbars) {
+        snapshotFlow { hotbars.contentHash() }
+            .collect { value = it }
+    }
+    val isSaved = (currentHotbarsHash == savedHotbarsHash )
+
     var isSaving by remember { mutableStateOf(false) }
-    var isSaved by remember { mutableStateOf(true) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
 
     var showGeneralWarningDialog by remember { mutableStateOf(false) }
@@ -104,7 +112,7 @@ fun EditorScreen(
                 isSaving = true
                 fileManager.saveHotbars(hotbars, "hotbar.nbt")
                 isSaving = false
-                isSaved = true
+                savedHotbarsHash = currentHotbarsHash
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
@@ -152,7 +160,7 @@ fun EditorScreen(
 
         DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
             onSwap = { srcKey, destKey ->
-                val hotbar = hotbars.hotbars[selectedHotbarIndex]!!
+                val hotbar = hotbars.hotbars[selectedHotbarIndex]
                 val srcData = hotbar.hotbarItems[srcKey]
                 hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
                 hotbar.hotbarItems[destKey] = srcData
@@ -164,13 +172,11 @@ fun EditorScreen(
                     // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
                     currentlyEditingItemIndex = srcKey
                 }
-
-                isSaved = false
             },
-            emptyChecker = {hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems[it] is AirItem}
+            emptyChecker = {hotbars.hotbars[selectedHotbarIndex].hotbarItems[it] is AirItem}
         ) {
             Row {
-                val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex]!!.hotbarItems
+                val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex].hotbarItems
                 for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
                     var dropdownExpanded by remember {mutableStateOf(false)}
 
@@ -233,7 +239,6 @@ fun EditorScreen(
                                 onClick = {
                                     // Add barrel to i slot
                                     selectedHotbarItems[i] = BlankBarrel.barrel
-                                    isSaved = false
                                     dropdownExpanded = false
                                     currentlyEditingItemIndex = i
                                 }
@@ -245,7 +250,6 @@ fun EditorScreen(
                                 onClick = {
                                     // Add cmd block to i slot
                                     selectedHotbarItems[i] = CommandBlockItem()
-                                    isSaved = false
                                     dropdownExpanded = false
                                 }
                             )

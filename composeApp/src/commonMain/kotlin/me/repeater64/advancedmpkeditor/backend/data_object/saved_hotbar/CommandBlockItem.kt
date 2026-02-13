@@ -54,4 +54,8 @@ class CommandBlockItem : SavedHotbarItem() {
     override fun hashCode(): Int {
         return this::class.hashCode()
     }
+
+    override fun contentHash(): Int {
+        return hashCode()
+    }
 }

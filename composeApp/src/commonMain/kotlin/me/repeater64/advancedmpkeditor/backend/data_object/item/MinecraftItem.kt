@@ -1,8 +1,9 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.item
 
+import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 
-interface MinecraftItem {
+interface MinecraftItem : ContentHashable {
     val commandString: String
     val displayName: String
     val amount: Int

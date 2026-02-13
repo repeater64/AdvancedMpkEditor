@@ -341,20 +341,20 @@ object EndEnterHotbarSorted {
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, conditions= condition(
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, _conditions= condition(
             "nofood"
         )
         ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, conditions= condition(
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, _conditions= condition(
             "nofood"
         )
         ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, conditions= condition(
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition(
             "flesh"
         )
         ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, conditions= condition("bread")),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, _conditions= condition("pork")),
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(

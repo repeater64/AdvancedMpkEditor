@@ -10,12 +10,17 @@ import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOp
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
+import me.repeater64.advancedmpkeditor.util.hash
 
 @Stable
 class HotbarSlotData(_hotbarPosition: Int, _itemOptions: WeightedOptionList<MinecraftItem>)
     : FixedSlotData("hotbar.$_hotbarPosition", _itemOptions) {
     val hotbarPosition by mutableStateOf(_hotbarPosition)
     override var itemOptions by mutableStateOf(_itemOptions)
+
+    override fun contentHash(): Int {
+        return hash(hotbarPosition, itemOptions.contentHash())
+    }
 
     companion object : BookSerializable<HotbarSlotData> {
         override val className = "HotbarSlotData"

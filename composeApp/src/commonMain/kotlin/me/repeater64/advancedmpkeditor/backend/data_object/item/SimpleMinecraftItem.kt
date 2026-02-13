@@ -3,6 +3,8 @@ package me.repeater64.advancedmpkeditor.backend.data_object.item
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 
 data class SimpleMinecraftItem(private val id: String, override val amount: Int) : MinecraftItem {
+    override fun contentHash() = hashCode() // Can use this for immutable data class
+
     override val commandString = "$id $amount"
     override val displayName = id.split("_").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
     override val iconFile = "${id}.png"

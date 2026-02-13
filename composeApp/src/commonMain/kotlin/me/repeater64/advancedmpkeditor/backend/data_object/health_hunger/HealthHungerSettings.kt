@@ -3,14 +3,17 @@ package me.repeater64.advancedmpkeditor.backend.data_object.health_hunger
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 
 @Stable
 class HealthHungerSettings(
     _options: WeightedOptionList<HealthHungerOption>
-) {
+) : ContentHashable {
     val options by mutableStateOf(_options)
+
+    override fun contentHash() = options.contentHash()
 
     companion object : BookSerializable<HealthHungerSettings> {
         override val className = "HealthHungerSettings"

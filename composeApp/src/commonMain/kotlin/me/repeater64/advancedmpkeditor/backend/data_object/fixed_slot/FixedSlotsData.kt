@@ -4,10 +4,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
+import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable.Companion.getListAndRemainingPages
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable.Companion.getObjectAndRemainingPages
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable.Companion.serializeList
+import me.repeater64.advancedmpkeditor.util.hash
 
 @Stable
 class FixedSlotsData(
@@ -18,7 +20,7 @@ class FixedSlotsData(
     _chestplateSlotData: ChestplateSlotData,
     _leggingsSlotData: LeggingsSlotData,
     _bootsSlotData: BootsSlotData
-) {
+) : ContentHashable {
 
     val offhandSlotData by mutableStateOf(_offhandSlotData)
     val hotbarSlotsData = _hotbarSlotsData.toMutableStateList()
@@ -27,6 +29,18 @@ class FixedSlotsData(
     val chestplateSlotData by mutableStateOf(_chestplateSlotData)
     val leggingsSlotData by mutableStateOf(_leggingsSlotData)
     val bootsSlotData by mutableStateOf(_bootsSlotData)
+
+    override fun contentHash(): Int {
+        return hash(
+            offhandSlotData.contentHash(),
+            hotbarSlotsData.map { it.contentHash() },
+            inventorySlotsData.map {it.contentHash() },
+            helmetSlotData.contentHash(),
+            chestplateSlotData.contentHash(),
+            leggingsSlotData.contentHash(),
+            bootsSlotData.contentHash(),
+        )
+    }
 
     fun getAllSlotsExceptFloatingInvSlots() : List<FixedSlotData> {
         return listOf(offhandSlotData, helmetSlotData, chestplateSlotData, leggingsSlotData, bootsSlotData) + hotbarSlotsData.toList() + inventorySlotsData.toList().filter { !it.isAvailableForRandomItems() && it.inventoryPosition < numInvSlotsWithItems()}
@@ -71,6 +85,5 @@ class FixedSlotsData(
             val bootsSlotData = getObjectAndRemainingPages(pages6, BootsSlotData).first
             return FixedSlotsData(offhandSlotData, hotbarSlotsData, inventorySlotsData, helmetSlotData, chestplateSlotData, leggingsSlotData, bootsSlotData)
         }
-
     }
 }
