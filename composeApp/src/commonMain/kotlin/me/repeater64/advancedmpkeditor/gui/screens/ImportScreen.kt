@@ -36,11 +36,7 @@ fun ImportScreen(
     val scope = rememberCoroutineScope()
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.width(1000.dp)
-    ) {
+    BasicFullyScrollableScreen(Modifier.width(1000.dp), Arrangement.spacedBy(16.dp)) {
 
         Text(
             "Import From \"hotbar.nbt\"",

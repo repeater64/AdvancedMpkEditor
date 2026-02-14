@@ -27,8 +27,6 @@ actual fun FileDropZone(
     onFileDropped: (SavedHotbars) -> Unit,
     content: @Composable (() -> Unit)
 ) {
-    // We use a Box to render the UI, but the event listener is global
-    // to the window to ensure we catch the drop reliably over the canvas.
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         content()
     }
@@ -36,8 +34,13 @@ actual fun FileDropZone(
     DisposableEffect(Unit) {
         val scope = MainScope()
 
+        val onDragEnter = { e: DragEvent ->
+            e.preventDefault()
+        }
+
         val onDragOver = { e: DragEvent ->
-            e.preventDefault() // Necessary to allow dropping
+            e.preventDefault()
+            e.dataTransfer?.dropEffect = "copy"
         }
 
         val onDrop = { e: DragEvent ->
@@ -46,8 +49,6 @@ actual fun FileDropZone(
             val files = e.dataTransfer?.files
             if (files != null && files.length > 0) {
                 val file = files[0]!!
-                // We reuse the logic from the previous helper function
-                // Assuming `readFileFromDrop` is available in the scope or imported
                 scope.launch {
                     val result = readFileFromDrop(file)
                     if (result != null) {
@@ -57,12 +58,13 @@ actual fun FileDropZone(
             }
         }
 
-        // Attach listeners
+        window.addEventListener("dragenter", onDragEnter as (Event) -> Unit)
         window.addEventListener("dragover", onDragOver as (Event) -> Unit)
         window.addEventListener("drop", onDrop as (Event) -> Unit)
 
         // Cleanup
         onDispose {
+            window.removeEventListener("dragenter", onDragEnter)
             window.removeEventListener("dragover", onDragOver)
             window.removeEventListener("drop", onDrop)
         }

@@ -13,11 +13,18 @@ data class SimpleMinecraftItem(private val id: String, override val amount: Int)
 
     override val numStacks: Int
         get() {
-            return amount / maxStackSize + if (amount % maxStackSize > 0) 1 else 0
+            return amount / stackSize + if (amount % stackSize > 0) 1 else 0
         }
 
     override fun getCommandStringNonStackable(num: Int) = "${id}{a:$num} $amount"
-    private val maxStackSize: Int
+
+    fun copyWithAmount(amount: Int) = SimpleMinecraftItem(id, amount)
+
+    override fun equalsIgnoringAmount(other: MinecraftItem): Boolean {
+        return (other is SimpleMinecraftItem && this.id == other.id)
+    }
+
+    override val stackSize: Int
         get() {
             val item = id.removePrefix("minecraft:")
             if (item.endsWith("_sign")) return 16

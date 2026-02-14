@@ -53,6 +53,7 @@ import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.SimpleDropdown
 import me.repeater64.advancedmpkeditor.gui.component.verticalColumnScrollbar
 import me.repeater64.advancedmpkeditor.gui.platform.HotbarNbtFileManager
+import me.repeater64.advancedmpkeditor.gui.platform.PreventAppExit
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.BarrelEditor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class) // Needed for ExposedDropdownMenuBox
@@ -80,12 +81,16 @@ fun EditorScreen(
     var generalWarningDialogText by remember { mutableStateOf("nothing yet") }
     var generalWarningProceedAction by remember { mutableStateOf<() -> Any>({}) }
 
+    var showEditorDialog by remember { mutableStateOf(false) }
+    var editorDialog by remember { mutableStateOf<@Composable () -> Any>( {} ) }
+
     var selectedHotbarIndex by remember { mutableStateOf(0) }
 
     var currentlyEditingItemIndex by remember { mutableStateOf(-1) }
     fun currentlyEditingItem(): SavedHotbarItem = if (currentlyEditingItemIndex >= 0) hotbars.hotbars[selectedHotbarIndex].hotbarItems[currentlyEditingItemIndex] else AirItem()
 
 
+    PreventAppExit(!isSaved)
 
     LaunchedEffect(pendingNavigationRequest) {
         if (pendingNavigationRequest != null) {
@@ -287,7 +292,12 @@ fun EditorScreen(
                 }
                 else {
                     BarrelEditor(
-                        barrelItem = currentlyEditingItem
+                        barrelItem = currentlyEditingItem,
+                        showDialogCallback = { dialog ->
+                            showEditorDialog = true
+                            editorDialog = dialog
+                        },
+                        hideDialogCallback = {showEditorDialog = false}
                     )
                 }
             }}
@@ -321,6 +331,8 @@ fun EditorScreen(
                     showGeneralWarningDialog = false
                 }
             )
+        } else if (showEditorDialog) {
+            editorDialog()
         }
     }
 }

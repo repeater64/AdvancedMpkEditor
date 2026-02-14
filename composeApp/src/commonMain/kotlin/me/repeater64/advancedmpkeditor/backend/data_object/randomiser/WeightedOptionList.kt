@@ -12,7 +12,7 @@ class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) : ContentH
     val options = _options.toMutableStateList()
     override fun contentHash() = hash(options.map { it.contentHash() })
 
-    val optionsSortedByWeight = options.sorted()
+    val optionsSortedByWeight get() = options.sorted()
 
     fun generateAllConditionLists(): Map<Set<RandomiserCondition>, UnconditionalWeightedList<T>> {
         val toReturn: MutableMap<Set<RandomiserCondition>, UnconditionalWeightedList<T>> = HashMap()

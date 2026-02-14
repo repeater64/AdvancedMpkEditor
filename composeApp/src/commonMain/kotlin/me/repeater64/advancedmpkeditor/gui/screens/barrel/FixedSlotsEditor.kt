@@ -1,5 +1,6 @@
 package me.repeater64.advancedmpkeditor.gui.screens.barrel
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -8,19 +9,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.onClick
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
@@ -34,19 +39,22 @@ const val SLOT_SIZE = 75
 @Composable
 fun ColumnScope.FixedSlotsEditor(
     fixedSlotsData: FixedSlotsData,
+    allLabels: MutableSet<String>,
+    showDialogCallback: (@Composable () -> Any) -> Any,
+    hideDialogCallback: () -> Unit
 ) {
     Text("Fixed Slot Items", style = MaterialTheme.typography.headlineLarge)
     Spacer(Modifier.height(15.dp))
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
-            ArmorSlotDisplay(fixedSlotsData.helmetSlotData.itemOptions, "empty_helmet_slot")
+            ArmorSlotDisplay(fixedSlotsData.helmetSlotData, "empty_helmet_slot", MinecraftItemCategory.ALL_HELMETS, allLabels, showDialogCallback, hideDialogCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.chestplateSlotData.itemOptions, "empty_chestplate_slot")
+            ArmorSlotDisplay(fixedSlotsData.chestplateSlotData, "empty_chestplate_slot", MinecraftItemCategory.ALL_CHESTPLATES, allLabels, showDialogCallback, hideDialogCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.leggingsSlotData.itemOptions, "empty_leggings_slot")
+            ArmorSlotDisplay(fixedSlotsData.leggingsSlotData, "empty_leggings_slot", MinecraftItemCategory.ALL_LEGGINGS, allLabels, showDialogCallback, hideDialogCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.bootsSlotData.itemOptions, "empty_boots_slot")
+            ArmorSlotDisplay(fixedSlotsData.bootsSlotData, "empty_boots_slot", MinecraftItemCategory.ALL_BOOTS, allLabels, showDialogCallback, hideDialogCallback)
         }
         Spacer(Modifier.height(15.dp))
 
@@ -86,7 +94,7 @@ fun ColumnScope.FixedSlotsEditor(
 
                         val invPosition = row*9 + col
                         val slotData = fixedSlotsData.inventorySlotsData[invPosition]
-                        FixedSlotDisplay(slotData.itemOptions, invPosition+9)
+                        FixedSlotDisplay(slotData, allLabels, invPosition+9, showDialogCallback, hideDialogCallback)
 
                         Spacer(Modifier.width(2.dp))
                     }
@@ -101,7 +109,7 @@ fun ColumnScope.FixedSlotsEditor(
             Row {
                 // Offhand
                 val offhandSlotData = fixedSlotsData.offhandSlotData
-                FixedSlotDisplay(offhandSlotData.itemOptions, 36)
+                FixedSlotDisplay(offhandSlotData, allLabels, 36, showDialogCallback, hideDialogCallback)
 
                 Spacer(Modifier.width(10.dp))
 
@@ -110,7 +118,7 @@ fun ColumnScope.FixedSlotsEditor(
                     Spacer(Modifier.width(2.dp))
 
                     val slotData = fixedSlotsData.hotbarSlotsData[hotbarSlot]
-                    FixedSlotDisplay(slotData.itemOptions, hotbarSlot)
+                    FixedSlotDisplay(slotData, allLabels, hotbarSlot, showDialogCallback, hideDialogCallback)
 
                     Spacer(Modifier.width(2.dp))
                 }
@@ -120,23 +128,36 @@ fun ColumnScope.FixedSlotsEditor(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun RowScope.FixedSlotDisplay(itemOptions: WeightedOptionList<MinecraftItem>, dragSwappableKey: Int) {
+fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<String>, dragSwappableKey: Int, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit) {
     val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
-        options = itemOptions,
+        options = slotData.itemOptions,
         size = SLOT_SIZE,
+        modifier = Modifier.onClick(onClick = {
+            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback) }
+        })
     )
 
     DragSwappable(
         key = dragSwappableKey,
-        ghostContent = {minecraftSlotDisplay.ContentsOnly()},
-        content = {isDragging -> minecraftSlotDisplay.SlotDisplay(!isDragging)}
+        ghostContent = { minecraftSlotDisplay.ContentsOnly() },
+        content = { isDragging -> minecraftSlotDisplay.SlotDisplay(!isDragging) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun RowScope.ArmorSlotDisplay(itemOptions: WeightedOptionList<MinecraftItem>, ifEmpty: String) {
-    MinecraftSlotDisplayMulti(itemOptions, size=SLOT_SIZE, ifEmpty=ifEmpty, tooltipContents = {Text("Click to edit items", style = MaterialTheme.typography.bodyMedium)}).SlotDisplay()
+fun RowScope.ArmorSlotDisplay(slotData: FixedSlotData, ifEmpty: String, itemCategory: MinecraftItemCategory, allLabels: MutableSet<String>, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit) {
+    val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
+        options = slotData.itemOptions,
+        size = SLOT_SIZE,
+        ifEmpty = ifEmpty,
+        tooltipContents = {Text("Click to edit items", style = MaterialTheme.typography.bodyMedium)},
+        modifier = Modifier.onClick(onClick = {
+            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback, onlyOneItemCategory = itemCategory) }
+        })
+    )
+
+    minecraftSlotDisplay.SlotDisplay()
 }

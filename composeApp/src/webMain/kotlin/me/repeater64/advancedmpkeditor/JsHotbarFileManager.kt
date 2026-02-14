@@ -21,11 +21,9 @@ import kotlin.coroutines.suspendCoroutine
 class JsHotbarFileManager : HotbarNbtFileManager {
 
     override fun saveHotbars(hotbars: SavedHotbars, fileName: String) {
-        // 1. Write Hotbars to an Okio Buffer
         val buffer = Buffer()
         hotbars.encodeToNbtSink(buffer)
 
-        // 2. Convert Buffer to JS Blob
         val byteArray = buffer.readByteArray()
         // Convert Kotlin ByteArray to JS Int8Array
         val int8Array = Int8Array(byteArray.size)
@@ -35,7 +33,6 @@ class JsHotbarFileManager : HotbarNbtFileManager {
 
         val blob = Blob(arrayOf(int8Array), BlobPropertyBag(type = "application/octet-stream"))
 
-        // 3. Trigger Download via Anchor tag
         val url = URL.createObjectURL(blob)
         val link = document.createElement("a") as HTMLAnchorElement
         link.href = url
@@ -47,17 +44,15 @@ class JsHotbarFileManager : HotbarNbtFileManager {
     }
 
     override suspend fun loadHotbars(): SavedHotbars? = suspendCoroutine { continuation ->
-        // 1. Create invisible file input
         val input = document.createElement("input") as HTMLInputElement
         input.type = "file"
         input.style.display = "none"
 
-        input.onchange = { event ->
+        input.onchange = {
             val file = input.files?.item(0)
             if (file != null) {
                 val reader = FileReader()
                 reader.onload = { loadEvent ->
-                    // 2. Read ArrayBuffer -> ByteArray -> Okio Buffer
                     val arrayBuffer = loadEvent.target.asDynamic().result as ArrayBuffer
                     val uint8Array = Uint8Array(arrayBuffer)
                     val byteArray = ByteArray(uint8Array.length)
@@ -67,7 +62,6 @@ class JsHotbarFileManager : HotbarNbtFileManager {
 
                     val source = Buffer().write(byteArray)
 
-                    // 3. Decode
                     try {
                         val result = SavedHotbars.decodeFromNbtSource(source)
                         continuation.resume(result)

@@ -1,6 +1,7 @@
 package me.repeater64.advancedmpkeditor.gui.screens
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,7 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun InstructionsScreen() {
 
-    BasicInfoScreen {
+    BasicFullyScrollableScreen(Modifier.fillMaxWidth()) {
         // TODO add instructions info
         Text(
             text = "How to use this tool",

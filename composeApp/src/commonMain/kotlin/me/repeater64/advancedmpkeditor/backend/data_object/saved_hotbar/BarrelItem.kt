@@ -41,7 +41,8 @@ class BarrelItem(
     _randomSlotsData: RandomSlotsData,
     _junkSettings: JunkSettings,
     _healthHungerSettings: HealthHungerSettings,
-    _fireResSettings: FireResSettings
+    _fireResSettings: FireResSettings,
+    val allRandomiserLinkLabels: MutableSet<String>
 )
     : SavedHotbarItem() {
 
@@ -67,6 +68,7 @@ class BarrelItem(
             junkSettings.contentHash(),
             healthHungerSettings.contentHash(),
             fireResSettings.contentHash(),
+            // Doesn't need to include allRandomiserLinkLabels as if randomiser link labels are changed, that will mean there have been changes elsewhere
         )
     }
 
@@ -76,7 +78,7 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings))
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()))
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -120,7 +122,7 @@ class BarrelItem(
 
             val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
 
-            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings)
+            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings, allCommandsSettings.allRandomiserLinkLabels.toMutableSet())
         }
     }
 }

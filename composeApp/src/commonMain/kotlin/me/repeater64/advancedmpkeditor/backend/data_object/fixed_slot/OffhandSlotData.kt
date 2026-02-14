@@ -15,6 +15,8 @@ class OffhandSlotData(_itemOptions: WeightedOptionList<MinecraftItem>)
 
     override var itemOptions by mutableStateOf(_itemOptions)
 
+    override val slotDisplayName = "Offhand Slot"
+
     companion object : SingleSpecificFixedSlotCompanion<OffhandSlotData> {
         override val className = "OffhandSlotData"
         override fun empty() = OffhandSlotData(optionList(emptyItem()))

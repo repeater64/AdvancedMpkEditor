@@ -10,6 +10,7 @@ class FireResItem : NoAttributesDataClass(), MinecraftItem {
     override val amount = 1
     override val iconFile = "fire_res.png"
     override val numStacks = 1
+    override val stackSize = 1
     override val companion = Companion as BookSerializable<MinecraftItem>
 
     companion object : BookSerializableNoAttributes<FireResItem> {

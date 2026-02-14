@@ -10,6 +10,7 @@ class DontReplaceMinecraftItem : NoAttributesDataClass(), MinecraftItem {
     override val displayName = "Available for Random Items"
     override val iconFile = "air.png"
     override val numStacks = 0
+    override val stackSize = 1
     override val companion = Companion as BookSerializable<MinecraftItem>
 
     companion object : BookSerializableNoAttributes<DontReplaceMinecraftItem> {

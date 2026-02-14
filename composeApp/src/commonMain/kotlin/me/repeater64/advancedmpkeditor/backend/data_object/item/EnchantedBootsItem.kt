@@ -26,6 +26,11 @@ data class EnchantedBootsItem(
     }
     override val companion = Companion as BookSerializable<MinecraftItem>
     override val numStacks = 1
+    override val stackSize = 1
+
+    override fun equalsIgnoringAmount(other: MinecraftItem): Boolean {
+        return (other is EnchantedBootsItem && this.iron == other.iron && this.ssLevel == other.ssLevel)
+    }
 
     companion object : BookSerializable<EnchantedBootsItem> {
         fun integer123ToRomanNumerals(integer: Int) : String {

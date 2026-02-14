@@ -20,6 +20,8 @@ class InventorySlotData(_inventoryPosition: Int, _itemOptions: WeightedOptionLis
         return hash(inventoryPosition, itemOptions.contentHash())
     }
 
+    override val slotDisplayName = "Inventory Slot ${inventoryPosition+1}"
+
     fun isAvailableForRandomItems(): Boolean = itemOptions.options.size == 1 && itemOptions.options[0].option is DontReplaceMinecraftItem
 
     companion object : BookSerializable<InventorySlotData> {

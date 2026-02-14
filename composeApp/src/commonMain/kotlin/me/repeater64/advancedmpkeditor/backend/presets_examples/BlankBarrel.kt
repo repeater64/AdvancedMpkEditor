@@ -87,5 +87,5 @@ object BlankBarrel {
         WeightedOption(0, 1)
     )))
 
-    val barrel get() = BarrelItem("Unnammed Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings)
+    val barrel get() = BarrelItem("Unnammed Barrel", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, hashSetOf())
 }

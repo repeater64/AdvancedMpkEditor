@@ -65,10 +65,10 @@ fun HomeScreen(
 fun HomeScreenMenuButton(text: String, onClick: () -> Unit, content: @Composable ColumnScope.() -> Unit = {}) {
     Button(
         onClick = onClick,
-        modifier = Modifier.width(700.dp).height(150.dp)
+        modifier = Modifier.width(600.dp).height(90.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text, style = MaterialTheme.typography.displaySmall)
+            Text(text, style = MaterialTheme.typography.headlineMedium)
             content()
         }
     }

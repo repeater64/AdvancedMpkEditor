@@ -13,6 +13,7 @@ class ForcedEmptyMinecraftItem : NoAttributesDataClass(), MinecraftItem {
     override val displayName = "Forced Empty Slot"
     override val iconFile = "barrier.png"
     override val numStacks = 1
+    override val stackSize = 1
     override val companion = Companion as BookSerializable<MinecraftItem>
 
     companion object : BookSerializableNoAttributes<ForcedEmptyMinecraftItem> {

@@ -1,6 +1,8 @@
 package me.repeater64.advancedmpkeditor.gui.screens
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -10,7 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CreditsScreen() {
-    BasicInfoScreen {
+    BasicFullyScrollableScreen(Modifier.fillMaxWidth()) {
         // TODO add credits info
         Text(
             text = "Credits",

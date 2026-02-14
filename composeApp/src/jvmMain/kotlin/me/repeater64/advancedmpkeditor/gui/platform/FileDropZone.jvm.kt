@@ -27,20 +27,15 @@ actual fun FileDropZone(
     val dropTarget = remember {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
-                // 1. Get the AWT Transferable from the Compose event
-                // Note: 'awtTransferable' is an extension property in Compose Desktop
                 val transferable = event.awtTransferable
 
-                // 2. Check if the drag contains files
                 if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     try {
-                        // 3. Extract the list of files
                         @Suppress("UNCHECKED_CAST")
                         val fileList = transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
 
                         val firstFile = fileList.firstOrNull()
                         if (firstFile != null) {
-                            // 4. Decode using Okio (Same logic as before)
                             val path = firstFile.toOkioPath()
                             FileSystem.SYSTEM.source(path).buffer().use { source ->
                                 val hotbars = SavedHotbars.decodeFromNbtSource(source)
@@ -61,7 +56,6 @@ actual fun FileDropZone(
     Box(
         modifier = modifier.dragAndDropTarget(
             shouldStartDragAndDrop = { event ->
-                // Only accept if it contains files
                 event.awtTransferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
             },
             target = dropTarget

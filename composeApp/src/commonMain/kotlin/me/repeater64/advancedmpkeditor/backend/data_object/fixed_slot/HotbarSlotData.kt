@@ -22,6 +22,8 @@ class HotbarSlotData(_hotbarPosition: Int, _itemOptions: WeightedOptionList<Mine
         return hash(hotbarPosition, itemOptions.contentHash())
     }
 
+    override val slotDisplayName = "Hotbar Slot ${hotbarPosition+1}"
+
     companion object : BookSerializable<HotbarSlotData> {
         override val className = "HotbarSlotData"
 

@@ -11,8 +11,13 @@ interface MinecraftItem : ContentHashable {
     val companion: BookSerializable<MinecraftItem>
 
     val numStacks: Int
+    val stackSize: Int
 
     fun getCommandStringNonStackable(num: Int): String = commandString
+
+    fun equalsIgnoringAmount(other: MinecraftItem): Boolean {
+        return this == other
+    }
 
     companion object : BookSerializable<MinecraftItem> {
         override val className = "MinecraftItem"

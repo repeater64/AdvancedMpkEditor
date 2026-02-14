@@ -17,7 +17,9 @@ import me.repeater64.advancedmpkeditor.gui.component.SimpleTextField
 
 @Composable
 fun ColumnScope.BarrelEditor(
-    barrelItem: BarrelItem
+    barrelItem: BarrelItem,
+    showDialogCallback: (@Composable () -> Any) -> Any,
+    hideDialogCallback: () -> Unit
 ) {
 
 
@@ -55,5 +57,5 @@ fun ColumnScope.BarrelEditor(
     }
 
     Spacer(Modifier.height(50.dp))
-    FixedSlotsEditor(barrelItem.fixedSlotsData)
+    FixedSlotsEditor(barrelItem.fixedSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
 }
