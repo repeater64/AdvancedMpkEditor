@@ -162,110 +162,6 @@ fun EditorScreen(
             Row(modifier = Modifier.align(Alignment.CenterEnd)) { saveButton(); Spacer(Modifier.width(50.dp)) }
         }
         Spacer(Modifier.height(12.dp))
-
-        DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
-            onSwap = { srcKey, destKey ->
-                val hotbar = hotbars.hotbars[selectedHotbarIndex]
-                val srcData = hotbar.hotbarItems[srcKey]
-                hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
-                hotbar.hotbarItems[destKey] = srcData
-
-                if (currentlyEditingItemIndex == srcKey && srcData is BarrelItem) {
-                    // We moved the currently editing barrel to destKey. Follow it
-                    currentlyEditingItemIndex = destKey
-                } else if (currentlyEditingItemIndex == destKey && hotbar.hotbarItems[srcKey] is BarrelItem) {
-                    // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
-                    currentlyEditingItemIndex = srcKey
-                }
-            },
-            emptyChecker = {hotbars.hotbars[selectedHotbarIndex].hotbarItems[it] is AirItem}
-        ) {
-            Row {
-                val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex].hotbarItems
-                for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
-                    var dropdownExpanded by remember {mutableStateOf(false)}
-
-                    val onLeftClick = {
-                        if (savedHotbarItem is AirItem) { // Open dropdown with add barrel/add cmd block options
-                            dropdownExpanded = true
-                        } else if (savedHotbarItem is BarrelItem) {
-                            currentlyEditingItemIndex = i
-                        }
-                    }
-                    val onRightClick = {
-                        if (savedHotbarItem !is AirItem) {
-                            val deleteAction = {
-                                selectedHotbarItems[i] = AirItem()
-
-                                if (currentlyEditingItemIndex == i) {
-                                    currentlyEditingItemIndex = -1
-                                }
-                            }
-                            if (savedHotbarItem is BarrelItem) {
-                                showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
-                            } else {
-                                deleteAction()
-                            }
-                        }
-                    }
-
-                    val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 100,
-                        tooltipContents = {
-                            Column {
-                                Text(savedHotbarItem.getGuiName(), style = MaterialTheme.typography.titleSmallEmphasized, fontWeight = FontWeight.Bold)
-                                Spacer(Modifier.height(5.dp))
-                                when (savedHotbarItem) {
-                                    is AirItem -> Text("Click to add item", style = MaterialTheme.typography.bodyMedium)
-                                    is BarrelItem -> Text("Left Click to edit, Right Click to delete", style = MaterialTheme.typography.bodyMedium)
-                                    is CommandBlockItem -> Text("Right Click to delete", style = MaterialTheme.typography.bodyMedium)
-                                }
-                                if (savedHotbarItem !is AirItem) {
-                                    Spacer(Modifier.height(5.dp))
-                                    Text("Click and drag to swap hotbar slots", style = MaterialTheme.typography.bodyMedium)
-                                }
-                            }
-                        },
-                        highlighted = currentlyEditingItemIndex == i,
-                        modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
-                            .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
-                    )
-
-                    Spacer(Modifier.width(2.dp))
-                    Box(contentAlignment = Alignment.Center) {
-                        DragSwappable(
-                            key = i,
-                            ghostContent = { slotDisplay.ContentsOnly() },
-                            content = { isDragging -> slotDisplay.SlotDisplay(!isDragging) }
-                        )
-                        DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
-                            DropdownMenuItem(
-                                text = { Text("Add Configuration Barrel") },
-                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
-                                onClick = {
-                                    // Add barrel to i slot
-                                    selectedHotbarItems[i] = BlankBarrel.barrel
-                                    dropdownExpanded = false
-                                    currentlyEditingItemIndex = i
-                                }
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            DropdownMenuItem(
-                                text = { Text("Add MPK Command Block") },
-                                leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1), modifier=Modifier.size(50.dp)) },
-                                onClick = {
-                                    // Add cmd block to i slot
-                                    selectedHotbarItems[i] = CommandBlockItem()
-                                    dropdownExpanded = false
-                                }
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(2.dp))
-                }
-            }
-        }
-
-        Spacer(Modifier.height(12.dp))
     }
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -280,6 +176,112 @@ fun EditorScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // Hotbar items selector
+            DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
+                onSwap = { srcKey, destKey ->
+                    val hotbar = hotbars.hotbars[selectedHotbarIndex]
+                    val srcData = hotbar.hotbarItems[srcKey]
+                    hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
+                    hotbar.hotbarItems[destKey] = srcData
+
+                    if (currentlyEditingItemIndex == srcKey && srcData is BarrelItem) {
+                        // We moved the currently editing barrel to destKey. Follow it
+                        currentlyEditingItemIndex = destKey
+                    } else if (currentlyEditingItemIndex == destKey && hotbar.hotbarItems[srcKey] is BarrelItem) {
+                        // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
+                        currentlyEditingItemIndex = srcKey
+                    }
+                },
+                emptyChecker = {hotbars.hotbars[selectedHotbarIndex].hotbarItems[it] is AirItem}
+            ) {
+                Row {
+                    val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex].hotbarItems
+                    for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
+                        var dropdownExpanded by remember {mutableStateOf(false)}
+
+                        val onLeftClick = {
+                            if (savedHotbarItem is AirItem) { // Open dropdown with add barrel/add cmd block options
+                                dropdownExpanded = true
+                            } else if (savedHotbarItem is BarrelItem) {
+                                currentlyEditingItemIndex = i
+                            }
+                        }
+                        val onRightClick = {
+                            if (savedHotbarItem !is AirItem) {
+                                val deleteAction = {
+                                    selectedHotbarItems[i] = AirItem()
+
+                                    if (currentlyEditingItemIndex == i) {
+                                        currentlyEditingItemIndex = -1
+                                    }
+                                }
+                                if (savedHotbarItem is BarrelItem) {
+                                    showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
+                                } else {
+                                    deleteAction()
+                                }
+                            }
+                        }
+
+                        val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 100,
+                            tooltipContents = {
+                                Column {
+                                    Text(savedHotbarItem.getGuiName(), style = MaterialTheme.typography.titleSmallEmphasized, fontWeight = FontWeight.Bold)
+                                    Spacer(Modifier.height(5.dp))
+                                    when (savedHotbarItem) {
+                                        is AirItem -> Text("Click to add item", style = MaterialTheme.typography.bodyMedium)
+                                        is BarrelItem -> Text("Left Click to edit, Right Click to delete", style = MaterialTheme.typography.bodyMedium)
+                                        is CommandBlockItem -> Text("Right Click to delete", style = MaterialTheme.typography.bodyMedium)
+                                    }
+                                    if (savedHotbarItem !is AirItem) {
+                                        Spacer(Modifier.height(5.dp))
+                                        Text("Click and drag to swap hotbar slots", style = MaterialTheme.typography.bodyMedium)
+                                    }
+                                }
+                            },
+                            highlighted = currentlyEditingItemIndex == i,
+                            modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
+                                .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
+                        )
+
+                        Spacer(Modifier.width(2.dp))
+                        Box(contentAlignment = Alignment.Center) {
+                            DragSwappable(
+                                key = i,
+                                ghostContent = { slotDisplay.ContentsOnly() },
+                                content = { isDragging -> slotDisplay.SlotDisplay(!isDragging) }
+                            )
+                            DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                                DropdownMenuItem(
+                                    text = { Text("Add Configuration Barrel") },
+                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
+                                    onClick = {
+                                        // Add barrel to i slot
+                                        selectedHotbarItems[i] = BlankBarrel.barrel
+                                        dropdownExpanded = false
+                                        currentlyEditingItemIndex = i
+                                    }
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                DropdownMenuItem(
+                                    text = { Text("Add MPK Command Block") },
+                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1), modifier=Modifier.size(50.dp)) },
+                                    onClick = {
+                                        // Add cmd block to i slot
+                                        selectedHotbarItems[i] = CommandBlockItem()
+                                        dropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                        Spacer(Modifier.width(2.dp))
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Barrel editor, or text telling you to select a barrel
             key(currentlyEditingItemIndex) { Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 val currentlyEditingItem = currentlyEditingItem()
                 if (currentlyEditingItem !is BarrelItem) {
@@ -303,6 +305,8 @@ fun EditorScreen(
             }}
 
             Spacer(Modifier.weight(1f)) // Push save button to bottom
+            Spacer(Modifier.height(24.dp)) // A bit of space even if no spare room to push save button all the way to bottom
+
 
             saveButton()
 
