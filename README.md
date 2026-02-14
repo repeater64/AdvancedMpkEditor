@@ -1,6 +1,6 @@
 ### Advanced MPK Editor
 
-Website: [repeater64.github.io/advanced-mpk-editor](https://repeater64.github.io/advanced-mpk-editor)
+Website: [repeater64.github.io/AdvancedMpkEditor](https://repeater64.github.io/AdvancedMpkEditor/)
 
 This is a website that lets you create saved hotbars for use with [MiniPracticeKit](https://github.com/Knawk/mc-MiniPracticeKit) (MPK).
 
