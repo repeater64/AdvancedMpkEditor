@@ -9,9 +9,11 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     js {
-        browser()
+        browser {
+
+        }
         binaries.executable()
     }
     
