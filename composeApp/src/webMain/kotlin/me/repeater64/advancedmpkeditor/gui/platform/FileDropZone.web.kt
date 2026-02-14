@@ -24,7 +24,7 @@ import kotlin.coroutines.resume
 @Composable
 actual fun FileDropZone(
     modifier: Modifier,
-    onFileDropped: (SavedHotbars) -> Unit,
+    onFileDropped: (SavedHotbars?) -> Unit,
     content: @Composable (() -> Unit)
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -51,9 +51,7 @@ actual fun FileDropZone(
                 val file = files[0]!!
                 scope.launch {
                     val result = readFileFromDrop(file)
-                    if (result != null) {
-                        onFileDropped(result)
-                    }
+                    onFileDropped(result)
                 }
             }
         }

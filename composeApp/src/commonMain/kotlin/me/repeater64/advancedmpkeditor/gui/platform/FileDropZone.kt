@@ -7,6 +7,6 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHot
 @Composable
 expect fun FileDropZone(
     modifier: Modifier = Modifier,
-    onFileDropped: (SavedHotbars) -> Unit,
+    onFileDropped: (SavedHotbars?) -> Unit,
     content: @Composable () -> Unit
 )

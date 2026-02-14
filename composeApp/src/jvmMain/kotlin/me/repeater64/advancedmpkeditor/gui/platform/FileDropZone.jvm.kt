@@ -21,7 +21,7 @@ import java.io.File
 @Composable
 actual fun FileDropZone(
     modifier: Modifier,
-    onFileDropped: (SavedHotbars) -> Unit,
+    onFileDropped: (SavedHotbars?) -> Unit,
     content: @Composable () -> Unit
 ) {
     val dropTarget = remember {

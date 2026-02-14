@@ -28,7 +28,7 @@ fun InstructionsScreen() {
                 2. Edit your hotbars in the main editor.
                 3. Click 'Save' to download the updated .nbt file.
                 
-                (Add your detailed instructions here...)
+                (TODO add full instructions)
             """.trimIndent(),
             style = MaterialTheme.typography.bodyMedium,
             lineHeight = MaterialTheme.typography.bodyMedium.fontSize * 1.5
