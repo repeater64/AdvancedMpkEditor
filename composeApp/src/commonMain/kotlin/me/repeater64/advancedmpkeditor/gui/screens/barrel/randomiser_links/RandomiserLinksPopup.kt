@@ -1,4 +1,4 @@
-package me.repeater64.advancedmpkeditor.gui.screens.barrel
+package me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

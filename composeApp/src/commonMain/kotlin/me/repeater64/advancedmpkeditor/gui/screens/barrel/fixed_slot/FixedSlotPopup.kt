@@ -1,4 +1,4 @@
-package me.repeater64.advancedmpkeditor.gui.screens.barrel
+package me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.hoverable
@@ -22,6 +22,8 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.MinecraftItemChooserPopup
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -31,7 +33,8 @@ fun FixedSlotPopup(
     closePopupInputCallback: () -> Unit,
     onlyOneItemCategory: MinecraftItemCategory? = null
 ) {
-    WeightedOptionListPopup(fixedSlotData.itemOptions, allLabels, closePopupInputCallback,
+    WeightedOptionListPopup(
+        fixedSlotData.itemOptions, allLabels, closePopupInputCallback,
 
         topContent = {
             Text(
@@ -67,7 +70,7 @@ fun FixedSlotPopup(
                     leadingIcon = {
                         MinecraftSlotDisplayMulti(
                             preset.options,
-                            size=50
+                            size = 50
                         ).ContentsOnly()
                     },
                     onClick = {
@@ -109,7 +112,7 @@ fun FixedSlotPopup(
             MinecraftSlotDisplay(
                 option.option,
                 50,
-                tooltipContents = {Text("Click to change item/amount")},
+                tooltipContents = { Text("Click to change item/amount") },
                 modifier = Modifier.onClick(onClick = { showPopup = true })
                     .hoverable(interactionSource)
                     .indication(interactionSource, ripple())
@@ -120,7 +123,7 @@ fun FixedSlotPopup(
 
                 MinecraftItemChooserPopup(
                     onDismiss = { showPopup = false },
-                    onItemChosen = {chosenItem -> option.option = chosenItem },
+                    onItemChosen = { chosenItem -> option.option = chosenItem },
                     allowMoreThanAStack = false,
                     initiallySelectedItem = option.option,
                     onlyOneCategory = onlyOneItemCategory

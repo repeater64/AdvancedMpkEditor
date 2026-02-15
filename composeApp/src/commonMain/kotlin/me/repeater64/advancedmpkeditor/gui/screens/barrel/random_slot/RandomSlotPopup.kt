@@ -1,43 +1,29 @@
-package me.repeater64.advancedmpkeditor.gui.screens.barrel
+package me.repeater64.advancedmpkeditor.gui.screens.barrel.random_slot
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.PointerButton
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
-import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.RandomSlotPreset
-import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
-import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
-import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.MinecraftItemChooserPopup
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -47,7 +33,8 @@ fun RandomSlotPopup(
     closePopupInputCallback: () -> Unit,
     deleteCallback: () -> Unit
 ) {
-    WeightedOptionListPopup(data.options, allLabels, closePopupInputCallback,
+    WeightedOptionListPopup(
+        data.options, allLabels, closePopupInputCallback,
 
         width = 650,
         col1Weight = 0.3f,
@@ -89,7 +76,7 @@ fun RandomSlotPopup(
                     leadingIcon = {
                         MinecraftSlotDisplay(
                             preset.iconItem,
-                            size=50
+                            size = 50
                         ).ContentsOnly()
                     },
                     onClick = {
@@ -120,7 +107,7 @@ fun RandomSlotPopup(
                     MinecraftSlotDisplay(
                         item,
                         40,
-                        tooltipContents = {Text("Left click to change item/amount\nRight click to remove item")},
+                        tooltipContents = { Text("Left click to change item/amount\nRight click to remove item") },
                         modifier = Modifier
                             .onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = {
                                 showPopup = true
@@ -142,7 +129,7 @@ fun RandomSlotPopup(
 
                         MinecraftItemChooserPopup(
                             onDismiss = { showPopup = false },
-                            onItemChosen = {chosenItem -> list[index] = chosenItem },
+                            onItemChosen = { chosenItem -> list[index] = chosenItem },
                             allowMoreThanAStack = true,
                             initiallySelectedItem = item,
                             itemToAlwaysPutAtStart = { DontReplaceMinecraftItem(true) }
@@ -155,7 +142,7 @@ fun RandomSlotPopup(
                     onClick = {
                         showPopup = true
                         list.add(DontReplaceMinecraftItem(true))
-                              },
+                    },
                     tooltipText = "Click to Add Item",
                     icon = Icons.Default.Add
                 )
@@ -163,7 +150,7 @@ fun RandomSlotPopup(
                 if (showPopup) {
                     MinecraftItemChooserPopup(
                         onDismiss = { showPopup = false },
-                        onItemChosen = {chosenItem -> list[list.lastIndex] = chosenItem },
+                        onItemChosen = { chosenItem -> list[list.lastIndex] = chosenItem },
                         allowMoreThanAStack = true,
                         initiallySelectedItem = DontReplaceMinecraftItem(true),
                         itemToAlwaysPutAtStart = { DontReplaceMinecraftItem(true) }

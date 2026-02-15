@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,24 +22,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
-import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
-import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
-import me.repeater64.advancedmpkeditor.backend.presets_examples.BlankBarrel
-import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
-import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
-import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
-import me.repeater64.advancedmpkeditor.gui.component.MinecraftItemIcon
-import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
-import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.RandomiserLinkRemovableChip
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.RandomiserLinksPopup
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
