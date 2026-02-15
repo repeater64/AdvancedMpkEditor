@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
@@ -59,7 +60,7 @@ fun <T> WeightedOptionListPopup(
         closePopupInputCallback()
     }
 
-    Dialog(onDismissRequest = { closePopup() }) {
+    Dialog(onDismissRequest = { closePopup() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(
             modifier = Modifier
                 .width(width.dp)
@@ -91,7 +92,7 @@ fun <T> WeightedOptionListPopup(
                     Box(modifier = Modifier.weight(col2Weight), contentAlignment = Alignment.Center) {
                         HeaderWithTooltip(
                             text = "Weight",
-                            tooltipText = "Controls the relative chance of this $typeOfThing being chosen to be in this slot. For example, if all weights are 1, all are equally likely. If one is 2, that one is twice as likely."
+                            tooltipText = "Controls the relative chance of this $typeOfThing being chosen. For example, if all weights are 1, all are equally likely. If one is 2, that one is twice as likely."
                         )
                     }
 

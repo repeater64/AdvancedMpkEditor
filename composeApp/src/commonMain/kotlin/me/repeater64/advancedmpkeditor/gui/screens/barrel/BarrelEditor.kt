@@ -21,6 +21,7 @@ import me.repeater64.advancedmpkeditor.gui.component.SimpleDropdown
 import me.repeater64.advancedmpkeditor.gui.component.SimpleTextField
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot.FixedSlotsEditor
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot.InventorySlotKey
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.health_hunger.HealthHungerEditor
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.random_slot.RandomSlotsEditor
 
 @Composable
@@ -91,4 +92,6 @@ fun ColumnScope.BarrelEditor(
 
 
     RandomSlotsEditor(barrelItem.randomSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
+    Spacer(Modifier.height(50.dp))
+    HealthHungerEditor(barrelItem.healthHungerSettings, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
 }
