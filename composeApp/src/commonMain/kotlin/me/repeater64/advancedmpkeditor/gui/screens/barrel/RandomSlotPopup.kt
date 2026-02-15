@@ -104,7 +104,7 @@ fun RandomSlotPopup(
                     MinecraftSlotDisplay(
                         item,
                         40,
-                        tooltipContents = {Text("Left click to change item/amount\nRight click to emove item")},
+                        tooltipContents = {Text("Left click to change item/amount\nRight click to remove item")},
                         modifier = Modifier
                             .onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = {
                                 showPopup = true
