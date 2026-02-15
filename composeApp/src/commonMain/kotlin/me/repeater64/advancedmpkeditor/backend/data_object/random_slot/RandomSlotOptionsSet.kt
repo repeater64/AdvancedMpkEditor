@@ -19,8 +19,7 @@ class RandomSlotOptionsSet(_setName: String, _options: WeightedOptionList<Snapsh
     override fun contentHash() = hash(setName, options.contentHash())
 
     val numStacksProperty: (List<MinecraftItem>) -> Int = { it.fold(0) { acc, item -> acc + item.numStacks } }
-    val maxNumStacks = options.getMaximumPossibleProperty(numStacksProperty)
-    val minNumStacks = options.getMinimumPossibleProperty(numStacksProperty)
+    val maxNumStacks get() = options.getMaximumPossibleProperty(numStacksProperty)
 
     companion object : BookSerializable<RandomSlotOptionsSet> {
         override val className = "RandomSlotOptionsSet"

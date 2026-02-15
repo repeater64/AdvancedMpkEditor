@@ -70,8 +70,4 @@ class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) : ContentH
     fun <P: Comparable<P>> getMaximumPossibleProperty(propertyGetter: (T) -> P): P {
         return options.maxOf { propertyGetter(it.option) }
     }
-
-    fun <P: Comparable<P>> getMinimumPossibleProperty(propertyGetter: (T) -> P): P {
-        return options.minOf { propertyGetter(it.option) }
-    }
 }

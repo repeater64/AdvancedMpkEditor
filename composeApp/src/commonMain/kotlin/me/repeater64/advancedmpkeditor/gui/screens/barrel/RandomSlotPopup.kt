@@ -32,6 +32,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCat
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
+import me.repeater64.advancedmpkeditor.backend.presets_examples.RandomSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
@@ -78,10 +79,25 @@ fun RandomSlotPopup(
         },
         showAddPresetButton = {
             val options = data.options.options
-            options.size == 1 && (options[0].option.isEmpty() && options[0].option[0] is DontReplaceMinecraftItem)
+            options.size == 1 && (options[0].option.size == 1 && options[0].option[0] is DontReplaceMinecraftItem)
         },
         presetDropdownContents = {
-
+            val options = data.options.options
+            for (preset in RandomSlotPreset.entries) {
+                DropdownMenuItem(
+                    text = { Text(preset.displayName) },
+                    leadingIcon = {
+                        MinecraftSlotDisplay(
+                            preset.iconItem,
+                            size=50
+                        ).ContentsOnly()
+                    },
+                    onClick = {
+                        options.clear()
+                        options.addAll(preset.optionsGetter().options)
+                    }
+                )
+            }
         },
         footerLeftSideContent = {
             Button(
