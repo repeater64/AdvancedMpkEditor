@@ -56,7 +56,6 @@ Other sections that would exist but don't need from the start:
 
 Note:
 
-TODO
 fixedSlotsData.numAvailableForRandomInvSlots() must be greater than randomSlotsData.totalMaxNumStacks()
 
 

@@ -44,9 +44,10 @@ class MinecraftSlotDisplay(minecraftItem: MinecraftItem,
                                 modifier: Modifier = Modifier,
                                 tooltipContents: @Composable TooltipScope.() -> Unit = {},
                                 highlighted: Boolean = false,
-                                ifEmpty: String? = null
+                                ifEmpty: String? = null,
+                                displayDontReplaceAsAir: Boolean = false,
     )
-    : MinecraftSlotDisplayMulti(WeightedOptionList(mutableListOf(WeightedOption(minecraftItem, 1))), size, modifier, tooltipContents, highlighted, ifEmpty)
+    : MinecraftSlotDisplayMulti(WeightedOptionList(mutableListOf(WeightedOption(minecraftItem, 1))), size, modifier, tooltipContents, highlighted, ifEmpty, displayDontReplaceAsAir)
 
 @OptIn(ExperimentalMaterial3Api::class)
 open class MinecraftSlotDisplayMulti(val options: WeightedOptionList<MinecraftItem>,

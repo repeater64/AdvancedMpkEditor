@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,8 +31,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOp
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
 import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
 import me.repeater64.advancedmpkeditor.gui.component.UpdateCounterWrapper
+import kotlin.math.roundToInt
 
 const val SLOT_SIZE = 75
 
@@ -43,6 +46,7 @@ fun ColumnScope.FixedSlotsEditor(
     showDialogCallback: (@Composable () -> Any) -> Any,
     hideDialogCallback: () -> Unit
 ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text("Fixed Slot Items", style = MaterialTheme.typography.headlineLarge)
     Spacer(Modifier.height(15.dp))
 
@@ -60,7 +64,7 @@ fun ColumnScope.FixedSlotsEditor(
 
         // Inventory and hotbar and offhand
         // For the DragDropContainer, indexed by 0-8 is hotbar, 9+ is inv, 36 is offhand
-        DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
+        DragDropContainer(contentAlignment = Alignment.Center,
             onSwap = { srcKey, destKey ->
                 val srcSlot = if (srcKey == 36) fixedSlotsData.offhandSlotData else if (srcKey < 9) fixedSlotsData.hotbarSlotsData[srcKey] else fixedSlotsData.inventorySlotsData[srcKey-9]
                 val destSlot = if (destKey == 36) fixedSlotsData.offhandSlotData else if (destKey < 9) fixedSlotsData.hotbarSlotsData[destKey] else fixedSlotsData.inventorySlotsData[destKey-9]
@@ -126,6 +130,7 @@ fun ColumnScope.FixedSlotsEditor(
             }
         }}
     }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -162,4 +167,36 @@ fun RowScope.ArmorSlotDisplay(slotData: FixedSlotData, ifEmpty: String, itemCate
     )
 
     minecraftSlotDisplay.SlotDisplay()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InventorySlotKey() {
+    Column(horizontalAlignment = Alignment.Start) {
+
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 40.dp, bottom = 10.dp)) {
+            MinecraftSlotDisplay(
+                minecraftItem = DontReplaceMinecraftItem(),
+                size = (SLOT_SIZE*0.6).roundToInt(),
+                tooltipContents = { Text("Example Available for Random Items Slot") },
+                displayDontReplaceAsAir = true
+            ).SlotDisplay()
+
+            Spacer(Modifier.width(8.dp))
+
+            Text("Available for Random Items", style = MaterialTheme.typography.titleMedium)
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            MinecraftSlotDisplay(
+                minecraftItem = ForcedEmptyMinecraftItem(),
+                size = (SLOT_SIZE*0.6).roundToInt(),
+                tooltipContents = { Text("Example Empty Slot") },
+            ).SlotDisplay()
+
+            Spacer(Modifier.width(8.dp))
+
+            Text("Empty Slot", style = MaterialTheme.typography.titleMedium)
+        }
+    }
 }
