@@ -1,6 +1,7 @@
 package me.repeater64.advancedmpkeditor.gui.screens.barrel
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,7 @@ fun ColumnScope.BarrelEditor(
 ) {
 
 
-    Row {
+    FlowRow {
         SimpleTextField(
             modifier=Modifier.width(300.dp),
             label="Barrel Name",

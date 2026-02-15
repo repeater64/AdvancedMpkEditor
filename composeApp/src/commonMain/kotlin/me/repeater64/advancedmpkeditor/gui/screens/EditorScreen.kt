@@ -223,7 +223,7 @@ fun EditorScreen(
                             }
                         }
 
-                        val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 100,
+                        val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 80,
                             tooltipContents = {
                                 Column {
                                     Text(savedHotbarItem.getGuiName(), style = MaterialTheme.typography.titleSmallEmphasized, fontWeight = FontWeight.Bold)
