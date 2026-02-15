@@ -127,7 +127,9 @@ fun <T> RandomiserLinksPopup(
                         OutlinedTextField(
                             value = customInputLabel,
                             onValueChange = {
-                                customInputLabel = it
+                                if (it.length < 16) {
+                                    customInputLabel = it
+                                }
                             },
                             label = { Text("Condition Label") },
                             isError = isBlankInput,
