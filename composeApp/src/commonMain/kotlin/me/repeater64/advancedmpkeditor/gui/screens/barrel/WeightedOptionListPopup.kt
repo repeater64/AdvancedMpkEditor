@@ -82,6 +82,7 @@ fun <T> WeightedOptionListPopup(
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Spacer(Modifier.width(24.dp)) // To make up for the "delete" buttons in every row
                     Box(modifier = Modifier.weight(col1Weight), contentAlignment = Alignment.Center) {
                         Text(
                             text = firstColumnHeading,

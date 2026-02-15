@@ -36,6 +36,11 @@ fun FixedSlotPopup(
     WeightedOptionListPopup(
         fixedSlotData.itemOptions, allLabels, closePopupInputCallback,
 
+        col1Weight = 0.2f,
+        col2Weight= 0.13f,
+        col3Weight = 0.35f,
+        width = 530,
+
         topContent = {
             Text(
                 text = "Items for ${fixedSlotData.slotDisplayName}",

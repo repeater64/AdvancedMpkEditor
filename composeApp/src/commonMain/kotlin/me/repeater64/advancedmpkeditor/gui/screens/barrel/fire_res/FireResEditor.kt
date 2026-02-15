@@ -1,4 +1,4 @@
-package me.repeater64.advancedmpkeditor.gui.screens.barrel.health_hunger
+package me.repeater64.advancedmpkeditor.gui.screens.barrel.fire_res
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,22 +12,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ColumnScope.HealthHungerEditor(
-    healthHungerSettings: HealthHungerSettings,
+fun ColumnScope.FireResEditor(
+    fireResSettings: FireResSettings,
     allLabels: MutableSet<String>,
     showDialogCallback: (@Composable () -> Any) -> Any,
     hideDialogCallback: () -> Unit
 ) {
-    Text("Health + Hunger Settings", style = MaterialTheme.typography.headlineLarge)
+    Text("Fire Resistance Effect Settings", style = MaterialTheme.typography.headlineLarge)
     Spacer(Modifier.height(15.dp))
     Button(
         onClick = {
             showDialogCallback {
-                HealthHungerPopup(healthHungerSettings, allLabels, hideDialogCallback)
+                FireResPopup(fireResSettings, allLabels, hideDialogCallback)
             }
         },
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
