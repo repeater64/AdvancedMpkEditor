@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -23,11 +24,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MinecraftItemIcon(
     minecraftItem: MinecraftItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    displayDontReplaceAsAir: Boolean = false
 ) {
     Box(modifier = modifier) {
         Image(
-            painter = painterResource(getItemResource(minecraftItem.iconFile)),
+            painter = painterResource(getItemResource(if (displayDontReplaceAsAir && minecraftItem is DontReplaceMinecraftItem) "air.png" else minecraftItem.iconFile)),
             contentDescription = minecraftItem.displayName,
             modifier = Modifier.fillMaxSize()
         )

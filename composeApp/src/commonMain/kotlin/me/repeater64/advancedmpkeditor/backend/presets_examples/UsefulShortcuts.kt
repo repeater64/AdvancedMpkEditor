@@ -1,5 +1,6 @@
 package me.repeater64.advancedmpkeditor.backend.presets_examples
 
+import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.HotbarSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
@@ -24,5 +25,5 @@ fun invSlot(pos: Int, items: WeightedOptionList<MinecraftItem>) = InventorySlotD
 fun emptyItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(ForcedEmptyMinecraftItem(), weight, label, conditions)
 fun availableItem(weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption<MinecraftItem>(DontReplaceMinecraftItem(), weight, label, conditions)
 fun optionList(vararg options: WeightedOption<MinecraftItem>) = WeightedOptionList(options.toMutableList())
-fun itemList(vararg items: MinecraftItem, weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption(items.toList(), weight, label, conditions)
+fun itemList(vararg items: MinecraftItem, weight: Int = 1, label: String? = null, conditions: List<RandomiserCondition> = emptyList() ) = WeightedOption(items.toList().toMutableStateList(), weight, label, conditions)
 fun emptyHotbar() = SavedHotbar(List(9) { AirItem() })

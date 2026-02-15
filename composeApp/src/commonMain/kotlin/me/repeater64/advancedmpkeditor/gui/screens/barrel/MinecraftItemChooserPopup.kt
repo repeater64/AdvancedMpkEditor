@@ -7,11 +7,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.onClick
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -23,7 +21,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
@@ -37,6 +34,7 @@ fun MinecraftItemChooserPopup(
     onItemChosen: (MinecraftItem) -> Unit,
     allowMoreThanAStack: Boolean,
     initiallySelectedItem: MinecraftItem?,
+    itemToAlwaysPutAtStart: () -> MinecraftItem = { ForcedEmptyMinecraftItem() },
     onlyOneCategory: MinecraftItemCategory? = null,
 ) {
     var selectedCategory by remember { mutableStateOf(onlyOneCategory ?: MinecraftItemCategory.ALL) }
@@ -46,7 +44,7 @@ fun MinecraftItemChooserPopup(
     var selectedItem by remember { mutableStateOf(initiallySelectedItem) }
 
     fun getItems(): List<MinecraftItem> {
-        return listOf(ForcedEmptyMinecraftItem()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
+        return listOf(itemToAlwaysPutAtStart()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
     }
 
     fun trySetItemThenDismiss() {

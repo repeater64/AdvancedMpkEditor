@@ -2,6 +2,7 @@ package me.repeater64.advancedmpkeditor.gui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,8 @@ open class MinecraftSlotDisplayMulti(val options: WeightedOptionList<MinecraftIt
                                      val tooltipContents: @Composable TooltipScope.() -> Unit = {
                                          Column{Text("Click to edit items", style = MaterialTheme.typography.bodyMedium);Spacer(Modifier.height(2.dp));Text("Click and drag to swap slots", style = MaterialTheme.typography.bodyMedium)}},
                                      val highlighted: Boolean = false,
-                                     val ifEmpty: String? = null
+                                     val ifEmpty: String? = null,
+                                     val displayDontReplaceAsAir: Boolean = false
 ) {
     @Composable
     fun SlotDisplay(showContents: Boolean = true) {
@@ -89,7 +91,11 @@ open class MinecraftSlotDisplayMulti(val options: WeightedOptionList<MinecraftIt
                 // Slot is fully empty
                 if (ifEmpty != null) {
                     MinecraftItemIcon(
-                        SimpleMinecraftItem(ifEmpty, 1), modifier = Modifier.size((size * 0.85).dp)
+                        SimpleMinecraftItem(ifEmpty, 1), modifier = Modifier.size((size * 0.85).dp), displayDontReplaceAsAir
+                    )
+                } else if (!displayDontReplaceAsAir) {
+                    MinecraftItemIcon(
+                        itemOptions[0].option, modifier = Modifier.size((size * 0.85).dp)
                     )
                 }
             } else {
@@ -97,29 +103,29 @@ open class MinecraftSlotDisplayMulti(val options: WeightedOptionList<MinecraftIt
                 if (itemOptions.size == 1) {
                     // Single item in slot
                     MinecraftItemIcon(
-                        itemOptions[0].option, modifier = Modifier.size((size * 0.85).dp)
+                        itemOptions[0].option, modifier = Modifier.size((size * 0.85).dp), displayDontReplaceAsAir
                     )
                 } else if (itemOptions.size < 5) {
                     // Can render all items in sub-grid
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[0].option, modifier = Modifier.size(halfSize.dp)) }
-                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 1) itemOptions[1].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp)) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[0].option, modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 1) itemOptions[1].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 2) itemOptions[2].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp)) }
-                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 3) itemOptions[3].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp)) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 2) itemOptions[2].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(if (itemOptions.size > 3) itemOptions[3].option else SimpleMinecraftItem("air", 1), modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
                         }
                     }
                 } else {
                     // Can render first 3 items in sub-grid, then ...
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[0].option, modifier = Modifier.size(halfSize.dp)) }
-                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[1].option, modifier = Modifier.size(halfSize.dp)) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[0].option, modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[1].option, modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[2].option, modifier = Modifier.size(halfSize.dp)) }
+                            GridCell(halfSize.dp) { MinecraftItemIcon(itemOptions[2].option, modifier = Modifier.size(halfSize.dp), displayDontReplaceAsAir) }
                             GridCell(halfSize.dp) { Text("+${itemOptions.size-3}", style=MaterialTheme.typography.bodySmall) }
                         }
                     }

@@ -136,7 +136,8 @@ fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<Str
         size = SLOT_SIZE,
         modifier = Modifier.onClick(onClick = {
             showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback) }
-        })
+        }),
+        displayDontReplaceAsAir = true
     )
 
     DragSwappable(
@@ -156,7 +157,8 @@ fun RowScope.ArmorSlotDisplay(slotData: FixedSlotData, ifEmpty: String, itemCate
         tooltipContents = {Text("Click to edit items", style = MaterialTheme.typography.bodyMedium)},
         modifier = Modifier.onClick(onClick = {
             showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback, onlyOneItemCategory = itemCategory) }
-        })
+        }),
+        displayDontReplaceAsAir = true
     )
 
     minecraftSlotDisplay.SlotDisplay()

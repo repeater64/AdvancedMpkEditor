@@ -68,13 +68,13 @@ class WeightedOption<T>(
                     throw IllegalArgumentException("Can't serialize a Weighted Option containing an empty list!")
                 }
                 if ((it.option as List<Any?>).first() !is MinecraftItem) {
-                    throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, List<MinecraftItem>, Int and HealthHungerOption")
+                    throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, SnapshotStateList<MinecraftItem>, Int and HealthHungerOption")
                 }
 
                 val minecraftItemList = it.option as List<MinecraftItem>
                 pages.addAll(BookSerializable.serializeList(minecraftItemList, MinecraftItem))
             } else {
-                throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, List<MinecraftItem>, Int and HealthHungerOption")
+                throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, SnapshotStateList<MinecraftItem>, Int and HealthHungerOption")
             }
 
             return pages
@@ -92,7 +92,7 @@ class WeightedOption<T>(
             } else if (remainingPages[0] == "!Int") {
                 remainingPages[1].toInt()
             } else if (remainingPages[0] == "!MinecraftItemList") {
-                BookSerializable.getListAndRemainingPages(remainingPages.drop(1), MinecraftItem).first
+                BookSerializable.getListAndRemainingPages(remainingPages.drop(1), MinecraftItem).first.toMutableStateList()
             } else {
                 throw IllegalArgumentException("Expected !MinecraftItem or !MinecraftItemList whilst deserializing WeightedOption but found ${remainingPages[0]}")
             }

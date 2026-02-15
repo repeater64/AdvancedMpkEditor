@@ -59,4 +59,6 @@ fun ColumnScope.BarrelEditor(
 
     Spacer(Modifier.height(50.dp))
     FixedSlotsEditor(barrelItem.fixedSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
+    Spacer(Modifier.height(50.dp))
+    RandomSlotsEditor(barrelItem.randomSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
 }
