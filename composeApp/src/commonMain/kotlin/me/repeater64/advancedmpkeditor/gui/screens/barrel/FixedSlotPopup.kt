@@ -28,12 +28,17 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinec
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.BlankBarrel
+import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftItemIcon
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,8 +114,8 @@ fun FixedSlotPopup(
                 LazyColumn(
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 ) {
-                    items(fixedSlotData.itemOptions.options.size) { index ->
-                        val options = fixedSlotData.itemOptions.options
+                    val options = fixedSlotData.itemOptions.options
+                    items(options.size) { index ->
                         val option = options[index]
                         ItemRow(
                             option = option,
@@ -144,7 +149,6 @@ fun FixedSlotPopup(
                                 .fillMaxWidth()
                                 .height(48.dp)
                                 .clickable {
-                                    val options = fixedSlotData.itemOptions.options
 
                                     // Check if this is an available for random items slot, in which case delete that item before adding new one
                                     if (options.size == 1 && options[0].option is DontReplaceMinecraftItem) {
@@ -162,6 +166,45 @@ fun FixedSlotPopup(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
+                    }
+
+                    // Use preset button, if this is an empty list
+                    if (options.size == 1 && (options[0].option is DontReplaceMinecraftItem || options[0].option is ForcedEmptyMinecraftItem)) {
+                        item {
+                            var dropdownExpanded by remember { mutableStateOf(false) }
+
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .clickable {
+                                        dropdownExpanded = true
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Use a Preset", style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
+
+                                DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                                    for (preset in FixedSlotPreset.entries.filter { it.onlyIfOneCategory == onlyOneItemCategory }) {
+                                        DropdownMenuItem(
+                                            text = { Text(preset.displayName) },
+                                            leadingIcon = {
+                                                MinecraftSlotDisplayMulti(
+                                                    preset.options,
+                                                    size=50
+                                                ).ContentsOnly()
+                                            },
+                                            onClick = {
+                                                options.clear()
+                                                options.addAll(preset.optionsGetter().options)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
 
