@@ -5,7 +5,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.Bo
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.NoAttributesDataClass
 
 class SplashFireResItem : NoAttributesDataClass(), MinecraftItem {
-    override val commandString = "splash_potion{CustomPotionColor:16351261,CustomPotionEffects:[{Id:12,Duration:3600}],display:{Name:'[{\"text\":\"Splash Potion of Fire Resistance\",\"italic\":false}]'}} 1"
+    override val commandString = "splash_potion{Potion:\"minecraft:fire_resistance\"} 1"
     override val displayName = "Potion of Fire Resistance"
     override val amount = 1
     override val iconFile = "splash_fire_res.png"
