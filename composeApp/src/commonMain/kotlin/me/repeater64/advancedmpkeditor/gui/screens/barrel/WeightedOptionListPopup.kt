@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -25,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
@@ -34,29 +36,32 @@ import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.Rando
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> WeightedOptionListPopup(
-    data: WeightedOptionList<T>,
+    options: SnapshotStateList<WeightedOptionEitherType<T>>,
     allLabels: MutableSet<String>,
     closePopupInputCallback: () -> Unit,
 
     topContent: @Composable (ColumnScope.() -> Unit),
     firstColumnHeading: String,
     typeOfThing: String,
-    toAddWhenOnlyOptionRemoved: () -> WeightedOption<T>,
+    toAddWhenOnlyOptionRemoved: () -> WeightedOptionEitherType<T>,
     addNewRowClicked: () -> Unit,
     showAddPresetButton: () -> Boolean,
     presetDropdownContents: @Composable ColumnScope.() -> Unit,
     footerLeftSideContent: @Composable RowScope.() -> Unit,
-    leftColumnContent: @Composable BoxScope.(WeightedOption<T>) -> Unit,
+    leftColumnContent: @Composable BoxScope.(WeightedOptionEitherType<T>) -> Unit,
 
     col1Weight: Float = 0.2f,
     col2Weight: Float = 0.13f,
     col3Weight: Float = 0.3f,
     width: Int = 500,
+
+    hasRandomiserLinks: Boolean = true,
+    showAvailableForRandomItemsIfApplicable: Boolean = false
 ) {
 
     fun closePopup() {
         // Fix any weights that are "zero" (due to being left empty) to 1
-        data.options.forEach { if (it.weight == 0) it.weight = 1 }
+        options.forEach { if (it.weight == 0) it.weight = 1 }
         closePopupInputCallback()
     }
 
@@ -93,16 +98,18 @@ fun <T> WeightedOptionListPopup(
                     Box(modifier = Modifier.weight(col2Weight), contentAlignment = Alignment.Center) {
                         HeaderWithTooltip(
                             text = "Weight",
-                            tooltipText = "Controls the relative chance of this $typeOfThing being chosen. For example, if all weights are 1, all are equally likely. If one is 2, that one is twice as likely."
+                            tooltipText = if (hasRandomiserLinks) "Controls the relative chance of this $typeOfThing being chosen. For example, if all weights are 1, all are equally likely. If one is 2, that one is twice as likely." else "Controls how often different ${typeOfThing}s are chosen relative to each other. For example, setting one $typeOfThing to have a weight of 2 means it will come up twice as often."
                         )
                     }
 
-                    Box(modifier = Modifier.weight(col3Weight), contentAlignment = Alignment.Center) {
-                        HeaderWithTooltip(
-                            text = "Randomiser Links",
-                            tooltipText = "Allows you to link which $typeOfThing is chosen here to other randomly chosen options. For any $typeOfThing, you can either set it to \"trigger\" a condition, or to depend on a condition (or set of conditions). If you set an $typeOfThing to depend on conditions, it will only be added to the pool of available options if those conditions are met. If you set it to depend on multiple conditions, they must all be met (ie they are treated as AND). For more explanation about this, see the instructions page (link in top right).",
-                            tooltipModifier = Modifier.width(350.dp)
-                        )
+                    if (hasRandomiserLinks) {
+                        Box(modifier = Modifier.weight(col3Weight), contentAlignment = Alignment.Center) {
+                            HeaderWithTooltip(
+                                text = "Randomiser Links",
+                                tooltipText = "Allows you to link which $typeOfThing is chosen here to other randomly chosen options. For any $typeOfThing, you can either set it to \"trigger\" a condition, or to depend on a condition (or set of conditions). If you set an $typeOfThing to depend on conditions, it will only be added to the pool of available options if those conditions are met. If you set it to depend on multiple conditions, they must all be met (ie they are treated as AND). For more explanation about this, see the instructions page (link in top right).",
+                                tooltipModifier = Modifier.width(350.dp)
+                            )
+                        }
                     }
                 }
 
@@ -110,13 +117,12 @@ fun <T> WeightedOptionListPopup(
                 LazyColumn(
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 ) {
-                    val options = data.options
                     items(options.size) { index ->
                         val option = options[index]
                         WeightedOptionRow(
                             option = option,
                             leftColumnContent = leftColumnContent,
-                            wholeList = data,
+                            wholeList = options,
                             allLabels = allLabels,
                             isOnlyRow = options.size == 1,
                             col1Weight = col1Weight,
@@ -127,7 +133,9 @@ fun <T> WeightedOptionListPopup(
                                 if (options.isEmpty()) {
                                     options.add(toAddWhenOnlyOptionRemoved())
                                 }
-                            }
+                            },
+                            hasRandomiserLinks = hasRandomiserLinks,
+                            showAvailableForRandomItemsIfApplicable = showAvailableForRandomItemsIfApplicable,
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     }
@@ -202,19 +210,21 @@ fun <T> WeightedOptionListPopup(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun <T> WeightedOptionRow(
-    option: WeightedOption<T>,
-    leftColumnContent: @Composable BoxScope.(WeightedOption<T>) -> Unit,
-    wholeList: WeightedOptionList<T>,
+    option: WeightedOptionEitherType<T>,
+    leftColumnContent: @Composable BoxScope.(WeightedOptionEitherType<T>) -> Unit,
+    wholeList: SnapshotStateList<WeightedOptionEitherType<T>>,
     allLabels: MutableSet<String>,
     isOnlyRow: Boolean,
     col1Weight: Float,
     col2Weight: Float,
     col3Weight: Float,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    hasRandomiserLinks: Boolean,
+    showAvailableForRandomItemsIfApplicable: Boolean
 ) {
 
     // Check if this is a "available for random items" slot
-    if (isOnlyRow && option.option is DontReplaceMinecraftItem) {
+    if (showAvailableForRandomItemsIfApplicable && isOnlyRow && option.option is DontReplaceMinecraftItem) {
         // Don't render normal row, just info saying this slot is available for random items
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier= Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 8.dp)) {
             Spacer(Modifier.height(15.dp))
@@ -282,6 +292,9 @@ fun <T> WeightedOptionRow(
             )
         }
 
+        if (!hasRandomiserLinks) return@Row
+        option as WeightedOption<T>
+
         // Randomiser Links column
         Box(modifier = Modifier.weight(col3Weight), contentAlignment = Alignment.Center) {
             var showPopup by remember { mutableStateOf(false) }
@@ -319,7 +332,7 @@ fun <T> WeightedOptionRow(
             if (showPopup) {
                 RandomiserLinksPopup(
                     onDismiss = { showPopup = false },
-                    wholeList = wholeList,
+                    wholeList = wholeList as SnapshotStateList<WeightedOption<T>>,
                     option = option,
                     allLabels = allLabels
                 )

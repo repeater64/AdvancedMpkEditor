@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -13,6 +14,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -23,7 +25,7 @@ fun HealthHungerPopup(
     closePopupInputCallback: () -> Unit
 ) {
     WeightedOptionListPopup(
-        healthHungerSettings.options, allLabels, closePopupInputCallback,
+        healthHungerSettings.options as SnapshotStateList<WeightedOptionEitherType<HealthHungerOption>>, allLabels, closePopupInputCallback,
 
         width = 800,
         col1Weight = 0.45f,

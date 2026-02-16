@@ -5,15 +5,16 @@ import advancedmpkeditor.composeapp.generated.resources.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
@@ -25,18 +26,21 @@ import org.jetbrains.compose.resources.painterResource
 fun MinecraftItemIcon(
     minecraftItem: MinecraftItem,
     modifier: Modifier = Modifier,
-    displayDontReplaceAsAir: Boolean = false
+    displayDontReplaceAsAir: Boolean = false,
+    alphaValue: Float? = null
 ) {
     Box(modifier = modifier) {
+
         Image(
             painter = painterResource(getItemResource(if (displayDontReplaceAsAir && minecraftItem is DontReplaceMinecraftItem) "air.png" else minecraftItem.iconFile)),
             contentDescription = minecraftItem.displayName,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            alpha = alphaValue ?: DefaultAlpha
         )
         if (minecraftItem.amount > 1) {
             Text("${minecraftItem.amount}",
             style = MaterialTheme.typography.labelSmall.copy(
-                color = Color.White,
+                color = if (alphaValue == null) Color.White else Color.Gray,
                 shadow = Shadow(
                     color = Color.Black,
                     offset = Offset(2f, 2f),
@@ -45,7 +49,8 @@ fun MinecraftItemIcon(
             ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(2.dp))
+                .padding(2.dp)
+            )
         }
     }
 }

@@ -23,6 +23,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlo
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
 
 object EndEnterHotbarSorted {
@@ -320,25 +321,22 @@ object EndEnterHotbarSorted {
     )
 
     private val junkSettings get() = JunkSettings(true, true, listOf(
-        rawItem("string", 2),
-        rawItem("iron_ingot", 4),
-        rawItem("iron_nugget", 40),
-        SplashFireResItem(),
-        rawItem("gold_ingot", 2),
-        rawItem("golden_boots", 1),
-        rawItem("leather", 64),
-        SplashFireResItem(),
-        rawItem("glowstone_dust", 3),
-        rawItem("cracked_stone_bricks", 1),
-        FireResItem(),
-        rawItem("mossy_stone_bricks", 1),
-        rawItem("tnt", 1),
-        FireResItem(),
-        rawItem("leather", 64),
-        rawItem("nether_brick", 3),
-        rawItem("dirt", 4),
-        rawItem("nether_brick_fence", 1),
-        EnchantedBootsItem(true, 1),
+        WeightedOptionNoLinks(rawItem("string", 2)),
+        WeightedOptionNoLinks(rawItem("iron_ingot", 4)),
+        WeightedOptionNoLinks(rawItem("iron_nugget", 40)),
+        WeightedOptionNoLinks(rawItem("gold_ingot", 2)),
+        WeightedOptionNoLinks(rawItem("golden_boots", 1)),
+        WeightedOptionNoLinks(rawItem("leather", 64), 2),
+        WeightedOptionNoLinks(SplashFireResItem(), 2),
+        WeightedOptionNoLinks(rawItem("glowstone_dust", 3)),
+        WeightedOptionNoLinks(rawItem("cracked_stone_bricks", 1)),
+        WeightedOptionNoLinks(FireResItem(), 2),
+        WeightedOptionNoLinks(rawItem("mossy_stone_bricks", 1)),
+        WeightedOptionNoLinks(rawItem("tnt", 1)),
+        WeightedOptionNoLinks(rawItem("nether_brick", 3)),
+        WeightedOptionNoLinks(rawItem("dirt", 4)),
+        WeightedOptionNoLinks(rawItem("nether_brick_fence", 1)),
+        WeightedOptionNoLinks(EnchantedBootsItem(true, 1)),
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(

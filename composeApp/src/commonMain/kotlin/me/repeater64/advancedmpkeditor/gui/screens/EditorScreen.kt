@@ -5,11 +5,13 @@ import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
@@ -119,7 +121,8 @@ fun EditorScreen(
                 isSaving = false
                 savedHotbarsHash = currentHotbarsHash
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            modifier = Modifier
         ) {
             Text(if (isSaving) "Saving..." else "Download / Save All")
         }
@@ -308,7 +311,11 @@ fun EditorScreen(
             Spacer(Modifier.height(24.dp)) // A bit of space even if no spare room to push save button all the way to bottom
 
 
-            saveButton()
+            Row {
+                Spacer(Modifier.weight(1f))
+                saveButton()
+                Spacer(Modifier.width(50.dp))
+            }
 
             Spacer(Modifier.height(24.dp))
         }

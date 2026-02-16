@@ -34,7 +34,7 @@ fun MinecraftItemChooserPopup(
     onItemChosen: (MinecraftItem) -> Unit,
     allowMoreThanAStack: Boolean,
     initiallySelectedItem: MinecraftItem?,
-    itemToAlwaysPutAtStart: () -> MinecraftItem = { ForcedEmptyMinecraftItem() },
+    itemToAlwaysPutAtStart: () -> MinecraftItem? = { ForcedEmptyMinecraftItem() },
     onlyOneCategory: MinecraftItemCategory? = null,
 ) {
     var selectedCategory by remember { mutableStateOf(onlyOneCategory ?: MinecraftItemCategory.ALL) }
@@ -44,7 +44,8 @@ fun MinecraftItemChooserPopup(
     var selectedItem by remember { mutableStateOf(initiallySelectedItem) }
 
     fun getItems(): List<MinecraftItem> {
-        return listOf(itemToAlwaysPutAtStart()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
+        val itemAtStart = itemToAlwaysPutAtStart()
+        return (itemAtStart?.let {listOf(it)} ?: emptyList()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
     }
 
     fun trySetItemThenDismiss() {

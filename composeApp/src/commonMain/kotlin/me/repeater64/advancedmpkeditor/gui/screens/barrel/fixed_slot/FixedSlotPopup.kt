@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -15,8 +16,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotD
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
@@ -34,7 +37,7 @@ fun FixedSlotPopup(
     onlyOneItemCategory: MinecraftItemCategory? = null
 ) {
     WeightedOptionListPopup(
-        fixedSlotData.itemOptions, allLabels, closePopupInputCallback,
+        fixedSlotData.itemOptions.options as SnapshotStateList<WeightedOptionEitherType<MinecraftItem>>, allLabels, closePopupInputCallback,
 
         col1Weight = 0.2f,
         col2Weight= 0.13f,
@@ -111,29 +114,37 @@ fun FixedSlotPopup(
             }
         },
         leftColumnContent = { option ->
-            var showPopup by remember { mutableStateOf(false) }
-            val interactionSource = remember { MutableInteractionSource() }
-
-            MinecraftSlotDisplay(
-                option.option,
-                50,
-                tooltipContents = { Text("Click to change item/amount") },
-                modifier = Modifier.onClick(onClick = { showPopup = true })
-                    .hoverable(interactionSource)
-                    .indication(interactionSource, ripple())
-            ).SlotDisplay()
-
-            // Popup to edit the item
-            if (showPopup) {
-
-                MinecraftItemChooserPopup(
-                    onDismiss = { showPopup = false },
-                    onItemChosen = { chosenItem -> option.option = chosenItem },
-                    allowMoreThanAStack = false,
-                    initiallySelectedItem = option.option,
-                    onlyOneCategory = onlyOneItemCategory
-                )
-            }
-        }
+            SimpleSingleItemChooser(option, onlyOneItemCategory)
+        },
+        showAvailableForRandomItemsIfApplicable = true
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun SimpleSingleItemChooser(option: WeightedOptionEitherType<MinecraftItem>, onlyOneItemCategory: MinecraftItemCategory?, itemToAlwaysPutAtStart: () -> MinecraftItem? = { ForcedEmptyMinecraftItem() }) {
+    var showPopup by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+
+    MinecraftSlotDisplay(
+        option.option,
+        50,
+        tooltipContents = { Text("Click to change item/amount") },
+        modifier = Modifier.onClick(onClick = { showPopup = true })
+            .hoverable(interactionSource)
+            .indication(interactionSource, ripple())
+    ).SlotDisplay()
+
+    // Popup to edit the item
+    if (showPopup) {
+
+        MinecraftItemChooserPopup(
+            onDismiss = { showPopup = false },
+            onItemChosen = { chosenItem -> option.option = chosenItem },
+            allowMoreThanAStack = false,
+            initiallySelectedItem = option.option,
+            onlyOneCategory = onlyOneItemCategory,
+            itemToAlwaysPutAtStart = itemToAlwaysPutAtStart,
+        )
+    }
 }

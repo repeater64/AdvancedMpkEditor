@@ -22,6 +22,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlo
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
 
 object BlankBarrel {
@@ -76,7 +77,7 @@ object BlankBarrel {
     private val randomSlotsData get() = RandomSlotsData(emptyList())
 
     private val junkSettings get() = JunkSettings(true, true, listOf(
-        rawItem("leather", 64),
+        WeightedOptionNoLinks(rawItem("leather", 64)),
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -27,7 +28,7 @@ enum class RandomiserLinkType(val displayName: String, val tooltipText: String) 
 @Composable
 fun <T> RandomiserLinksPopup(
     onDismiss: () -> Unit,
-    wholeList: WeightedOptionList<T>,
+    wholeList: SnapshotStateList<WeightedOption<T>>,
     option: WeightedOption<T>,
     allLabels: MutableSet<String>
 ) {
@@ -51,7 +52,7 @@ fun <T> RandomiserLinksPopup(
     fun checkForBadLabelAdd() : Boolean {
         // Check if this list uses any conditions depending on this label
         if (actualChosenLabel == null) return false // This'll get detected by other code as an issue
-        return wholeList.options.any { it.conditions.any { it.conditionLabel == actualChosenLabel } }
+        return wholeList.any { it.conditions.any { it.conditionLabel == actualChosenLabel } }
     }
 
     Popup(
@@ -142,7 +143,7 @@ fun <T> RandomiserLinksPopup(
                             allLabels.toList()
                         } else {
                             allLabels.filter { label ->
-                                !wholeList.options.any { it.label == label } && !option.conditions.any { it.conditionLabel == label } // Filter out conditions that are triggered by a label elsewhere in this option list, and also filter out conditions that have already been added to this specific option
+                                !wholeList.any { it.label == label } && !option.conditions.any { it.conditionLabel == label } // Filter out conditions that are triggered by a label elsewhere in this option list, and also filter out conditions that have already been added to this specific option
                             }.toList()
                         }
 
@@ -201,7 +202,7 @@ fun <T> RandomiserLinksPopup(
                                 option.label = actualChosenLabel
                                 if (checkForBadLabelAdd()) {
                                     // Need to remove all conditions from this list that look at this label
-                                    wholeList.options.forEach { option -> option.conditions.removeAll { it.conditionLabel == actualChosenLabel } }
+                                    wholeList.forEach { option -> option.conditions.removeAll { it.conditionLabel == actualChosenLabel } }
                                 }
                                 allLabels.add(actualChosenLabel!!)
                             } else {

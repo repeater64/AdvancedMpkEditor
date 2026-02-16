@@ -2,6 +2,7 @@ package me.repeater64.advancedmpkeditor.gui.screens.barrel.random_slot
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -125,30 +126,38 @@ fun ColumnScope.RandomSlotsRow(
                 Text(optionsSet.setName, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(start=20.dp, top=5.dp))
 
 
-                FlowRow(
-                    maxLines = 1,
-                    itemVerticalAlignment = Alignment.CenterVertically,
-                    overflow = FlowRowOverflow.expandIndicator {
-                        Text(" ...", style = MaterialTheme.typography.bodyLarge)
-                    },
-                ) {
-                    for ((index, option) in optionsSet.options.options.withIndex()) {
-                        Surface(
-                            modifier = Modifier
-                                .padding(horizontal = 15.dp),
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.surface,
-                            tonalElevation = 20.dp,
-                            shadowElevation = 6.dp,
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                for (item in option.option) {
-                                    MinecraftSlotDisplay(item, 50, modifier=Modifier.padding(horizontal = 10.dp)).ContentsOnly()
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    val availableWidth = maxWidth.value
+
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        var widthSoFar = 0.0f
+                        for ((index, option) in optionsSet.options.options.withIndex()) {
+                            widthSoFar+=50 // For padding + or text
+                            widthSoFar+= 50*(option.option.size) // For items
+
+                            if (widthSoFar > availableWidth-20) {
+                                Text(" ...", style = MaterialTheme.typography.bodyLarge)
+                                return@Row
+                            } else {
+                                Surface(
+                                    modifier = Modifier
+                                        .padding(horizontal = 15.dp),
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    tonalElevation = 20.dp,
+                                    shadowElevation = 6.dp,
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        for (item in option.option) {
+                                            MinecraftSlotDisplay(item, 50).ContentsOnly()
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (index != optionsSet.options.options.size-1) {
-                            Text("or", style = MaterialTheme.typography.bodyLarge)
+                            if (index != optionsSet.options.options.size-1) {
+                                Text("or", style = MaterialTheme.typography.bodyLarge)
+                            }
                         }
                     }
                 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -21,6 +22,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -31,7 +33,7 @@ fun FireResPopup(
     closePopupInputCallback: () -> Unit
 ) {
     WeightedOptionListPopup(
-        fireResSettings.options, allLabels, closePopupInputCallback,
+        fireResSettings.options.options as SnapshotStateList<WeightedOptionEitherType<Int>>, allLabels, closePopupInputCallback,
 
         width = 550,
         col1Weight = 0.3f,

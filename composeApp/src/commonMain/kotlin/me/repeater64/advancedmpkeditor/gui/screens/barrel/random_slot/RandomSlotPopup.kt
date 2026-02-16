@@ -11,14 +11,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.backend.presets_examples.RandomSlotPreset
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
@@ -34,7 +37,7 @@ fun RandomSlotPopup(
     deleteCallback: () -> Unit
 ) {
     WeightedOptionListPopup(
-        data.options, allLabels, closePopupInputCallback,
+        data.options.options as SnapshotStateList<WeightedOptionEitherType<SnapshotStateList<MinecraftItem>>>, allLabels, closePopupInputCallback,
 
         width = 650,
         col1Weight = 0.3f,

@@ -17,9 +17,9 @@ class WeightedOption<T>(
     _weight: Int = 1,
     _label: String? = null,
     _conditions: List<RandomiserCondition> = emptyList()
-) : Comparable<WeightedOption<T>>, ContentHashable {
-    var option by mutableStateOf(_option)
-    var weight by mutableStateOf(_weight)
+) : Comparable<WeightedOption<T>>, ContentHashable, WeightedOptionEitherType<T> {
+    override var option by mutableStateOf(_option)
+    override var weight by mutableStateOf(_weight)
     var label by mutableStateOf(_label)
     val conditions = _conditions.toMutableStateList()
 
@@ -48,56 +48,18 @@ class WeightedOption<T>(
 
         override fun serializeToPages(it: WeightedOption<Any>): List<String> {
             val pages = mutableListOf<String>()
-            pages.add(it.weight.toString())
             pages.add(it.label.toString())
             pages.addAll(BookSerializable.serializeList(it.conditions, RandomiserCondition))
-
-            if (it.option is MinecraftItem) {
-                pages.add("!MinecraftItem")
-
-                pages.addAll(MinecraftItem.serialize(it.option as MinecraftItem))
-            } else if (it.option is HealthHungerOption) {
-                pages.add("!HealthHungerOption")
-                pages.addAll(HealthHungerOption.serialize(it.option as HealthHungerOption))
-            } else if (it.option is Int) {
-                pages.add("!Int")
-                pages.add(it.option.toString())
-            } else if (it.option is List<*>) {
-                pages.add("!MinecraftItemList")
-                if ((it.option as List<Any?>).isEmpty()) {
-                    throw IllegalArgumentException("Can't serialize a Weighted Option containing an empty list!")
-                }
-                if ((it.option as List<Any?>).first() !is MinecraftItem) {
-                    throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, SnapshotStateList<MinecraftItem>, Int and HealthHungerOption")
-                }
-
-                val minecraftItemList = it.option as List<MinecraftItem>
-                pages.addAll(BookSerializable.serializeList(minecraftItemList, MinecraftItem))
-            } else {
-                throw NotImplementedError("Book Serialization has not been implemented for WeightedOptions of type other than MinecraftItem, SnapshotStateList<MinecraftItem>, Int and HealthHungerOption")
-            }
-
+            pages.addAll(WeightedOptionNoLinks.serialize(WeightedOptionNoLinks(it.option, it.weight)))
             return pages
         }
 
         override fun deserializeFromPages(pages: List<String>): WeightedOption<Any> {
-            val weight = pages[0].toInt()
-            val label = if (pages[1] == "null") null else pages[1]
-            val (conditions, remainingPages) = BookSerializable.getListAndRemainingPages(pages.drop(2), RandomiserCondition)
+            val label = if (pages[0] == "null") null else pages[0]
+            val (conditions, remainingPages) = BookSerializable.getListAndRemainingPages(pages.drop(1), RandomiserCondition)
+            val weightedOptionNoLinks = BookSerializable.getObjectAndRemainingPages(remainingPages, WeightedOptionNoLinks).first
 
-            val option = if (remainingPages[0] == "!MinecraftItem") {
-                BookSerializable.getObjectAndRemainingPages(remainingPages.drop(1), MinecraftItem).first
-            } else if (remainingPages[0] == "!HealthHungerOption") {
-                BookSerializable.getObjectAndRemainingPages(remainingPages.drop(1), HealthHungerOption).first
-            } else if (remainingPages[0] == "!Int") {
-                remainingPages[1].toInt()
-            } else if (remainingPages[0] == "!MinecraftItemList") {
-                BookSerializable.getListAndRemainingPages(remainingPages.drop(1), MinecraftItem).first.toMutableStateList()
-            } else {
-                throw IllegalArgumentException("Expected !MinecraftItem or !MinecraftItemList whilst deserializing WeightedOption but found ${remainingPages[0]}")
-            }
-
-            return WeightedOption(option, weight, label, conditions)
+            return WeightedOption(weightedOptionNoLinks.option, weightedOptionNoLinks.weight, label, conditions)
         }
     }
 }
