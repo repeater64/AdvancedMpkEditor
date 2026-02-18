@@ -38,8 +38,12 @@ actual fun FileDropZone(
                         if (firstFile != null) {
                             val path = firstFile.toOkioPath()
                             FileSystem.SYSTEM.source(path).buffer().use { source ->
-                                val hotbars = SavedHotbars.decodeFromNbtSource(source)
-                                onFileDropped(hotbars)
+                                try {
+                                    val hotbars = SavedHotbars.decodeFromNbtSource(source)
+                                    onFileDropped(hotbars)
+                                } catch (_: Exception) {
+                                    onFileDropped(null)
+                                }
                             }
                             return true
                         }

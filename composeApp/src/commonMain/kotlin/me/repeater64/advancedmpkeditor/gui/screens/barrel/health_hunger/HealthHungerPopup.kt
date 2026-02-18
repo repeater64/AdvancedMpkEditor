@@ -25,7 +25,7 @@ fun HealthHungerPopup(
     closePopupInputCallback: () -> Unit
 ) {
     WeightedOptionListPopup(
-        healthHungerSettings.options as SnapshotStateList<WeightedOptionEitherType<HealthHungerOption>>, allLabels, closePopupInputCallback,
+        healthHungerSettings.options.options as SnapshotStateList<WeightedOptionEitherType<HealthHungerOption>>, allLabels, closePopupInputCallback,
 
         width = 800,
         col1Weight = 0.45f,

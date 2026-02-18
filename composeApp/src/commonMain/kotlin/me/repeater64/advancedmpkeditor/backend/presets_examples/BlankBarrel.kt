@@ -11,6 +11,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
+import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
@@ -76,8 +77,8 @@ object BlankBarrel {
 
     private val randomSlotsData get() = RandomSlotsData(emptyList())
 
-    private val junkSettings get() = JunkSettings(true, true, listOf(
-        WeightedOptionNoLinks(rawItem("leather", 64)),
+    private val junkSettings get() = JunkSettings(false, true, listOf(
+        WeightedOptionNoLinks(DontReplaceMinecraftItem()),
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(

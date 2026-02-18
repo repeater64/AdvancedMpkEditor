@@ -62,6 +62,19 @@ fun <T> WeightedOptionListPopup(
     fun closePopup() {
         // Fix any weights that are "zero" (due to being left empty) to 1
         options.forEach { if (it.weight == 0) it.weight = 1 }
+
+        val cleanedUpOptions = options.groupingBy { Pair(if (it.option is List<*>) (it.option as List<*>).toSet() else it.option, if (it is WeightedOption<*>) Pair(it.conditions.toSet(), it.label) else null) }
+            .reduce { _, accumulator, element ->
+                accumulator.copyWithNewWeight(accumulator.weight + element.weight)
+            }
+            .values
+            .toList()
+
+        if (cleanedUpOptions.size != options.size) {
+            options.clear()
+            options.addAll(cleanedUpOptions)
+        }
+
         closePopupInputCallback()
     }
 
@@ -132,6 +145,12 @@ fun <T> WeightedOptionListPopup(
                                 options.remove(option)
                                 if (options.isEmpty()) {
                                     options.add(toAddWhenOnlyOptionRemoved())
+                                } else if (options.size == 1) {
+                                    // Clear any randomiser links
+                                    if (options[0] is WeightedOption<*>) {
+                                        (options[0] as WeightedOption<*>).label = null
+                                        (options[0] as WeightedOption<*>).conditions.clear()
+                                    }
                                 }
                             },
                             hasRandomiserLinks = hasRandomiserLinks,
@@ -300,7 +319,15 @@ fun <T> WeightedOptionRow(
             var showPopup by remember { mutableStateOf(false) }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                if (option.label != null) {
+                if (wholeList.size == 1) {
+                    // Only one option, randomiser links aren't allowed.
+                    SmallIconAndTooltip(
+                        onClick = {  },
+                        tooltipText = "No randomiser links are allowed unless you have more than one option in the list!",
+                        icon = Icons.Default.Add,
+                        alpha = 0.38f // Greyed out
+                    )
+                } else if (option.label != null) {
                     // It's a trigger
                     RandomiserLinkRemovableChip(option.label!!, onRemove = { option.label = null })
                 } else {

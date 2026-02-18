@@ -170,7 +170,7 @@ fun MinecraftItemChooserPopup(
                             // Validation: Only allow digits
                             if (input.all { it.isDigit() }) {
                                 if (input.isEmpty()) amountText = input // Allow deleting all characters to type more
-                                else if (!allowMoreThanAStack && selectedItem != null && input.toInt() <= selectedItem!!.stackSize) {
+                                else if (allowMoreThanAStack || (selectedItem != null && input.toInt() <= selectedItem!!.stackSize)) {
                                     amountText = input
                                 }
                             }

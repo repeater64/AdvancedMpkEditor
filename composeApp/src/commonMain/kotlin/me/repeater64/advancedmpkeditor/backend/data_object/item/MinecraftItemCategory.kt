@@ -1072,6 +1072,8 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("bread"),
         rawItem("apple"),
         rawItem("carrot"),
+        rawItem("cooked_salmon"),
+        rawItem("cooked_cod"),
         rawItem("cooked_porkchop"),
         rawItem("cooked_beef"),
         rawItem("cooked_mutton"),
@@ -1080,6 +1082,7 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("golden_apple"),
         rawItem("enchanted_golden_apple"),
         rawItem("suspicious_stew"),
+        rawItem("mushroom_stew"),
         rawItem("rotten_flesh"),
     )),
     BARTERS("Barters", listOf(
@@ -1101,7 +1104,9 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("magma_cream"),
         rawItem("quartz"),
         rawItem("leather"),
-        // TODO add soul speed book items
+        SoulSpeedBookItem(1),
+        SoulSpeedBookItem(2),
+        SoulSpeedBookItem(3),
     )),
     MISC_SPEEDRUN_ITEMS("Misc Speedrun Items", listOf(
         rawItem("bow"),

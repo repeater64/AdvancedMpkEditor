@@ -128,7 +128,7 @@ fun <T> RandomiserLinksPopup(
                         OutlinedTextField(
                             value = customInputLabel,
                             onValueChange = {
-                                if (it.length < 16) {
+                                if (it.length < 16 && !it.contains("!")) {
                                     customInputLabel = it
                                 }
                             },

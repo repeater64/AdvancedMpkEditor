@@ -37,6 +37,10 @@ class WeightedOptionNoLinks<T>(
         return other.weight.compareTo(this.weight)
     }
 
+    override fun copyWithNewWeight(newWeight: Int): WeightedOptionEitherType<T> {
+        return WeightedOptionNoLinks(this.option, this.weight)
+    }
+
     companion object : BookSerializable<WeightedOptionNoLinks<Any>> {
         override val className: String = "WeightedOptionNoLinks"
 

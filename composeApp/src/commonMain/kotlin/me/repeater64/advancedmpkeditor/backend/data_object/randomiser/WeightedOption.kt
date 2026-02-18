@@ -43,6 +43,10 @@ class WeightedOption<T>(
         return other.weight.compareTo(this.weight)
     }
 
+    override fun copyWithNewWeight(newWeight: Int): WeightedOptionEitherType<T> {
+        return WeightedOption(this.option, newWeight, this.label, this.conditions)
+    }
+
     companion object : BookSerializable<WeightedOption<Any>> {
         override val className: String = "WeightedOption"
 

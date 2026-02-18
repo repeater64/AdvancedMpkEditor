@@ -22,7 +22,12 @@ class JvmHotbarFileManager : HotbarNbtFileManager {
         if (!FileSystem.SYSTEM.exists(path)) return null
 
         return FileSystem.SYSTEM.source(path).buffer().use { source ->
-            SavedHotbars.decodeFromNbtSource(source)
+            try {
+                SavedHotbars.decodeFromNbtSource(source)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
         }
     }
 }

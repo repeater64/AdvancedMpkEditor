@@ -2,7 +2,7 @@ package me.repeater64.advancedmpkeditor.backend.data_object.item
 
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 
-data class SimpleMinecraftItem(private val id: String, override val amount: Int) : MinecraftItem {
+data class SimpleMinecraftItem(val id: String, override val amount: Int) : MinecraftItem {
     override fun contentHash() = hashCode() // Can use this for immutable data class
 
     override val commandString = "$id $amount"

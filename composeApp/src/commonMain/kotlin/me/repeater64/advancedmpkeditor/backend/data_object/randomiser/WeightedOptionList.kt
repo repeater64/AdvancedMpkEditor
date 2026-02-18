@@ -30,9 +30,9 @@ class WeightedOptionList<T>(_options: MutableList<WeightedOption<T>>) : ContentH
             val validOptions = options.filter { option ->
                 for (condition in currentCombination) {
                     if (!condition.isInverted) {
-                        // This condition is a requirement, the option must also require this condition
+                        // This condition is a requirement, the option must not require the inverted condition
                         // Check the option contains the affirmative condition
-                        if (!option.conditions.contains(condition)) {
+                        if (option.conditions.contains(RandomiserCondition(condition.conditionLabel, true))) {
                             return@filter false
                         }
                     } else {

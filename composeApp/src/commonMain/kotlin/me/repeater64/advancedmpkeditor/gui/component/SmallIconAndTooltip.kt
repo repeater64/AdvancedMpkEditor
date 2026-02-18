@@ -9,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
@@ -17,6 +19,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -26,7 +29,7 @@ fun DeleteIconAndTooltip(onRemove: () -> Unit) = SmallIconAndTooltip(onRemove, "
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SmallIconAndTooltip(onClick: () -> Unit, tooltipText: String, icon: ImageVector) {
+fun SmallIconAndTooltip(onClick: () -> Unit, tooltipText: String, icon: ImageVector, alpha: Float? = null) {
     val tooltipState = rememberTooltipState()
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
@@ -42,7 +45,9 @@ fun SmallIconAndTooltip(onClick: () -> Unit, tooltipText: String, icon: ImageVec
                 .size(24.dp)
                 .clickable(onClick = onClick)
                 .background(color = androidx.compose.ui.graphics.Color.Transparent, shape = CircleShape)
-                .padding(4.dp)
+                .padding(4.dp),
+            tint = if (alpha == null) LocalContentColor.current else MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
+
         )
     }
 }

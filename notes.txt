@@ -107,3 +107,33 @@ sat 1 4      - 15 sat   (golden carrot)
 
 instant damage 1 0 - down 3 hearts
 instant damage 1 1 - down 6 hearts
+
+
+TODO looting sword
+TODO make junk non stackable button
+
+
+
+
+Processing command conditions plan:
+
+We want processedLabelsMap = Map (label -> CommandCondition)
+We'll also have unprocessedLabelsMap = Map (label -> list(CommandCondition + set<RandomiserCondition>>))
+
+And we want list(actual command + CommandObjectiveRange + set of RandomiserConditions that must all be met)
+
+Once we have those, we can fairly easily generate everything we need
+
+weightedOptionList:
+    - generate all sublists
+    for conditionsSet, unconditionalOptionList in:
+        Make an objective for this sublist. Assign the options a CommandIfRange in this objective.
+        For each option add to overall list: the command, its CommandIfRange in this objective, and the whole conditionsSet
+        If the option has a label, add to unprocessedLabelMap (this commandIfRange + conditionsSet)
+
+At the end, need to process unprocessed labels:
+
+any ones where the randomiserCondition set is empty, OR the CommandCondition with what's already in the processed map (or just put it in directly if nothing), then remove this list element from the unprocessedLabelsMap entry for that label
+
+
+
