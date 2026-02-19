@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
@@ -49,6 +52,35 @@ fun ColumnScope.JunkEditor(
         )
         Spacer(Modifier.width(6.dp))
         Text("Fill Inventory With Junk Items", style = MaterialTheme.typography.titleMedium)
+    }
+
+    Spacer(Modifier.height(15.dp))
+
+    val tooltipState1 = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip { Text(text = "If enabled, junk items will be given dummy NBT data to make them not able to stack with other item stacks. This is recommended, as it means your inventory will always get actually filled even if the same junk item is chosen twice. However, depending on how you like to sort your inventory and if you ever use any junk items for search crafting, you may want to disable this option.") }
+        },
+        state = tooltipState1,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = junkSettings.makeJunkNonStackable,
+                onCheckedChange = {junkSettings.makeJunkNonStackable = it},
+                modifier = Modifier.size(20.dp),
+                enabled = junkSettings.enableJunk
+            )
+            Spacer(Modifier.width(6.dp))
+            Text("Make Junk Non-Stackable", style = MaterialTheme.typography.titleMedium, modifier = if (junkSettings.enableJunk) Modifier else Modifier.alpha(0.38f))
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Hover for Info",
+                tint = if (junkSettings.enableJunk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha=0.38f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 
     Spacer(Modifier.height(15.dp))
