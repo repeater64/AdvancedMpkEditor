@@ -31,7 +31,11 @@ import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
+import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
+import me.repeater64.advancedmpkeditor.backend.presets_examples.JunkPreset
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMultiImpl
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.MinecraftItemChooserPopup
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot.SimpleSingleItemChooser
@@ -65,8 +69,27 @@ fun JunkPopup(
         addNewRowClicked = {
             junkSettings.junkList.add(WeightedOptionNoLinks(DontReplaceMinecraftItem(true)))
         },
-        showAddPresetButton = { false },
-        presetDropdownContents = {},
+        showAddPresetButton = { true },
+        addPresetText = "Add Items from Preset",
+        presetDropdownContents = {
+            for (preset in JunkPreset.entries) {
+                DropdownMenuItem(
+                    text = { Text(preset.displayName) },
+                    leadingIcon = {
+                        MinecraftSlotDisplayMultiImpl(
+                            preset.options.map { it.option },
+                            size = 50
+                        ).ContentsOnly()
+                    },
+                    onClick = {
+                        if (junkSettings.junkList.size == 1 && junkSettings.junkList[0].option is DontReplaceMinecraftItem) {
+                            junkSettings.junkList.clear()
+                        }
+                        junkSettings.junkList.addAll(preset.optionsGetter())
+                    }
+                )
+            }
+        },
         footerLeftSideContent = {
             Button(
                 onClick = {

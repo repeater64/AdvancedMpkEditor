@@ -46,6 +46,7 @@ fun <T> WeightedOptionListPopup(
     toAddWhenOnlyOptionRemoved: () -> WeightedOptionEitherType<T>,
     addNewRowClicked: () -> Unit,
     showAddPresetButton: () -> Boolean,
+    addPresetText: String = "Use a Preset",
     presetDropdownContents: @Composable ColumnScope.() -> Unit,
     footerLeftSideContent: @Composable RowScope.() -> Unit,
     leftColumnContent: @Composable BoxScope.(WeightedOptionEitherType<T>) -> Unit,
@@ -193,7 +194,7 @@ fun <T> WeightedOptionListPopup(
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("Use a Preset", style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
+                                Text(addPresetText, style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
 
                                 DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
                                     presetDropdownContents()

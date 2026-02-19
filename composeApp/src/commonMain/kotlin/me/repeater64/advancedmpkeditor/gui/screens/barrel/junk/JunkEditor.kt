@@ -94,7 +94,7 @@ fun ColumnScope.JunkEditor(
         Spacer(Modifier.height(15.dp))
         if (nonStackableBartersWarning) {
             Text(
-                "Warning - \"Make Junk Non Stackable\" option doesn't work with the \"Random Piglin Barter\" item in your junk list. This means if the same barters get chosen, they will stack and you will have some empty inventory slots. Instead consider adding the \"All Piglin Barters\" preset to your junk list.",
+                "Warning - \"Make Junk Non Stackable\" option doesn't work with the \"Random Piglin Barter\" item in your junk list. This means if the same barters get chosen, they will stack and you will have some empty inventory slots. Instead consider adding the \"Barter Junk\" preset to your junk list.",
                 style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.width(800.dp)
             )
             if (someEmptySlotsWarning) {
