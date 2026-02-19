@@ -1,6 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.commands
 
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.PracticeTypeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
@@ -245,6 +246,14 @@ object CommandsManager {
 
         var commandsAtStart = mutableListOf<String>()
         commandsAtStart.add("tellraw @p [{\"text\":\"MPK Setup Created With \",\"color\":\"aqua\"},{\"text\":\"repeater64.github.io/AdvancedMpkEditor\",\"bold\":true,\"color\":\"dark_aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://repeater64.github.io/AdvancedMpkEditor/\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Click to open editor website!\"}}]")
+
+        // Potential stronghold portal flag
+        commandsAtStart.add("scoreboard objectives add shportal dummy")
+        if (settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD) {
+            commandsAtStart.add("scoreboard players set @p shportal 1")
+        } else {
+            commandsAtStart.add("scoreboard players set @p shportal 0")
+        }
 
         // Generate randomiser commands
         for (randomiserIdentifier in actuallyUsedRandomisers) {

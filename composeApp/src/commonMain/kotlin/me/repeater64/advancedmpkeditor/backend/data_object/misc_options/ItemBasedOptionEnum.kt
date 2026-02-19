@@ -26,7 +26,7 @@ interface ItemBasedOptionEnum {
         fun <T : Enum<T>> tryGetFromNbt(tag: NbtCompound, enumEntries: EnumEntries<T>) : ItemBasedOptionEnum? {
             val id = (tag["id"] as NbtString).value
 
-            val amountMustMatch = if (id == "minecraft:obsidian") {
+            val amountMustMatch = if (id == "minecraft:obsidian" || id == "minecraft:end_portal_frame") {
                 // Need to check count too
                 NBT.getCount(tag)
             } else null

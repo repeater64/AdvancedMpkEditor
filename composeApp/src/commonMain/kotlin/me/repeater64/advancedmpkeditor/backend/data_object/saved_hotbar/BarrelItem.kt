@@ -101,7 +101,7 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()))
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()))
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -192,6 +192,7 @@ class BarrelItem(
             var foundAnyOffhandItems = false
             var forcePerchBook = false
             var surfaceBlindBook = false
+            var shPortalBookFound = false
 
             for (triggerItem in items) {
                 ItemBasedOptionEnum.tryGetFromNbt(triggerItem as NbtCompound, PracticeTypeOption.entries)?.let { practiceTypeOption = it as PracticeTypeOption; continue; }
@@ -291,7 +292,7 @@ class BarrelItem(
                                                 barrel.fixedSlotsData.bootsSlotData.itemOptions.options.add(WeightedOption(EnchantedBootsItem(true, 3), 4))
                                             } else if (loreText.contains("double travel portal")) {
                                                 // This is probably the default MPK "simulate double travel portal" book
-                                                // TODO
+                                                shPortalBookFound = true
                                             } else if (loreText.contains("piglin barters")) {
                                                 // This is probably the default MPK "Give piglin barters" book
                                                 // Check actual book contents to find amount
@@ -355,6 +356,10 @@ class BarrelItem(
             }
 
             if (practiceTypeOption == null) return AirItem()
+
+            if (practiceTypeOption == PracticeTypeOption.STRONGHOLD && !shPortalBookFound) {
+                practiceTypeOption = PracticeTypeOption.STRONGHOLD_NO_PORTAL
+            }
 
             // Handle coloured shulker data
             for (itemListList in coloredShulkerData.values) {
@@ -500,7 +505,7 @@ class BarrelItem(
                         is SoulSpeedBookItem -> true
                         is EnchantedBootsItem -> true
                         is LootingSwordItem -> false
-                        is FireResItem, is SplashFireResItem -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD
+                        is FireResItem, is SplashFireResItem -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD || practiceType == PracticeTypeOption.STRONGHOLD_NO_PORTAL
                         is SimpleMinecraftItem -> {
                             if (item.id.endsWith("_sapling")) return true
                             if (item.id.endsWith("_door")) return true // Junk by these later splits
@@ -519,7 +524,7 @@ class BarrelItem(
                                 "tnt" -> practiceType.isBlindOrLater
                                 "nether_brick_fence" -> true
                                 "bone" -> true
-                                "iron_ingot", "gold_ingot", "diamond" -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD
+                                "iron_ingot", "gold_ingot", "diamond" -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD || practiceType == PracticeTypeOption.STRONGHOLD_NO_PORTAL
                                 "emerald" -> true
                                 "basalt" -> true
                                 else -> false
