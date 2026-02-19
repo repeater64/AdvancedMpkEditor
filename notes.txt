@@ -110,7 +110,6 @@ instant damage 1 1 - down 6 hearts
 
 
 TODO change gamemode to exit waiting mode issue
-TODO add barrel from template
 
 
 

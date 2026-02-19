@@ -48,6 +48,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelIt
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.CommandBlockItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbarItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
+import me.repeater64.advancedmpkeditor.backend.presets_examples.BarrelPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.BlankBarrel
 import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
 import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
@@ -264,14 +265,40 @@ fun EditorScreen(
                                 content = { isDragging -> slotDisplay.SlotDisplay(!isDragging) }
                             )
                             DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                                var subDropdownOpen by remember {mutableStateOf(false)}
                                 DropdownMenuItem(
-                                    text = { Text("Add Configuration Barrel") },
+                                    text = { Text("Add Blank Configuration Barrel") },
                                     leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
                                     onClick = {
                                         // Add barrel to i slot
                                         selectedHotbarItems[i] = BlankBarrel.barrel
                                         dropdownExpanded = false
                                         currentlyEditingItemIndex = i
+                                    }
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                DropdownMenuItem(
+                                    text = { Text("Add Configuration Barrel from Preset") },
+                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
+                                    onClick = {
+                                        // Open sub dropdown with presets
+                                        subDropdownOpen = true
+                                    },
+                                    trailingIcon = {
+                                        DropdownMenu(subDropdownOpen, onDismissRequest = { subDropdownOpen = false}) {
+                                            for (preset in BarrelPreset.entries) {
+                                                DropdownMenuItem(
+                                                    text = { Text(preset.displayName) },
+                                                    onClick = {
+                                                        // Add barrel to i slot
+                                                        selectedHotbarItems[i] = preset.barrelGetter()
+                                                        subDropdownOpen = false
+                                                        dropdownExpanded = false
+                                                        currentlyEditingItemIndex = i
+                                                    }
+                                                )
+                                            }
+                                        }
                                     }
                                 )
                                 Spacer(Modifier.height(8.dp))
