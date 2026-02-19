@@ -21,7 +21,7 @@ data class SoulSpeedBookItem(
     }
 
     companion object : BookSerializable<SoulSpeedBookItem> {
-        override val className = "EnchantedBootsItem"
+        override val className = "SoulSpeedBookItem"
 
         override fun serializeToPages(it: SoulSpeedBookItem): List<String> {
             return listOf(it.ssLevel.toString())
