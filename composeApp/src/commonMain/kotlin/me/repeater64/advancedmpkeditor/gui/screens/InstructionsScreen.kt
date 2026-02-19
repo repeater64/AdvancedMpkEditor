@@ -15,7 +15,7 @@ fun InstructionsScreen() {
     BasicFullyScrollableScreen(Modifier.fillMaxWidth()) {
         // TODO add instructions info
         Text(
-            text = "How to use this tool",
+            text = "Instructions",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
         )
@@ -26,9 +26,9 @@ fun InstructionsScreen() {
             text = """
                 1. Select a template or load an existing file.
                 2. Edit your hotbars in the main editor.
-                3. Click 'Save' to download the updated .nbt file.
+                3. Click 'Save' to download the updated hotbars.nbt file.
                 
-                (TODO add full instructions)
+                (Actual instructions page TODO)
             """.trimIndent(),
             style = MaterialTheme.typography.bodyMedium,
             lineHeight = MaterialTheme.typography.bodyMedium.fontSize * 1.5
