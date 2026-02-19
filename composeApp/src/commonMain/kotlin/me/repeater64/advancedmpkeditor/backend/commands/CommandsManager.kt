@@ -172,7 +172,7 @@ object CommandsManager {
             n++
             if (n > 50) {
                 // We almost certainly have circular condition dependencies.
-                throw CircularConditionsException("TODO figure out which the circular ones are based on unprocessed labels left") // TODO
+                throw CircularConditionsException(unprocessedLabelsMap.keys.joinToString(", "))
             }
         }
 

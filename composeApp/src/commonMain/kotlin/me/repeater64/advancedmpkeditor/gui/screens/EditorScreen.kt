@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.commands.CircularConditionsException
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.AirItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
@@ -82,6 +83,7 @@ fun EditorScreen(
     var showGeneralWarningDialog by remember { mutableStateOf(false) }
     var generalWarningDialogText by remember { mutableStateOf("nothing yet") }
     var generalWarningProceedAction by remember { mutableStateOf<() -> Any>({}) }
+    var generalWarningIsError by remember { mutableStateOf(false) }
 
     var showEditorDialog by remember { mutableStateOf(false) }
     var editorDialog by remember { mutableStateOf<@Composable () -> Any>( {} ) }
@@ -106,9 +108,10 @@ fun EditorScreen(
         }
     }
 
-    fun showGeneralWarning(dialogText: String, proceedAction: () -> Any) {
+    fun showGeneralWarning(dialogText: String, proceedAction: () -> Any, isError: Boolean = false) {
         generalWarningDialogText = dialogText
         generalWarningProceedAction = proceedAction
+        generalWarningIsError = isError
         showGeneralWarningDialog = true
     }
 
@@ -116,10 +119,16 @@ fun EditorScreen(
     fun saveButton() {
         Button(
             onClick = {
-                isSaving = true
-                fileManager.saveHotbars(hotbars, "hotbar.nbt")
-                isSaving = false
-                savedHotbarsHash = currentHotbarsHash
+                try {
+                    isSaving = true
+                    fileManager.saveHotbars(hotbars, "hotbar.nbt")
+                    isSaving = false
+                    savedHotbarsHash = currentHotbarsHash
+                } catch (e: CircularConditionsException) {
+                    isSaving = false
+                    showGeneralWarning("Circular randomiser link dependency! You've set up randomiser links that are impossible to resolve due to a circular dependency. This is caused by a situation like: One list has an option that triggers A, and an option that depends on B, and another list has an option that triggers B and an option that depends on A. The relevant condition labels in your circular dependency are: ${e.message}",
+                        {}, true)
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier
@@ -340,7 +349,8 @@ fun EditorScreen(
                 },
                 onDismiss = {
                     showGeneralWarningDialog = false
-                }
+                },
+                isError = generalWarningIsError
             )
         } else if (showEditorDialog) {
             editorDialog()
@@ -377,24 +387,25 @@ fun UnsavedChangesDialog(
 fun GeneralWarningDialog(
     warningText: String,
     onProceed: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isError: Boolean
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Warning") },
+        title = { Text(if (isError) "Error" else "Warning") },
         text = { Text(warningText) },
         confirmButton = {
             Button(
                 onClick = onProceed,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = if (isError) ButtonDefaults.buttonColors() else ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Proceed")
+                Text(if (isError) "Ok" else "Proceed")
             }
         },
-        dismissButton = {
+        dismissButton = if (isError) null else {{
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        }}
     )
 }
