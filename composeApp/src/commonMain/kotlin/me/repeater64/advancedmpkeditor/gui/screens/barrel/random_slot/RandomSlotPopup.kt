@@ -85,6 +85,9 @@ fun RandomSlotPopup(
                     onClick = {
                         options.clear()
                         options.addAll(preset.optionsGetter().options)
+                        if (data.setName == "Unnamed") {
+                            data.setName = preset.displayName
+                        }
                     }
                 )
             }
