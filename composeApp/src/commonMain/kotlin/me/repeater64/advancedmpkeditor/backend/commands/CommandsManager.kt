@@ -4,7 +4,6 @@ import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
-import me.repeater64.advancedmpkeditor.util.getPrettyPrintedDataClass
 import me.repeater64.advancedmpkeditor.util.mapIntToAlpha
 import kotlin.collections.iterator
 
@@ -26,7 +25,7 @@ object CommandsManager {
         val fixedSlotsData = settings.fixedSlotsData
         for (fixedSlotData in fixedSlotsData.getAllSlotsExceptFloatingInvSlots()) {
             currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
-                { listOf("replaceitem entity @p ${fixedSlotData.minecraftSlotID} ${it.option.commandString}") } ,
+                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
                 "Warning - fixed slot data with no item options ($fixedSlotData)",
                 randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
         }
@@ -52,7 +51,7 @@ object CommandsManager {
             tempItemIndex++
 
             currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
-                { listOf("replaceitem entity @p ${fixedSlotData.minecraftSlotID} ${it.option.commandString}") } ,
+                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
                 "Warning - fixed slot data with no item options ($fixedSlotData)",
                 randomisers, unprocessedLabelsMap, processedCommandsAtEnd, currentRandomiserIndex) // Note we pass in processedCommandsAtEnd instead of processedCommands so we get these executing at the end
 
@@ -63,7 +62,7 @@ object CommandsManager {
         val randomSlotsData = settings.randomSlotsData
 
         var removedBedrockIndex = 0
-        for (randomSlotOptionsSet in randomSlotsData.optionsSets) {
+        for (randomSlotOptionsSet in randomSlotsData.getReorderedOptionsSets()) {
             val maxStacks = randomSlotOptionsSet.maxNumStacks
 
             currentRandomiserIndex = handleWeightedList(randomSlotOptionsSet.options,
@@ -81,7 +80,7 @@ object CommandsManager {
                             commands.add("clear @p minecraft:bedrock{a:$bedrockIndex}")
                             bedrockIndex++
                         }
-                        commands.add("give @p ${item.commandString}")
+                        commands.addAll(item.getGiveCommands())
                     }
 
                     // Now need to remove more bedrock corresponding to stacks that might have been removed if a maxStacks option were chosen
@@ -237,7 +236,7 @@ object CommandsManager {
                 val junkItem = actualJunkList[i % actualJunkList.size]
 
                 commands.add("execute store result score @p clear run clear @p minecraft:bedrock{a:$bedrockIndex}")
-                commands.add("execute unless score @p clear matches 0 run give @p ${if (junkSettings.makeJunkNonStackable) junkItem.getCommandStringNonStackable(i) else junkItem.commandString}")
+                commands.addAll(junkItem.getGiveCommands(if (junkSettings.makeJunkNonStackable) i else null).map { "execute unless score @p clear matches 0 run $it" })
 
                 i++
             }

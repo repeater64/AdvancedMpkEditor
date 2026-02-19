@@ -30,14 +30,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.item.RandomBarterItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
+import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun ColumnScope.JunkEditor(
     junkSettings: JunkSettings,
+    randomSlotsData: RandomSlotsData,
     showDialogCallback: (@Composable () -> Any) -> Any,
     hideDialogCallback: () -> Unit
 ) {
@@ -83,7 +87,30 @@ fun ColumnScope.JunkEditor(
         }
     }
 
-    Spacer(Modifier.height(15.dp))
+    val nonStackableBartersWarning = junkSettings.enableJunk && junkSettings.makeJunkNonStackable && junkSettings.junkList.any { it.option is RandomBarterItem }
+    val someEmptySlotsWarning = junkSettings.enableJunk && randomSlotsData.optionsSets.any { opSet -> opSet.options.options.any { option -> option.option.any { it is RandomBarterItem } } }
+
+    if (nonStackableBartersWarning || someEmptySlotsWarning) {
+        Spacer(Modifier.height(15.dp))
+        if (nonStackableBartersWarning) {
+            Text(
+                "Warning - \"Make Junk Non Stackable\" option doesn't work with the \"Random Piglin Barter\" item in your junk list. This means if the same barters get chosen, they will stack and you will have some empty inventory slots. Instead consider adding the \"All Piglin Barters\" preset to your junk list.",
+                style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.width(800.dp)
+            )
+            if (someEmptySlotsWarning) {
+                Spacer(Modifier.height(15.dp))
+            }
+        }
+        if (someEmptySlotsWarning) {
+            Text(
+                "Warning - Because you've used the \"Random Piglin Barter\" item in your random slots settings, it can't be guaranteed that junk will fill every single inventory slot - if the same stackable barter gets chosen multiple times, more spots in your inventory will be empty than expected and this stops junk from 100% filling your inventory.",
+                style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.width(800.dp)
+            )
+        }
+        Spacer(Modifier.height(15.dp))
+    } else {
+        Spacer(Modifier.height(15.dp))
+    }
 
     val tooltipState = rememberTooltipState()
     TooltipBox(

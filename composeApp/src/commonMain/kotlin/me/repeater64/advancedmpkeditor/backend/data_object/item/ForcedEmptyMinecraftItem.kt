@@ -6,7 +6,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.No
 
 class ForcedEmptyMinecraftItem : NoAttributesDataClass(), MinecraftItem {
     override val amount: Int = 1
-    override val commandString: String
+    override val commandEndBit: String
         get() {
             return "minecraft:barrier{\"id\":${identifier++}}"
         }

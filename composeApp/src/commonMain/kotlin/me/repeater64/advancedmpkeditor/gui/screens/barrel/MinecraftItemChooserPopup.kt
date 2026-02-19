@@ -24,6 +24,7 @@ import androidx.compose.ui.window.PopupProperties
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemWithAmount
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 
@@ -54,9 +55,13 @@ fun MinecraftItemChooserPopup(
             return
         }
 
-        val amount = (amountText.toIntOrNull() ?: 1).coerceAtMost(selectedItem!!.stackSize)
+        val amount = if (allowMoreThanAStack) {
+            (amountText.toIntOrNull() ?: 1)
+        } else {
+            (amountText.toIntOrNull() ?: 1).coerceAtMost(selectedItem!!.stackSize)
+        }
 
-        val finalItemToReturn = if (selectedItem is SimpleMinecraftItem) (selectedItem as SimpleMinecraftItem).copyWithAmount(amount) else selectedItem!!
+        val finalItemToReturn = if (selectedItem is MinecraftItemWithAmount) (selectedItem as MinecraftItemWithAmount).copyWithAmount(amount) else selectedItem!!
 
         onItemChosen(finalItemToReturn)
         onDismiss()
@@ -146,7 +151,7 @@ fun MinecraftItemChooserPopup(
                             highlighted = selectedItem?.equalsIgnoringAmount(item) ?: false,
                             modifier = Modifier.onClick(onClick = {
                                 selectedItem = item
-                                if (amountText.isNotBlank() && amountText.toInt() > item.stackSize) {
+                                if (amountText.isNotBlank() && !allowMoreThanAStack && amountText.toInt() > item.stackSize) {
                                     amountText = item.stackSize.toString()
                                 }
                             })

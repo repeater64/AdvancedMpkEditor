@@ -4,7 +4,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 
 interface MinecraftItem : ContentHashable {
-    val commandString: String
+    val commandEndBit: String
     val displayName: String
     val amount: Int
     val iconFile: String
@@ -13,7 +13,19 @@ interface MinecraftItem : ContentHashable {
     val numStacks: Int
     val stackSize: Int
 
-    fun getCommandStringNonStackable(num: Int): String = commandString
+    fun getCommandEndBitNonStackable(num: Int): String = commandEndBit
+
+    fun getReplaceitemCommand(slotString: String): String {
+        return "replaceitem entity @p ${slotString} $commandEndBit"
+    }
+
+    fun getGiveCommands(makeNonStackableNum: Int? = null): List<String> {
+        if (makeNonStackableNum != null) {
+            return listOf("give @p ${getCommandEndBitNonStackable(makeNonStackableNum)}")
+        } else {
+            return listOf("give @p $commandEndBit")
+        }
+    }
 
     fun equalsIgnoringAmount(other: MinecraftItem): Boolean {
         return this == other
@@ -31,6 +43,7 @@ interface MinecraftItem : ContentHashable {
             EnchantedBootsItem.className to EnchantedBootsItem,
             SoulSpeedBookItem.className to SoulSpeedBookItem,
             LootingSwordItem.className to LootingSwordItem,
+            RandomBarterItem.className to RandomBarterItem
         ) }
 
         override fun serializeToPages(it: MinecraftItem): List<String> {

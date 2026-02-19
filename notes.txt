@@ -110,6 +110,7 @@ instant damage 1 1 - down 6 hearts
 
 
 TODO junk presets
+TODO change gamemode to exit waiting mode issue
 
 
 

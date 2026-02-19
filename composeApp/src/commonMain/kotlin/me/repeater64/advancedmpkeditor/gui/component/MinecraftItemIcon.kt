@@ -1049,6 +1049,7 @@ fun getItemResource(filename: String): DrawableResource {
         "golden_sword_l1.png" -> Res.drawable.golden_sword_l1
         "golden_sword_l2.png" -> Res.drawable.golden_sword_l2
         "golden_sword_l3.png" -> Res.drawable.golden_sword_l3
+        "piglin_icon.png" -> Res.drawable.piglin_icon
         else -> Res.drawable.missing_texture
     }
 }

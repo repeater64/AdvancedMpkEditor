@@ -18,6 +18,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.RandomBarterItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
@@ -287,6 +288,28 @@ class BarrelItem(
                                             } else if (loreText.contains("double travel portal")) {
                                                 // This is probably the default MPK "simulate double travel portal" book
                                                 // TODO
+                                            } else if (loreText.contains("piglin barters")) {
+                                                // This is probably the default MPK "Give piglin barters" book
+                                                // Check actual book contents to find amount
+                                                var amount = 0
+                                                if (innerTag.containsKey("pages")) {
+                                                    val pagesTag = innerTag["pages"]
+                                                    if (pagesTag is NbtList<*>) {
+                                                        for (pageTag in pagesTag) {
+                                                            if (pageTag is NbtString) {
+                                                                val cmd = pageTag.value
+                                                                if (cmd.startsWith("data merge storage barters {count:")) {
+                                                                    amount = cmd.split("count:")[1].split("}")[0].toInt()
+                                                                    break
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                if (amount > 0) {
+                                                    barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet("Random Piglin Barters", WeightedOptionList(mutableListOf(WeightedOption(listOf(RandomBarterItem(amount)).toMutableStateList())))))
+                                                }
                                             }
 
                                             // Check actual book contents to see if it sets offhand item
@@ -458,6 +481,7 @@ class BarrelItem(
 
                 else -> {
                     when (item) {
+                        is RandomBarterItem -> false
                         is SoulSpeedBookItem -> true
                         is EnchantedBootsItem -> true
                         is LootingSwordItem -> false

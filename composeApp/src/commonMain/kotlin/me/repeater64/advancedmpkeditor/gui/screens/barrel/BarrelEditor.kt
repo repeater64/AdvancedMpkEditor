@@ -96,7 +96,7 @@ fun ColumnScope.BarrelEditor(
 
     RandomSlotsEditor(barrelItem.randomSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
     Spacer(Modifier.height(50.dp))
-    JunkEditor(barrelItem.junkSettings, showDialogCallback, hideDialogCallback)
+    JunkEditor(barrelItem.junkSettings, barrelItem.randomSlotsData, showDialogCallback, hideDialogCallback)
     Spacer(Modifier.height(50.dp))
     HealthHungerEditor(barrelItem.healthHungerSettings, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
     Spacer(Modifier.height(25.dp))

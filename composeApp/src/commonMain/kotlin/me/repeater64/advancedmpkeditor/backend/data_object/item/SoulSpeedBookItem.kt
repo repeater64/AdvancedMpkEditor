@@ -8,7 +8,7 @@ data class SoulSpeedBookItem(
 ) : MinecraftItem {
     override fun contentHash() = hashCode() // Can use this for immutable data class
 
-    override val commandString = "enchanted_book{StoredEnchantments:[{lvl:${ssLevel}s, id:\"minecraft:soul_speed\"}]} 1"
+    override val commandEndBit = "enchanted_book{StoredEnchantments:[{lvl:${ssLevel}s, id:\"minecraft:soul_speed\"}]} 1"
     override val displayName = "Soul Speed ${integer123ToRomanNumerals(ssLevel)} Book"
     override val amount = 1
     override val iconFile = "enchanted_book.png"

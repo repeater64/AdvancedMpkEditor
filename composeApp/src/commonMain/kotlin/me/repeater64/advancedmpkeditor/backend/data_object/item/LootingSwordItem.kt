@@ -6,7 +6,7 @@ data class LootingSwordItem(
     val lootingLevel: Int,
 ) : MinecraftItem {
     override fun contentHash() = hashCode() // Can use this for immutable data class
-    override val commandString = "golden_sword{Enchantments:[{lvl:$lootingLevel,id:looting}]} 1"
+    override val commandEndBit = "golden_sword{Enchantments:[{lvl:$lootingLevel,id:looting}]} 1"
     override val displayName = "Looting ${lootingLevel} Golden Sword"
     override val amount = 1
     override val iconFile = when (lootingLevel) {

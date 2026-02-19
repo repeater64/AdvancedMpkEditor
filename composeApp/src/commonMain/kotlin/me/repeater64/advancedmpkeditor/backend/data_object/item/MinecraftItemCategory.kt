@@ -993,6 +993,7 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         LootingSwordItem(1),
         LootingSwordItem(2),
         LootingSwordItem(3),
+        RandomBarterItem()
     )),
     ALL_HELMETS("All Helmets", isSpecificArmorSlotCategory = true, items = listOf(
         rawItem("golden_helmet"),
@@ -1094,6 +1095,7 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("rotten_flesh"),
     )),
     BARTERS("Barters", listOf(
+        RandomBarterItem(),
         rawItem("ender_pearl"),
         rawItem("string"),
         rawItem("obsidian"),
