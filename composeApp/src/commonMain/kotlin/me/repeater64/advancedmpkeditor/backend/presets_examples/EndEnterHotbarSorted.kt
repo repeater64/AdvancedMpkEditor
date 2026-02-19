@@ -14,6 +14,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthO
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
@@ -315,6 +316,12 @@ object EndEnterHotbarSorted {
                     itemList(rawItem("iron_shovel"), weight = 1, conditions = invCondition("0a")),
                     itemList(rawItem("stone_shovel"), weight = 1, conditions = invCondition("0a")),
                     itemList(availableItem().option, conditions = condition("0a"))
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Force Perch Potion",
+                WeightedOptionList(mutableListOf(
+                    itemList(ForcePerchPotionItem()),
                 ))
             ),
         )

@@ -992,7 +992,9 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         LootingSwordItem(1),
         LootingSwordItem(2),
         LootingSwordItem(3),
-        RandomBarterItem()
+        RandomBarterItem(),
+        SurfaceBlindPotionItem(),
+        ForcePerchPotionItem()
     )),
     ALL_HELMETS("All Helmets", isSpecificArmorSlotCategory = true, items = listOf(
         rawItem("golden_helmet"),
@@ -1152,5 +1154,9 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         LootingSwordItem(2),
         LootingSwordItem(3),
         // TODO organise this list into a logical order, add anything I missed
+    )),
+    MPK_POTIONS("MPK Command Potions", listOf(
+        ForcePerchPotionItem(),
+        SurfaceBlindPotionItem()
     ))
 }

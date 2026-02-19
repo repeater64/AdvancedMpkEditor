@@ -15,6 +15,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
@@ -22,6 +23,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.RandomBarterItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SurfaceBlindPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
@@ -188,6 +190,8 @@ class BarrelItem(
             val coloredShulkerData: HashMap<String, MutableList<List<MinecraftItem>>> = hashMapOf() // Map of shulker box item ID -> list of content lists of shulker boxes of the same colour
             val whiteShulkerItems = mutableListOf<MinecraftItem>()
             var foundAnyOffhandItems = false
+            var forcePerchBook = false
+            var surfaceBlindBook = false
 
             for (triggerItem in items) {
                 ItemBasedOptionEnum.tryGetFromNbt(triggerItem as NbtCompound, PracticeTypeOption.entries)?.let { practiceTypeOption = it as PracticeTypeOption; continue; }
@@ -342,9 +346,9 @@ class BarrelItem(
                                 }
                             }
                         } else if (bookName.contains("Surface Blind")) {
-                            // TODO
+                            surfaceBlindBook = true
                         } else if (bookName.contains("Force Perch")) {
-                            // TODO
+                            forcePerchBook = true
                         }
                     }
                 }
@@ -380,6 +384,17 @@ class BarrelItem(
             }
             for ((setName, items) in randomItemsetsMap) {
                 barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet(setName, WeightedOptionList(mutableListOf(WeightedOption(items.toMutableStateList())))))
+            }
+
+            if (forcePerchBook || surfaceBlindBook) {
+                val list = mutableListOf<MinecraftItem>()
+                if (forcePerchBook) {
+                    list.add(ForcePerchPotionItem())
+                }
+                if (surfaceBlindBook) {
+                    list.add(SurfaceBlindPotionItem())
+                }
+                barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet("MPK Potions", WeightedOptionList(mutableListOf(WeightedOption(list.toMutableStateList())))))
             }
 
             if (barrel.junkSettings.junkList.isEmpty()) {

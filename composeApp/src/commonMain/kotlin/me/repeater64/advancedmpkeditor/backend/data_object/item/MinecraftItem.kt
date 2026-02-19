@@ -43,7 +43,9 @@ interface MinecraftItem : ContentHashable {
             EnchantedBootsItem.className to EnchantedBootsItem,
             SoulSpeedBookItem.className to SoulSpeedBookItem,
             LootingSwordItem.className to LootingSwordItem,
-            RandomBarterItem.className to RandomBarterItem
+            RandomBarterItem.className to RandomBarterItem,
+            ForcePerchPotionItem.className to ForcePerchPotionItem,
+            SurfaceBlindPotionItem.className to SurfaceBlindPotionItem
         ) }
 
         override fun serializeToPages(it: MinecraftItem): List<String> {
