@@ -603,7 +603,6 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("netherite_shovel"),
         rawItem("netherite_sword"),
         rawItem("netherrack"),
-        rawItem("no_crafting_table"),
         rawItem("note_block"),
         rawItem("oak_boat"),
         rawItem("oak_button"),

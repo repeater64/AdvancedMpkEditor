@@ -67,7 +67,17 @@ fun JunkPopup(
         },
         showAddPresetButton = { false },
         presetDropdownContents = {},
-        footerLeftSideContent = {},
+        footerLeftSideContent = {
+            Button(
+                onClick = {
+                    junkSettings.junkList.clear()
+                    junkSettings.junkList.add(WeightedOptionNoLinks(DontReplaceMinecraftItem()))
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Clear All")
+            }
+        },
         leftColumnContent = { weightedOption ->
             SimpleSingleItemChooser(weightedOption, null) { null }
         }

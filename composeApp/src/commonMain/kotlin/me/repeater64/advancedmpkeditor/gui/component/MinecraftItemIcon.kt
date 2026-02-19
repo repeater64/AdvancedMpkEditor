@@ -662,7 +662,6 @@ fun getItemResource(filename: String): DrawableResource {
         "netherite_shovel.png" -> Res.drawable.netherite_shovel
         "netherite_sword.png" -> Res.drawable.netherite_sword
         "netherrack.png" -> Res.drawable.netherrack
-        "no_crafting_table.png" -> Res.drawable.no_crafting_table
         "note_block.png" -> Res.drawable.note_block
         "oak_boat.png" -> Res.drawable.oak_boat
         "oak_button.png" -> Res.drawable.oak_button
