@@ -16,6 +16,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinec
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
@@ -398,31 +399,53 @@ class BarrelItem(
                 "minecraft:iron_boots", "minecraft:golden_boots" -> {
                     val simpleItem = if (id == "minecraft:iron_boots") rawItem("iron_boots") else rawItem("golden_boots")
 
-                    if (!item.containsKey("tag")) return simpleItem
-                    val innerTag = item["tag"]
-                    if (innerTag !is NbtCompound) return simpleItem
-                    if (!innerTag.containsKey("Enchantments")) return simpleItem
-                    val enchantmentsTag = innerTag["Enchantments"]
-                    if (enchantmentsTag !is NbtList<*>) return simpleItem
-
-                    for (enchantmentTag in enchantmentsTag) {
-                        if (enchantmentTag !is NbtCompound) return simpleItem
-                        if (!enchantmentTag.containsKey("id")) return simpleItem
-                        val id = enchantmentTag["id"]
-                        if (id !is NbtString) return simpleItem
-                        if (id.value.contains("soul_speed")) {
-                            val iron = id.value == "minecraft:iron_boots"
-                            val lvl = NBT.getNumber(enchantmentTag, "lvl", 1)
-                            return EnchantedBootsItem(iron, lvl)
+                    val enchantments = getEnchantments(item) ?: return simpleItem
+                    for (enchantment in enchantments) {
+                        if (enchantment.first.contains("soul_speed")) {
+                            val iron = id == "minecraft:iron_boots"
+                            return EnchantedBootsItem(iron, enchantment.second)
                         }
                     }
                     simpleItem // If no soul speed enchant found
+                }
+                "minecraft:golden_sword" -> {
+                    val simpleItem = rawItem("golden_sword")
+
+                    val enchantments = getEnchantments(item) ?: return simpleItem
+                    for (enchantment in enchantments) {
+                        if (enchantment.first.contains("looting")) {
+                            return LootingSwordItem(enchantment.second)
+                        }
+                    }
+                    simpleItem // If no looting enchant found
                 }
                 else -> {
                     val count = NBT.getCount(item)
                     SimpleMinecraftItem(id.removePrefix("minecraft:"), count)
                 }
             }
+        }
+
+        private fun getEnchantments(item: NbtCompound): List<Pair<String, Int>>? {
+            if (!item.containsKey("tag")) return null
+            val innerTag = item["tag"]
+            if (innerTag !is NbtCompound) return null
+            if (!innerTag.containsKey("Enchantments")) return null
+            val enchantmentsTag = innerTag["Enchantments"]
+            if (enchantmentsTag !is NbtList<*>) return null
+
+            val list = mutableListOf<Pair<String, Int>>()
+
+            for (enchantmentTag in enchantmentsTag) {
+                if (enchantmentTag !is NbtCompound) return null
+                if (!enchantmentTag.containsKey("id")) return null
+                val id = enchantmentTag["id"]
+                if (id !is NbtString) return null
+
+                val lvl = NBT.getNumber(enchantmentTag, "lvl", 1)
+                list.add(Pair(id.value, lvl))
+            }
+            return list
         }
 
         private fun isJunk(item: MinecraftItem, practiceType: PracticeTypeOption): Boolean {
@@ -437,6 +460,7 @@ class BarrelItem(
                     when (item) {
                         is SoulSpeedBookItem -> true
                         is EnchantedBootsItem -> true
+                        is LootingSwordItem -> false
                         is FireResItem, is SplashFireResItem -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD
                         is SimpleMinecraftItem -> {
                             if (item.id.endsWith("_sapling")) return true

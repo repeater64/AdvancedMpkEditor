@@ -1,6 +1,7 @@
 package me.repeater64.advancedmpkeditor.backend.presets_examples
 
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
@@ -45,6 +46,17 @@ enum class FixedSlotPreset(
             item("stone_axe", 3),
             item("golden_axe", 2),
             item("diamond_axe", 1),
+        )
+    }),
+
+    RANDOM_SWORD( "Random Sword", {
+        optionList(
+            item("iron_sword", 20),
+            item("stone_sword", 20),
+            item("diamond_sword", 5),
+            WeightedOption(LootingSwordItem(1), 1),
+            WeightedOption(LootingSwordItem(2), 1),
+            WeightedOption(LootingSwordItem(3), 1),
         )
     }),
 

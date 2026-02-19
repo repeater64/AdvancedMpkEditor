@@ -987,7 +987,12 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         EnchantedBootsItem(false, 1),
         EnchantedBootsItem(false, 2),
         EnchantedBootsItem(false, 3),
-        // TODO add soul speed enchanted books
+        SoulSpeedBookItem(1),
+        SoulSpeedBookItem(2),
+        SoulSpeedBookItem(3),
+        LootingSwordItem(1),
+        LootingSwordItem(2),
+        LootingSwordItem(3),
     )),
     ALL_HELMETS("All Helmets", isSpecificArmorSlotCategory = true, items = listOf(
         rawItem("golden_helmet"),
@@ -1067,6 +1072,9 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("arrow"),
         rawItem("spectral_arrow"),
         rawItem("fishing_rod"),
+        LootingSwordItem(1),
+        LootingSwordItem(2),
+        LootingSwordItem(3),
     )),
     FOOD("Food", listOf(
         rawItem("bread"),
@@ -1139,6 +1147,9 @@ enum class MinecraftItemCategory(val displayName: String, val items: List<Minecr
         rawItem("diamond"),
         rawItem("cobblestone"),
         rawItem("oak_planks"),
+        LootingSwordItem(1),
+        LootingSwordItem(2),
+        LootingSwordItem(3),
         // TODO organise this list into a logical order, add anything I missed
     ))
 }

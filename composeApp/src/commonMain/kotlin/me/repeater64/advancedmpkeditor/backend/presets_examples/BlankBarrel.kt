@@ -12,14 +12,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.PracticeTypeOption
-import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList

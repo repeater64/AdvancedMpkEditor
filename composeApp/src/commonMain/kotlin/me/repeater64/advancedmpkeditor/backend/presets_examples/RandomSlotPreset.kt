@@ -1,9 +1,8 @@
 package me.repeater64.advancedmpkeditor.backend.presets_examples
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 
@@ -46,6 +45,17 @@ enum class RandomSlotPreset(
             itemList(rawItem("stone_axe"), weight=3),
             itemList(rawItem("golden_axe"), weight=2),
             itemList(rawItem("diamond_axe"), weight=1),
+        ))
+    }),
+
+    RANDOM_SWORD( "Random Sword", rawItem("iron_sword"), {
+        WeightedOptionList(mutableListOf(
+            itemList(rawItem("iron_sword"), weight = 20),
+            itemList(rawItem("stone_sword"), weight = 20),
+            itemList(rawItem("diamond_sword"), weight = 5),
+            itemList(LootingSwordItem(1), weight=1),
+            itemList(LootingSwordItem(2), weight=1),
+            itemList(LootingSwordItem(3), weight=1),
         ))
     }),
 
