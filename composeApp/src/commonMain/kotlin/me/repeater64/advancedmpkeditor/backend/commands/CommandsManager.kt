@@ -244,7 +244,7 @@ object CommandsManager {
 
 
         var commandsAtStart = mutableListOf<String>()
-        commandsAtStart.add("say TODO plug this tool, put the URL (clickable) and nice format") // TODO (also maybe make it a tellraw so it doesn't start with [MPK]
+        commandsAtStart.add("tellraw @p [{\"text\":\"MPK Setup Created With \",\"color\":\"aqua\"},{\"text\":\"repeater64.github.io/AdvancedMpkEditor\",\"bold\":true,\"color\":\"dark_aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://repeater64.github.io/AdvancedMpkEditor/\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Click to open editor website!\"}}]")
 
         // Generate randomiser commands
         for (randomiserIdentifier in actuallyUsedRandomisers) {

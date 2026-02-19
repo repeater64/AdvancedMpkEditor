@@ -20,7 +20,8 @@ data class WritableAutoBookItem(override val pages: List<String>) : BookItem(pag
                 putNbtCompound("display") {
                     put("Name", "{\"text\":\"AUTO\"}")
                     putNbtList("Lore") {
-                        add("{\"text\":\"repeater64's Advanced MPK Editor - Generated Commands - Don't Edit\"}") // TODO put github URL in another lore line
+                        add("{\"text\":\"repeater64's Advanced MPK Editor - Generated Commands - Don't Edit\"}")
+                        add("{\"text\":\"repeater64.github.io/AdvancedMpkEditor\"}")
                     }
                 }
             }
