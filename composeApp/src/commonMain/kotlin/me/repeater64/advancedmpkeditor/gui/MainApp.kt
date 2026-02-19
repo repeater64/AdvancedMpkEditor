@@ -29,6 +29,7 @@ import me.repeater64.advancedmpkeditor.gui.screens.InstructionsScreen
 import me.repeater64.advancedmpkeditor.gui.screens.Screen
 import me.repeater64.advancedmpkeditor.gui.platform.HotbarNbtFileManager
 import me.repeater64.advancedmpkeditor.gui.platform.openUrl
+import me.repeater64.advancedmpkeditor.gui.platform.trackEvent
 import me.repeater64.advancedmpkeditor.gui.screens.CreditsScreen
 
 @Composable
@@ -84,13 +85,19 @@ fun MainApp(fileManager: HotbarNbtFileManager) {
                 ) {
                     when (val screen = currentScreen) {
                         is Screen.Home -> HomeScreen(
-                            onOpenEditor = { hotbars -> currentScreen = Screen.Editor(hotbars) },
+                            onOpenEditor = { hotbars ->
+                                trackEvent("open_template", "Open Template")
+                                currentScreen = Screen.Editor(hotbars)
+                                           },
                             onOpenImport = { currentScreen = Screen.Import }
                         )
 
                         is Screen.Import -> ImportScreen(
                             fileManager = fileManager,
-                            onHotbarsLoaded = { hotbars -> currentScreen = Screen.Editor(hotbars) }
+                            onHotbarsLoaded = { hotbars ->
+                                trackEvent("import", "Import")
+                                currentScreen = Screen.Editor(hotbars)
+                            }
                         )
 
                         is Screen.Editor -> EditorScreen(
