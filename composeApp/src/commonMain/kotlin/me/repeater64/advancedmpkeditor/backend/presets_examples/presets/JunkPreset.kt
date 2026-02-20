@@ -1,15 +1,12 @@
-package me.repeater64.advancedmpkeditor.backend.presets_examples
+package me.repeater64.advancedmpkeditor.backend.presets_examples.presets
 
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
-import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
-import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
+import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
 enum class JunkPreset(
     val displayName: String,

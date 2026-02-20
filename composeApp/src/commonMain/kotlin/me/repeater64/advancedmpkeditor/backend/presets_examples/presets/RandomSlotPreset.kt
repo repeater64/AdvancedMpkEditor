@@ -1,10 +1,12 @@
-package me.repeater64.advancedmpkeditor.backend.presets_examples
+package me.repeater64.advancedmpkeditor.backend.presets_examples.presets
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
-import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
 enum class RandomSlotPreset(
     val displayName: String,
@@ -13,38 +15,38 @@ enum class RandomSlotPreset(
 ) {
     RANDOM_BOAT( "Random Boat", rawItem("oak_boat"), {
         WeightedOptionList(mutableListOf(
-            itemList(rawItem("oak_boat"), weight=12),
-            itemList(rawItem("birch_boat"), weight=4),
-            itemList(rawItem("acacia_boat"), weight=6),
-            itemList(rawItem("dark_oak_boat"), weight=2),
-            itemList(rawItem("jungle_boat"), weight=1),
-            itemList(rawItem("spruce_boat"), weight=2),
+            itemList(rawItem("oak_boat"), weight = 12),
+            itemList(rawItem("birch_boat"), weight = 4),
+            itemList(rawItem("acacia_boat"), weight = 6),
+            itemList(rawItem("dark_oak_boat"), weight = 2),
+            itemList(rawItem("jungle_boat"), weight = 1),
+            itemList(rawItem("spruce_boat"), weight = 2),
         ))
     }),
 
     RANDOM_PICKAXE( "Random Pickaxe", rawItem("iron_pickaxe"), {
         WeightedOptionList(mutableListOf(
-            itemList(rawItem("iron_pickaxe"), weight=8),
-            itemList(rawItem("golden_pickaxe"), weight=3),
-            itemList(rawItem("diamond_pickaxe"), weight=1),
+            itemList(rawItem("iron_pickaxe"), weight = 8),
+            itemList(rawItem("golden_pickaxe"), weight = 3),
+            itemList(rawItem("diamond_pickaxe"), weight = 1),
         ))
     }),
 
     RANDOM_SHOVEL( "Random Shovel", rawItem("iron_shovel"), {
         WeightedOptionList(mutableListOf(
-            itemList(rawItem("iron_shovel"), weight=3),
-            itemList(rawItem("stone_shovel"), weight=3),
-            itemList(rawItem("golden_shovel"), weight=2),
-            itemList(rawItem("diamond_shovel"), weight=1),
+            itemList(rawItem("iron_shovel"), weight = 3),
+            itemList(rawItem("stone_shovel"), weight = 3),
+            itemList(rawItem("golden_shovel"), weight = 2),
+            itemList(rawItem("diamond_shovel"), weight = 1),
         ))
     }),
 
     RANDOM_AXE( "Random Axe", rawItem("iron_axe"), {
         WeightedOptionList(mutableListOf(
-            itemList(rawItem("iron_axe"), weight=3),
-            itemList(rawItem("stone_axe"), weight=3),
-            itemList(rawItem("golden_axe"), weight=2),
-            itemList(rawItem("diamond_axe"), weight=1),
+            itemList(rawItem("iron_axe"), weight = 3),
+            itemList(rawItem("stone_axe"), weight = 3),
+            itemList(rawItem("golden_axe"), weight = 2),
+            itemList(rawItem("diamond_axe"), weight = 1),
         ))
     }),
 
@@ -53,9 +55,9 @@ enum class RandomSlotPreset(
             itemList(rawItem("iron_sword"), weight = 20),
             itemList(rawItem("stone_sword"), weight = 20),
             itemList(rawItem("diamond_sword"), weight = 5),
-            itemList(LootingSwordItem(1), weight=1),
-            itemList(LootingSwordItem(2), weight=1),
-            itemList(LootingSwordItem(3), weight=1),
+            itemList(LootingSwordItem(1), weight = 1),
+            itemList(LootingSwordItem(2), weight = 1),
+            itemList(LootingSwordItem(3), weight = 1),
         ))
     }),
 

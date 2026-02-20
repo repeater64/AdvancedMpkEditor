@@ -20,7 +20,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
-import me.repeater64.advancedmpkeditor.backend.presets_examples.FixedSlotPreset
+import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.FixedSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay

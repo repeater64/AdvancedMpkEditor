@@ -1,6 +1,5 @@
-package me.repeater64.advancedmpkeditor.backend.presets_examples
+package me.repeater64.advancedmpkeditor.backend.presets_examples.barrels
 
-import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.BootsSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.ChestplateSlotData
@@ -26,8 +25,18 @@ import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOp
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
+import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
+import me.repeater64.advancedmpkeditor.backend.presets_examples.invCondition
+import me.repeater64.advancedmpkeditor.backend.presets_examples.invSlot
+import me.repeater64.advancedmpkeditor.backend.presets_examples.item
+import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
-object EndEnterHotbarSorted {
+object EndEnterHotbarSortedBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(
             optionList(

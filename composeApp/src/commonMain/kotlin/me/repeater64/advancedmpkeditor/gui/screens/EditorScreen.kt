@@ -5,13 +5,11 @@ import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
@@ -48,7 +46,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelIt
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.CommandBlockItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbarItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
-import me.repeater64.advancedmpkeditor.backend.presets_examples.BarrelPreset
+import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.BarrelPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.BlankBarrel
 import me.repeater64.advancedmpkeditor.gui.component.DragDropContainer
 import me.repeater64.advancedmpkeditor.gui.component.DragSwappable

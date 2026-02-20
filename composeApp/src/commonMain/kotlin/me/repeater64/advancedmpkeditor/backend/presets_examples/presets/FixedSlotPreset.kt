@@ -1,4 +1,4 @@
-package me.repeater64.advancedmpkeditor.backend.presets_examples
+package me.repeater64.advancedmpkeditor.backend.presets_examples.presets
 
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
@@ -6,6 +6,9 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.item
+import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 
 enum class FixedSlotPreset(
     val displayName: String,
