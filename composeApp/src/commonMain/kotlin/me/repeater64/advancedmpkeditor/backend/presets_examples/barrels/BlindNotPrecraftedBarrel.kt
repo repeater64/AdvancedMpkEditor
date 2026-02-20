@@ -109,12 +109,7 @@ object BlindNotPrecraftedBarrel {
             ),
             hotbarSlot(
                 8, optionList(
-                    item("ender_eye", 1, 2),
-                    item("ender_eye", 1, 4),
-                    item("ender_eye", 1, 6),
-                    item("ender_eye", 1, 8),
-                    item("ender_eye", 1, 10),
-                    item("ender_eye", 1, 12),
+                    item("ender_eye", 4, 12),
                     item("ender_eye", 1, 14),
                 )
             ),
