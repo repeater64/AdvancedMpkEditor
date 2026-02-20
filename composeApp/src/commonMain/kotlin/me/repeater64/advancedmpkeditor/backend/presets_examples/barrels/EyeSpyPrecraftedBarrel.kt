@@ -43,6 +43,7 @@ object EyeSpyPrecraftedBarrel {
                 item("bread", 1, 4, label = "bread"),
                 item("cooked_porkchop", 1, 2, label = "pork"),
                 item("rotten_flesh", 1, 4, label = "flesh"),
+                item("cooked_salmon", 1, 2, label = "salmon"),
                 emptyItem(2, label = "nofood")
             )
         ),
@@ -357,7 +358,7 @@ object EyeSpyPrecraftedBarrel {
         WeightedOption(150, 2),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "4eyes", "6eyes", "8eyes", "10eyes", "11eyes", "12eyes")
+    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "salmon", "4eyes", "6eyes", "8eyes", "10eyes", "11eyes", "12eyes")
 
     val barrel get() = BarrelItem("Eye Spy - Precrafted", PracticeTypeOption.STRONGHOLD, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }

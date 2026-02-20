@@ -11,11 +11,13 @@ import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthH
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthHungerSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HealthOption
 import me.repeater64.advancedmpkeditor.backend.data_object.health_hunger.HungerOption
+import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SurfaceBlindPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
@@ -30,22 +32,22 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
-import me.repeater64.advancedmpkeditor.backend.presets_examples.invCondition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.invSlot
 import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
-object EndEnterHotbarUnsortedBarrel {
+// TODO set up bastion barrel
+object BastionBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(
             optionList(
-                item("bread", 1, 3, label = "bread"),
-                item("cooked_porkchop", 1, 1, label = "pork"),
-                item("rotten_flesh", 1, 4, label = "flesh"),
-                item("cooked_salmon", 1, 1, label = "salmon"),
-                emptyItem(1, label = "nofood")
+                item("bread", 1, 10, label = "bread"),
+                item("cooked_porkchop", 1, 4, label = "pork"),
+                item("rotten_flesh", 1, 15, label = "flesh"),
+                item("golden_carrot", 1, 4, label = "gcarrot"),
+                item("cooked_salmon", 1, 3, label = "salmon"),
             )
         ),
         listOf(
@@ -97,31 +99,35 @@ object EndEnterHotbarUnsortedBarrel {
             ),
             hotbarSlot(
                 6, optionList(
-                    item("obsidian", 1, 1),
-                    item("obsidian", 1, 3),
+                    item("fire_charge", 1, 23),
                     item("fire_charge", 1, 17)
                 )
             ),
             hotbarSlot(
                 7, optionList(
-                    item("ender_pearl", amount = 13)
+                    item("ender_pearl", amount = 16)
                 )
             ),
             hotbarSlot(
                 8, optionList(
-                    item("ender_eye"),
-                    emptyItem()
+                    item("ender_eye", 1, 2),
+                    item("ender_eye", 1, 4),
+                    item("ender_eye", 1, 6),
+                    item("ender_eye", 1, 8),
+                    item("ender_eye", 1, 10),
+                    item("ender_eye", 1, 12),
+                    item("ender_eye", 1, 14),
                 )
             ),
         ),
         listOf(
-            invSlot(0, optionList(item("fire_charge", amount = 23), item("fire_charge", amount = 15))),
+            invSlot(0, optionList(item("obsidian", amount = 10), item("obsidian", amount = 11), item("obsidian", amount = 14))),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
-            invSlot(6, optionList(item("ender_pearl", amount = 16))),
+            invSlot(6, optionList(item("ender_pearl", amount = 5))),
             invSlot(7, optionList(availableItem())),
             invSlot(8, optionList(availableItem())),
             invSlot(9, optionList(availableItem())),
@@ -182,35 +188,34 @@ object EndEnterHotbarUnsortedBarrel {
     private val randomSlotsData get() = RandomSlotsData(
         listOf(
             RandomSlotOptionsSet(
-                "Explosives",
+                "Explosive Ingredients",
                 WeightedOptionList(mutableListOf(
-                    itemList(rawItem("white_bed", 5), weight = 1),
-                    itemList(rawItem("white_bed", 4), rawItem("respawn_anchor", 1), rawItem("glowstone", 1), weight = 1),
-                    itemList(rawItem("white_bed", 3), rawItem("respawn_anchor", 2), rawItem("glowstone", 2), weight = 1),
-                    itemList(rawItem("white_bed", 2), rawItem("respawn_anchor", 3), rawItem("glowstone", 3), weight = 1),
+                    itemList(rawItem("string", 5*12+2), rawItem("crying_obsidian", 6), rawItem("glowstone_dust", 15), weight = 1),
+                    itemList(rawItem("string", 4*12+3), rawItem("crying_obsidian", 1*6+3), rawItem("glowstone_dust", 1*16+14), weight = 1),
+                    itemList(rawItem("string", 3*12+4), rawItem("crying_obsidian", 2*6+9), rawItem("glowstone_dust", 2*16+10), weight = 1),
+                    itemList(rawItem("string", 2*12+5), rawItem("crying_obsidian", 3*6+5), rawItem("glowstone_dust", 3*16+3), weight = 1),
 
-                    itemList(rawItem("white_bed", 6), weight = 3),
-                    itemList(rawItem("white_bed", 5), rawItem("respawn_anchor", 1), rawItem("glowstone", 1), weight = 3),
-                    itemList(rawItem("white_bed", 4), rawItem("respawn_anchor", 2), rawItem("glowstone", 2), weight = 3),
-                    itemList(rawItem("white_bed", 3), rawItem("respawn_anchor", 3), rawItem("glowstone", 3), weight = 3),
+                    itemList(rawItem("string", 6*12+7), rawItem("crying_obsidian", 4), rawItem("glowstone_dust", 11), weight = 3),
+                    itemList(rawItem("string", 5*12+4), rawItem("crying_obsidian", 1*6+20), rawItem("glowstone_dust", 1*16+14), weight = 3),
+                    itemList(rawItem("string", 4*12+5), rawItem("crying_obsidian", 2*6+1), rawItem("glowstone_dust", 2*16+2), weight = 3),
+                    itemList(rawItem("string", 3*12+6), rawItem("crying_obsidian", 3*6+7), rawItem("glowstone_dust", 3*16+8), weight = 3),
 
-                    itemList(rawItem("white_bed", 7), weight = 2),
-                    itemList(rawItem("white_bed", 6), rawItem("respawn_anchor", 1), rawItem("glowstone", 1), weight = 2),
-                    itemList(rawItem("white_bed", 5), rawItem("respawn_anchor", 2), rawItem("glowstone", 2), weight = 2),
-                    itemList(rawItem("white_bed", 4), rawItem("respawn_anchor", 3), rawItem("glowstone", 3), weight = 2),
+                    itemList(rawItem("string", 7*12+10), rawItem("crying_obsidian", 10), rawItem("glowstone_dust", 6), weight = 2),
+                    itemList(rawItem("string", 6*12+9), rawItem("crying_obsidian", 1*6+4), rawItem("glowstone_dust", 1*16+3), weight = 2),
+                    itemList(rawItem("string", 5*12+6), rawItem("crying_obsidian", 2*6+16), rawItem("glowstone_dust", 2*16+7), weight = 2),
+                    itemList(rawItem("string", 4*12+7), rawItem("crying_obsidian", 3*6+3), rawItem("glowstone_dust", 3*16+12), weight = 2),
 
-                    itemList(rawItem("white_bed", 8), weight = 1),
-                    itemList(rawItem("white_bed", 7), rawItem("respawn_anchor", 1), rawItem("glowstone", 1), weight = 1),
-                    itemList(rawItem("white_bed", 6), rawItem("respawn_anchor", 2), rawItem("glowstone", 2), weight = 1),
-                    itemList(rawItem("white_bed", 5), rawItem("respawn_anchor", 3), rawItem("glowstone", 3), weight = 1),
+                    itemList(rawItem("string", 8*12+10), rawItem("crying_obsidian", 5), rawItem("glowstone_dust", 9), weight = 1),
+                    itemList(rawItem("string", 7*12+5), rawItem("crying_obsidian", 1*6+20), rawItem("glowstone_dust", 1*16+5), weight = 1),
+                    itemList(rawItem("string", 6*12+11), rawItem("crying_obsidian", 2*6), rawItem("glowstone_dust", 2*16+1), weight = 1),
+                    itemList(rawItem("string", 5*12+8), rawItem("crying_obsidian", 3*6), rawItem("glowstone_dust", 3*16+13), weight = 1),
                 ))
             ),
             RandomSlotOptionsSet(
-                "Bow",
+                "Potential Crossbow",
                 WeightedOptionList(mutableListOf(
-                    itemList(rawItem("bow"), weight = 3),
-                    itemList(rawItem("crossbow"), weight = 2),
-                    itemList(availableItem().option, weight = 1)
+                    itemList(rawItem("crossbow"), weight = 1),
+                    itemList(availableItem().option, weight = 3)
                 ))
             ),
             RandomSlotOptionsSet(
@@ -231,37 +236,32 @@ object EndEnterHotbarUnsortedBarrel {
                 WeightedOptionList(mutableListOf(
                     itemList(
                         rawItem("gravel", 45),
-                        rawItem("oak_planks", 4),
-                        rawItem("crying_obsidian", 6),
+                        rawItem("oak_planks", 31),
                         rawItem("soul_sand", 64),
                         weight = 5
                     ),
                     itemList(
-                        rawItem("oak_planks", 30),
-                        rawItem("crying_obsidian", 5),
+                        rawItem("oak_planks", 50),
+                        rawItem("soul_sand", 64),
                         weight = 2
                     ),
                     itemList(
                         rawItem("gravel", 36),
-                        rawItem("oak_planks", 3),
-                        rawItem("crying_obsidian", 24),
+                        rawItem("oak_planks", 26),
                         weight = 1
                     ),
                     itemList(
                         rawItem("gravel", 120),
-                        rawItem("oak_planks", 5),
-                        rawItem("crying_obsidian", 31),
+                        rawItem("oak_planks", 29),
                         weight = 1
                     ),
                     itemList(
-                        rawItem("oak_planks", 3),
-                        rawItem("crying_obsidian", 4),
+                        rawItem("oak_planks", 25),
                         rawItem("netherrack", 53),
                         weight = 3
                     ),
                     itemList(
-                        rawItem("oak_planks", 4),
-                        rawItem("crying_obsidian", 3),
+                        rawItem("oak_planks", 35),
                         rawItem("netherrack", 94),
                         weight = 1
                     ),
@@ -272,6 +272,7 @@ object EndEnterHotbarUnsortedBarrel {
                 WeightedOptionList(mutableListOf(
                     itemList(rawItem("stick", 1), weight = 1),
                     itemList(rawItem("stick", 2), weight = 1),
+                    itemList(rawItem("stick", 3), weight = 1),
                     itemList(availableItem().option, weight = 1)
                 ))
             ),
@@ -297,61 +298,55 @@ object EndEnterHotbarUnsortedBarrel {
                 ))
             ),
             RandomSlotOptionsSet(
-                "Force Perch Potion",
+                "Leftover Gold",
                 WeightedOptionList(mutableListOf(
-                    itemList(ForcePerchPotionItem()),
+                    itemList(availableItem().option, weight = 1),
+                    itemList(rawItem("gold_ingot", 5), weight = 1),
+                    itemList(rawItem("gold_ingot", 8), weight = 1),
+                    itemList(rawItem("gold_ingot", 12), weight = 1),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Fire Res",
+                WeightedOptionList(mutableListOf(
+                    itemList(FireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), FireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), SplashFireResItem(), weight = 1),
+                    itemList(FireResItem(), FireResItem(), weight = 1),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Crafting Table",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("crafting_table")),
                 ))
             ),
         )
     )
 
-    private val junkSettings get() = JunkSettings(true, true, listOf(
-        WeightedOptionNoLinks(SplashFireResItem(), 2),
-        WeightedOptionNoLinks(FireResItem(), 2),
-        WeightedOptionNoLinks(rawItem("string", 2)),
-        WeightedOptionNoLinks(rawItem("iron_ingot", 4)),
-        WeightedOptionNoLinks(rawItem("iron_nugget", 40)),
-        WeightedOptionNoLinks(rawItem("gold_ingot", 2)),
-        WeightedOptionNoLinks(rawItem("golden_boots", 1)),
-        WeightedOptionNoLinks(rawItem("leather", 64), 2),
-        WeightedOptionNoLinks(rawItem("glowstone_dust", 3)),
-        WeightedOptionNoLinks(rawItem("cracked_stone_bricks", 1)),
-        WeightedOptionNoLinks(rawItem("mossy_stone_bricks", 1)),
-        WeightedOptionNoLinks(rawItem("tnt", 1)),
-        WeightedOptionNoLinks(rawItem("nether_brick", 3)),
-        WeightedOptionNoLinks(rawItem("dirt", 4)),
-        WeightedOptionNoLinks(rawItem("nether_brick_fence", 1)),
-        WeightedOptionNoLinks(EnchantedBootsItem(true, 1)),
-        WeightedOptionNoLinks(SoulSpeedBookItem(1)),
-        WeightedOptionNoLinks(rawItem("polished_blackstone_bricks", 3), 1),
-        WeightedOptionNoLinks(rawItem("basalt", 2), 1),
+    private val junkSettings get() = JunkSettings(false, true, listOf(
+        WeightedOptionNoLinks(DontReplaceMinecraftItem()),
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition(
-            "flesh"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("bread")),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(0, 2),
-        WeightedOption(30, 1),
-        WeightedOption(60, 1),
-        WeightedOption(90, 1),
+        WeightedOption(0, 1),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "salmon")
+    private val allRandomiserLinkLabels = hashSetOf("gcarrot", "flesh", "pork", "bread", "salmon")
 
-    val barrel get() = BarrelItem("End Enter - Hotbar Unsorted", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
+    val barrel get() = BarrelItem("Bastion", PracticeTypeOption.BASTION, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }

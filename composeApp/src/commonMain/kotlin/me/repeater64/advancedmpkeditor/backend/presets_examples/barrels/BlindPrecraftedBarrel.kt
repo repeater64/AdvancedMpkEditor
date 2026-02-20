@@ -16,6 +16,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.SurfaceBlindPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
@@ -30,22 +31,21 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
-import me.repeater64.advancedmpkeditor.backend.presets_examples.invCondition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.invSlot
 import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
-object EndEnterHotbarUnsortedBarrel {
+object BlindPrecraftedBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(
             optionList(
-                item("bread", 1, 3, label = "bread"),
-                item("cooked_porkchop", 1, 1, label = "pork"),
-                item("rotten_flesh", 1, 4, label = "flesh"),
-                item("cooked_salmon", 1, 1, label = "salmon"),
-                emptyItem(1, label = "nofood")
+                item("bread", 1, 10, label = "bread"),
+                item("cooked_porkchop", 1, 4, label = "pork"),
+                item("rotten_flesh", 1, 15, label = "flesh"),
+                item("golden_carrot", 1, 4, label = "gcarrot"),
+                item("cooked_salmon", 1, 3, label = "salmon"),
             )
         ),
         listOf(
@@ -97,31 +97,35 @@ object EndEnterHotbarUnsortedBarrel {
             ),
             hotbarSlot(
                 6, optionList(
-                    item("obsidian", 1, 1),
-                    item("obsidian", 1, 3),
+                    item("fire_charge", 1, 23),
                     item("fire_charge", 1, 17)
                 )
             ),
             hotbarSlot(
                 7, optionList(
-                    item("ender_pearl", amount = 13)
+                    item("ender_pearl", amount = 16)
                 )
             ),
             hotbarSlot(
                 8, optionList(
-                    item("ender_eye"),
-                    emptyItem()
+                    item("ender_eye", 1, 2),
+                    item("ender_eye", 1, 4),
+                    item("ender_eye", 1, 6),
+                    item("ender_eye", 1, 8),
+                    item("ender_eye", 1, 10),
+                    item("ender_eye", 1, 12),
+                    item("ender_eye", 1, 14),
                 )
             ),
         ),
         listOf(
-            invSlot(0, optionList(item("fire_charge", amount = 23), item("fire_charge", amount = 15))),
+            invSlot(0, optionList(item("obsidian", amount = 10), item("obsidian", amount = 11), item("obsidian", amount = 14))),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
-            invSlot(6, optionList(item("ender_pearl", amount = 16))),
+            invSlot(6, optionList(item("ender_pearl", amount = 5))),
             invSlot(7, optionList(availableItem())),
             invSlot(8, optionList(availableItem())),
             invSlot(9, optionList(availableItem())),
@@ -218,11 +222,10 @@ object EndEnterHotbarUnsortedBarrel {
                 WeightedOptionList(mutableListOf(
                     itemList(rawItem("arrow", 6), weight = 3),
                     itemList(rawItem("arrow", 12), weight = 2),
-                    itemList(rawItem("arrow", 20), rawItem("spectral_arrow", 13), weight = 2),
+                    itemList(rawItem("arrow", 20), weight = 2),
                     itemList(rawItem("arrow", 34), weight = 1),
                     itemList(rawItem("arrow", 50), weight = 1),
                     itemList(rawItem("arrow", 64), weight = 2),
-                    itemList(rawItem("arrow", 64), rawItem("spectral_arrow", 30), weight = 1),
                     itemList(availableItem().option, weight = 3)
                 ))
             ),
@@ -239,6 +242,7 @@ object EndEnterHotbarUnsortedBarrel {
                     itemList(
                         rawItem("oak_planks", 30),
                         rawItem("crying_obsidian", 5),
+                        rawItem("soul_sand", 64),
                         weight = 2
                     ),
                     itemList(
@@ -297,9 +301,34 @@ object EndEnterHotbarUnsortedBarrel {
                 ))
             ),
             RandomSlotOptionsSet(
+                "Gold Picks",
+                WeightedOptionList(mutableListOf(
+                    itemList(availableItem().option, weight = 1),
+                    itemList(rawItem("golden_pickaxe", 1), weight = 1),
+                    itemList(rawItem("golden_pickaxe", 2), weight = 1),
+                    itemList(rawItem("golden_pickaxe", 3), weight = 1),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Fire Res",
+                WeightedOptionList(mutableListOf(
+                    itemList(FireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), FireResItem(), weight = 1),
+                    itemList(SplashFireResItem(), SplashFireResItem(), weight = 1),
+                    itemList(FireResItem(), FireResItem(), weight = 1),
+                ))
+            ),
+            RandomSlotOptionsSet(
                 "Force Perch Potion",
                 WeightedOptionList(mutableListOf(
                     itemList(ForcePerchPotionItem()),
+                ))
+            ),
+            RandomSlotOptionsSet(
+                "Surface Blind Potion",
+                WeightedOptionList(mutableListOf(
+                    itemList(SurfaceBlindPotionItem()),
                 ))
             ),
         )
@@ -315,8 +344,6 @@ object EndEnterHotbarUnsortedBarrel {
         WeightedOptionNoLinks(rawItem("golden_boots", 1)),
         WeightedOptionNoLinks(rawItem("leather", 64), 2),
         WeightedOptionNoLinks(rawItem("glowstone_dust", 3)),
-        WeightedOptionNoLinks(rawItem("cracked_stone_bricks", 1)),
-        WeightedOptionNoLinks(rawItem("mossy_stone_bricks", 1)),
         WeightedOptionNoLinks(rawItem("tnt", 1)),
         WeightedOptionNoLinks(rawItem("nether_brick", 3)),
         WeightedOptionNoLinks(rawItem("dirt", 4)),
@@ -328,30 +355,28 @@ object EndEnterHotbarUnsortedBarrel {
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition(
-            "flesh"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("bread")),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(0, 2),
-        WeightedOption(30, 1),
-        WeightedOption(60, 1),
+        WeightedOption(0, 1),
+        WeightedOption(30, 3),
+        WeightedOption(60, 3),
         WeightedOption(90, 1),
+        WeightedOption(120, 1),
+        WeightedOption(150, 1),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "salmon")
+    private val allRandomiserLinkLabels = hashSetOf("gcarrot", "flesh", "pork", "bread", "salmon")
 
-    val barrel get() = BarrelItem("End Enter - Hotbar Unsorted", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
+    val barrel get() = BarrelItem("Blind - Always Precrafted", PracticeTypeOption.BLIND, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }

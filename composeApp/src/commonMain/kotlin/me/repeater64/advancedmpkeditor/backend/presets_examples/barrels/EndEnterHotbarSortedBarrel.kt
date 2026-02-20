@@ -44,6 +44,7 @@ object EndEnterHotbarSortedBarrel {
                 item("bread", 1, 3, label = "bread"),
                 item("cooked_porkchop", 1, 1, label = "pork"),
                 item("rotten_flesh", 1, 4, label = "flesh"),
+                item("cooked_salmon", 1, 1, label = "salmon"),
                 emptyItem(1, label = "nofood")
             )
         ),
@@ -393,7 +394,7 @@ object EndEnterHotbarSortedBarrel {
         WeightedOption(90, 1),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "0a", "1a", "2a", "3a", "4a", "hotbar_ss", "hotbar_gravel", "hotbar_nrack")
+    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "salmon", "0a", "1a", "2a", "3a", "4a", "hotbar_ss", "hotbar_gravel", "hotbar_nrack")
 
     val barrel get() = BarrelItem("End Enter - Hotbar Sorted", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }
