@@ -130,6 +130,11 @@ class BarrelItem(
         }
     }
 
+    fun deepCopy(): BarrelItem {
+        // Rather than implementing a proper deep copy which would require changes to many classes, just serialize + deserialize. This isn't efficient but this doesn't particularly need to be, it's ok if we freeze the GUI for a moment when someone duplicates a barrel
+        return fromTagAdvancedMpkEditorGeneratedBarrel(this.getTag())
+    }
+
     companion object {
         fun fromTag(tag: NbtCompound) : SavedHotbarItem {
             return try {

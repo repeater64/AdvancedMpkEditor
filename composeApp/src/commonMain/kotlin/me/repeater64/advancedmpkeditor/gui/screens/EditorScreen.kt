@@ -235,6 +235,25 @@ fun EditorScreen(
                                 }
                             }
                         }
+                        val onMiddleClick = {
+                            if (savedHotbarItem is BarrelItem) {
+                                // Look for blank slot to put it
+                                var targetIndex = -1
+                                for ((index, item) in selectedHotbarItems.withIndex()) {
+                                    if (item is AirItem) {
+                                        targetIndex = index
+                                        break
+                                    }
+                                }
+
+                                if (targetIndex == -1) {
+                                    // Couldn't find - pop up error
+                                    showGeneralWarning("There isn't an empty slot in this hotbar to duplicate this barrel into! Please clear out a slot.", {}, true)
+                                } else {
+                                    selectedHotbarItems[targetIndex] = savedHotbarItem.deepCopy()
+                                }
+                            }
+                        }
 
                         val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 80,
                             tooltipContents = {
@@ -243,7 +262,7 @@ fun EditorScreen(
                                     Spacer(Modifier.height(5.dp))
                                     when (savedHotbarItem) {
                                         is AirItem -> Text("Click to add item", style = MaterialTheme.typography.bodyMedium)
-                                        is BarrelItem -> Text("Left Click to edit, Right Click to delete", style = MaterialTheme.typography.bodyMedium)
+                                        is BarrelItem -> Text("Left Click to edit, Right Click to delete, Middle Click to duplicate", style = MaterialTheme.typography.bodyMedium)
                                         is CommandBlockItem -> Text("Right Click to delete", style = MaterialTheme.typography.bodyMedium)
                                     }
                                     if (savedHotbarItem !is AirItem) {
@@ -255,6 +274,7 @@ fun EditorScreen(
                             highlighted = currentlyEditingItemIndex == i,
                             modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
                                 .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
+                                .onClick(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onClick = onMiddleClick)
                         )
 
                         Spacer(Modifier.width(2.dp))
