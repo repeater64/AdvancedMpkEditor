@@ -19,6 +19,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotion
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemWithAmount
 import me.repeater64.advancedmpkeditor.backend.data_object.item.RandomBarterItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
@@ -232,14 +233,26 @@ class BarrelItem(
                             val loadedItem = getMinecraftItem(item) ?: continue
                             list.add(loadedItem)
                         }
-                        if (list.isEmpty()) {
+                        // Merge stacks of same type
+                        var uniqueId = 0
+                        val reducedList = list.groupingBy { if (it is SimpleMinecraftItem) it.id else uniqueId++ }
+                            .reduce { _, accumulator, element ->
+                                if (accumulator is SimpleMinecraftItem) {
+                                    accumulator.copyWithAmount(accumulator.amount + (element as SimpleMinecraftItem).amount)
+                                } else { // Should never be trying to reduce other types
+                                    accumulator
+                                }
+                            }
+                            .values
+                            .toMutableList()
+                        if (reducedList.isEmpty()) {
                             // This shulker is a "no item" alternative
-                            list.add(DontReplaceMinecraftItem())
+                            reducedList.add(DontReplaceMinecraftItem())
                         }
                         if (!coloredShulkerData.contains(triggerItemId)) {
                             numItemsThatWouldBeInInventory += list.size // This isn't perfect, we just assume that all shulkers of this colour have the same number of items as the first we found. But that doesn't really matter because this would only be relevant in the unlikely case that someone has a chest AFTER coloured shulkers
                         }
-                        coloredShulkerData.getOrPut(triggerItemId) { mutableListOf() }.add(list)
+                        coloredShulkerData.getOrPut(triggerItemId) { mutableListOf() }.add(reducedList)
                     }
                     "minecraft:writable_book" -> {
                         if (!triggerItem.containsKey("tag")) continue
@@ -379,7 +392,7 @@ class BarrelItem(
                 val list = randomItemsetsMap.getOrPut(getItemsetNameForItem(item)) { mutableListOf() }
                 var foundMatching = false
                 for ((index, existingItem) in list.withIndex()) {
-                    if (existingItem is SimpleMinecraftItem && existingItem.equalsIgnoringAmount(item)) {
+                    if (existingItem is MinecraftItemWithAmount && existingItem.equalsIgnoringAmount(item)) {
                         list[index] = existingItem.copyWithAmount(existingItem.amount + item.amount)
                         foundMatching = true
                         break
