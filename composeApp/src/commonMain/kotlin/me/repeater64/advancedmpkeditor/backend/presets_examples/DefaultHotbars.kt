@@ -6,13 +6,15 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHot
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.SavedHotbars
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EndEnterHotbarSortedBarrel
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EndEnterHotbarUnsortedBarrel
+import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EyeSpyNotPrecraftedBarrel
+import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EyeSpyPrecraftedBarrel
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.MyEndEnterBarrel
 
 object DefaultHotbars {
     val exampleTemplate
         get() = SavedHotbars(listOf(
         SavedHotbar(listOf(
-            MyEndEnterBarrel.barrel, AirItem(), AirItem(), AirItem(), AirItem(), AirItem(), EndEnterHotbarSortedBarrel.barrel, EndEnterHotbarUnsortedBarrel.barrel, CommandBlockItem()
+            MyEndEnterBarrel.barrel, AirItem(), AirItem(), AirItem(), EyeSpyNotPrecraftedBarrel.barrel, EyeSpyPrecraftedBarrel.barrel, EndEnterHotbarSortedBarrel.barrel, EndEnterHotbarUnsortedBarrel.barrel, CommandBlockItem()
         )),
         emptyHotbar(),
         emptyHotbar(),

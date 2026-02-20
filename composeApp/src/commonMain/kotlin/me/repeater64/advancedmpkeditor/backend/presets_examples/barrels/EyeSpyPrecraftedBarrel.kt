@@ -30,21 +30,20 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
-import me.repeater64.advancedmpkeditor.backend.presets_examples.invCondition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.invSlot
 import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
-object EndEnterHotbarUnsortedBarrel {
+object EyeSpyPrecraftedBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(
             optionList(
-                item("bread", 1, 3, label = "bread"),
-                item("cooked_porkchop", 1, 1, label = "pork"),
+                item("bread", 1, 4, label = "bread"),
+                item("cooked_porkchop", 1, 2, label = "pork"),
                 item("rotten_flesh", 1, 4, label = "flesh"),
-                emptyItem(1, label = "nofood")
+                emptyItem(2, label = "nofood")
             )
         ),
         listOf(
@@ -108,8 +107,12 @@ object EndEnterHotbarUnsortedBarrel {
             ),
             hotbarSlot(
                 8, optionList(
-                    item("ender_eye"),
-                    emptyItem()
+                    item("ender_eye", 1, 4, label="4eyes"),
+                    item("ender_eye", 1, 6, label="6eyes"),
+                    item("ender_eye", 2, 8, label="8eyes"),
+                    item("ender_eye", 2, 10, label="10eyes"),
+                    item("ender_eye", 1, 11, label="11eyes"),
+                    item("ender_eye", 4, 12, label="12eyes"),
                 )
             ),
         ),
@@ -180,6 +183,18 @@ object EndEnterHotbarUnsortedBarrel {
 
     private val randomSlotsData get() = RandomSlotsData(
         listOf(
+            RandomSlotOptionsSet(
+                "Blaze Rods",
+                WeightedOptionList(mutableListOf(
+                    itemList(availableItem().option, weight=3, conditions=condition("12eyes")),
+                    itemList(rawItem("blaze_rod", 1), weight=1, conditions=condition("12eyes")),
+                    itemList(rawItem("blaze_rod", 1), conditions=condition("11eyes")),
+                    itemList(rawItem("blaze_rod", 1), conditions=condition("10eyes")),
+                    itemList(rawItem("blaze_rod", 2), conditions=condition("8eyes")),
+                    itemList(rawItem("blaze_rod", 3), conditions=condition("6eyes")),
+                    itemList(rawItem("blaze_rod", 4), conditions=condition("4eyes")),
+                ))
+            ),
             RandomSlotOptionsSet(
                 "Explosives",
                 WeightedOptionList(mutableListOf(
@@ -314,8 +329,6 @@ object EndEnterHotbarUnsortedBarrel {
         WeightedOptionNoLinks(rawItem("golden_boots", 1)),
         WeightedOptionNoLinks(rawItem("leather", 64), 2),
         WeightedOptionNoLinks(rawItem("glowstone_dust", 3)),
-        WeightedOptionNoLinks(rawItem("cracked_stone_bricks", 1)),
-        WeightedOptionNoLinks(rawItem("mossy_stone_bricks", 1)),
         WeightedOptionNoLinks(rawItem("tnt", 1)),
         WeightedOptionNoLinks(rawItem("nether_brick", 3)),
         WeightedOptionNoLinks(rawItem("dirt", 4)),
@@ -327,30 +340,24 @@ object EndEnterHotbarUnsortedBarrel {
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 5, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.GOLDEN_CARROT), 1, _conditions= condition(
-            "nofood"
-        )
-        ),
-        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition(
-            "flesh"
-        )
-        ),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.DOWN_6_HUNGER), 1, _conditions= condition("nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.DOWN_6_HUNGER), 1, _conditions= condition("nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.DOWN_6_HUNGER), 1, _conditions= condition("nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
         WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("bread")),
         WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, _conditions= condition("pork")),
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(0, 2),
+        WeightedOption(0, 1),
         WeightedOption(30, 1),
         WeightedOption(60, 1),
         WeightedOption(90, 1),
+        WeightedOption(120, 2),
+        WeightedOption(150, 2),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread")
+    private val allRandomiserLinkLabels = hashSetOf("nofood", "flesh", "pork", "bread", "4eyes", "6eyes", "8eyes", "10eyes", "11eyes", "12eyes")
 
-    val barrel get() = BarrelItem("End Enter - Hotbar Unsorted", PracticeTypeOption.END_ENTER, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
+    val barrel get() = BarrelItem("Eye Spy - Precrafted", PracticeTypeOption.STRONGHOLD, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }
