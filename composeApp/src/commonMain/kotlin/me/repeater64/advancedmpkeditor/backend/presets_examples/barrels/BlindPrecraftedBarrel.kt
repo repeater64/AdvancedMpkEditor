@@ -97,8 +97,9 @@ object BlindPrecraftedBarrel {
             ),
             hotbarSlot(
                 6, optionList(
-                    item("fire_charge", 1, 23),
-                    item("fire_charge", 1, 17)
+                    item("obsidian", 1, 10),
+                    item("obsidian", 1, 11),
+                    item("obsidian", 1, 15)
                 )
             ),
             hotbarSlot(
@@ -119,14 +120,14 @@ object BlindPrecraftedBarrel {
             ),
         ),
         listOf(
-            invSlot(0, optionList(item("obsidian", amount = 10), item("obsidian", amount = 11), item("obsidian", amount = 14))),
+            invSlot(0, optionList(item("fire_charge", amount = 23), item("fire_charge", amount = 17))),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
-            invSlot(6, optionList(item("ender_pearl", amount = 5))),
-            invSlot(7, optionList(availableItem())),
+            invSlot(6, optionList(availableItem())),
+            invSlot(7, optionList(item("ender_pearl", amount = 5))),
             invSlot(8, optionList(availableItem())),
             invSlot(9, optionList(availableItem())),
             invSlot(10, optionList(availableItem())),
