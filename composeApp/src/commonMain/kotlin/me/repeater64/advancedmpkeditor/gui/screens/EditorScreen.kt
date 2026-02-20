@@ -127,7 +127,7 @@ fun EditorScreen(
                     trackEvent("download", "Download")
                 } catch (e: CircularConditionsException) {
                     isSaving = false
-                    showGeneralWarning("Circular randomiser link dependency! You've set up randomiser links that are impossible to resolve due to a circular dependency. This is caused by a situation like: One list has an option that triggers A, and an option that depends on B, and another list has an option that triggers B and an option that depends on A. The relevant condition labels in your circular dependency are: ${e.message}",
+                    showGeneralWarning("Circular randomiser link dependency! You've set up randomiser links that are impossible to resolve due to a circular dependency, in barrel: ${e.barrelName}. This is caused by a situation like: One list has an option that triggers A, and an option that depends on B, and another list has an option that triggers B and an option that depends on A. The relevant condition labels in your circular dependency are: ${e.problematicLabels}",
                         {}, true)
                 }
             },

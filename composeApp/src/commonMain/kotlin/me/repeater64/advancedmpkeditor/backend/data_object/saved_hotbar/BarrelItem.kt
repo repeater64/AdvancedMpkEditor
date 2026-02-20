@@ -102,7 +102,7 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()))
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()), name)
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")

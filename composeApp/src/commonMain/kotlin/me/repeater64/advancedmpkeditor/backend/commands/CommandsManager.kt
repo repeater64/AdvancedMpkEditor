@@ -13,7 +13,7 @@ object CommandsManager {
     fun unconditionalProcessedCommand(command: String): Triple<String, CommandObjectiveRange, Set<RandomiserCondition>> {
         return Triple(command, CommandObjectiveRange("guaranteed", 0..0, 1), emptySet())
     }
-    fun generateCommands(settings: AllCommandsSettings) : Triple<List<String>, List<String>, Int> { // Returns commands book pages, serialization book pages, numTopLeftInvSlotsToFillLikeHotbar
+    fun generateCommands(settings: AllCommandsSettings, barrelName: String) : Triple<List<String>, List<String>, Int> { // Returns commands book pages, serialization book pages, numTopLeftInvSlotsToFillLikeHotbar
 
         val randomisers = hashMapOf<String, Int>() // Map of randomiser identifier to total weight
         val unprocessedLabelsMap = hashMapOf<String, MutableList<Pair<CommandCondition, Set<RandomiserCondition>>>>() // Maps a label to all the states that would trigger it - each state is a pair of the processed condition so far, and a set of randomiserConditions that must also all be true
@@ -175,7 +175,7 @@ object CommandsManager {
             n++
             if (n > 50) {
                 // We almost certainly have circular condition dependencies.
-                throw CircularConditionsException(unprocessedLabelsMap.keys.joinToString(", "))
+                throw CircularConditionsException(barrelName, unprocessedLabelsMap.keys.joinToString(", "))
             }
         }
 
