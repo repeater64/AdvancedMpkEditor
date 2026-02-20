@@ -24,6 +24,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.Gamemode
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.PracticeTypeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionNoLinks
@@ -32,22 +33,26 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.hotbarSlot
+import me.repeater64.advancedmpkeditor.backend.presets_examples.invCondition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.invSlot
 import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
-// TODO set up fortress barrel
 object FortressBarrel {
     private val fixedSlotsData get() = FixedSlotsData(
         OffhandSlotData(
             optionList(
-                item("bread", 1, 10, label = "bread"),
-                item("cooked_porkchop", 1, 4, label = "pork"),
-                item("rotten_flesh", 1, 15, label = "flesh"),
-                item("golden_carrot", 1, 4, label = "gcarrot"),
-                item("cooked_salmon", 1, 3, label = "salmon"),
+                item("bread", 4, 14, label = "village"),
+                item("rotten_flesh", 4, 20, label = "desert_temple"),
+                item("cooked_salmon", 4, 3, label = "bt"),
+                item("bread", 3, 6, label = "shipwreck"),
+                item("golden_carrot", 1, 4, label = "shipwreck"),
+                item("cooked_porkchop", 1, 5, label = "rp"),
+                item("cooked_beef", 1, 5, label = "rp"),
+                item("cooked_mutton", 1, 6, label = "rp"),
+                emptyItem(1, label = "rp_nofood"),
             )
         ),
         listOf(
@@ -60,7 +65,6 @@ object FortressBarrel {
             hotbarSlot(
                 1, optionList(
                     item("iron_pickaxe", 8),
-                    item("golden_pickaxe", 2),
                     item("diamond_pickaxe", 1),
                 )
             ),
@@ -82,53 +86,50 @@ object FortressBarrel {
             ),
             hotbarSlot(
                 4, optionList(
+                    item("soul_sand", 1, 64),
+                    item("soul_sand", 1, 60),
                     item("soul_sand", 1, 55),
-                    item("soul_sand", 1, 47),
-                    item("soul_sand", 1, 33),
-                    item("soul_sand", 1, 28),
-                    item("soul_sand", 1, 19),
                 )
             ),
             hotbarSlot(
                 5, optionList(
-                    item("gravel", 1, 50),
-                    item("gravel", 1, 44),
-                    item("gravel", 1, 38),
-                    item("gravel", 1, 27),
+                    item("gravel", 1, 63),
+                    item("gravel", 1, 62),
+                    item("gravel", 1, 55),
+                    item("gravel", 1, 53),
                 )
             ),
             hotbarSlot(
                 6, optionList(
-                    item("fire_charge", 1, 23),
-                    item("fire_charge", 1, 17)
+                    item("obsidian", 1, 20),
+                    item("obsidian", 1, 21),
+                    item("obsidian", 1, 25),
                 )
             ),
             hotbarSlot(
                 7, optionList(
-                    item("ender_pearl", amount = 16)
+                    item("ender_pearl", amount = 14),
+                    item("ender_pearl", amount = 12),
+                    item("ender_pearl", amount = 9),
                 )
             ),
             hotbarSlot(
                 8, optionList(
-                    item("ender_eye", 1, 2),
-                    item("ender_eye", 1, 4),
-                    item("ender_eye", 1, 6),
-                    item("ender_eye", 1, 8),
-                    item("ender_eye", 1, 10),
-                    item("ender_eye", 1, 12),
-                    item("ender_eye", 1, 14),
+                    WeightedOption(FireResItem(), 1),
+                    WeightedOption(SplashFireResItem(), 2),
+                    emptyItem(2, label="fire_res_used")
                 )
             ),
         ),
         listOf(
-            invSlot(0, optionList(item("obsidian", amount = 10), item("obsidian", amount = 11), item("obsidian", amount = 14))),
+            invSlot(0, optionList(item("fire_charge", amount = 23), item("fire_charge", amount = 17))),
             invSlot(1, optionList(availableItem())),
             invSlot(2, optionList(availableItem())),
             invSlot(3, optionList(availableItem())),
             invSlot(4, optionList(availableItem())),
             invSlot(5, optionList(availableItem())),
             invSlot(6, optionList(availableItem())),
-            invSlot(7, optionList(item("ender_pearl", amount = 5))),
+            invSlot(7, optionList(item("ender_pearl", amount = 16))),
             invSlot(8, optionList(availableItem())),
             invSlot(9, optionList(availableItem())),
             invSlot(10, optionList(availableItem())),
@@ -187,6 +188,19 @@ object FortressBarrel {
 
     private val randomSlotsData get() = RandomSlotsData(
         listOf(
+            RandomSlotOptionsSet(
+                "Blaze Bed(s) / TNT",
+                WeightedOptionList(mutableListOf(
+                    itemList(rawItem("tnt", 5), conditions = condition("desert_temple")),
+
+                    itemList(rawItem("yellow_bed", 2), weight = 1, conditions = condition("village")),
+                    itemList(rawItem("yellow_bed"), rawItem("white_bed"), weight = 2, conditions = condition("village")),
+                    itemList(rawItem("white_bed", 2), weight = 2, conditions = condition("village")),
+
+                    itemList(rawItem("white_bed", 2), weight = 2, conditions = listOf(RandomiserCondition("village", true), RandomiserCondition("desert_temple", true))),
+                    itemList(rawItem("white_bed", 1), weight = 1, conditions = listOf(RandomiserCondition("village", true), RandomiserCondition("desert_temple", true))),
+                ))
+            ),
             RandomSlotOptionsSet(
                 "Explosive Ingredients",
                 WeightedOptionList(mutableListOf(
@@ -325,28 +339,39 @@ object FortressBarrel {
         )
     )
 
-    private val junkSettings get() = JunkSettings(false, true, listOf(
-        WeightedOptionNoLinks(DontReplaceMinecraftItem()),
+    private val junkSettings get() = JunkSettings(true, true, listOf(
+        WeightedOptionNoLinks(SplashFireResItem(), 1),
+        WeightedOptionNoLinks(FireResItem(), 1),
+        WeightedOptionNoLinks(rawItem("iron_ingot", 4)),
+        WeightedOptionNoLinks(rawItem("iron_nugget", 40)),
+        WeightedOptionNoLinks(rawItem("golden_boots", 1)),
+        WeightedOptionNoLinks(rawItem("leather", 64), 2),
+        WeightedOptionNoLinks(rawItem("nether_brick", 3)),
+        WeightedOptionNoLinks(rawItem("dirt", 4)),
+        WeightedOptionNoLinks(EnchantedBootsItem(true, 1)),
+        WeightedOptionNoLinks(SoulSpeedBookItem(1)),
+        WeightedOptionNoLinks(rawItem("polished_blackstone_bricks", 3), 1),
+        WeightedOptionNoLinks(rawItem("basalt", 2), 1),
     ))
 
     private val healthHungerSettings get() = HealthHungerSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("flesh")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BREAD), 1, _conditions= condition("bread")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.BEEF), 1, _conditions= condition("pork")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.MUTTON), 1, _conditions= condition("salmon")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_3_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
-        WeightedOption(HealthHungerOption(HealthOption.DOWN_6_HEARTS, HungerOption.GOLDEN_CARROT), 1, _conditions= condition("gcarrot")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.HUNGER_RESET), 1, _conditions= condition("rp_nofood")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BEEF), 1, _conditions= condition("rp")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("village")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.MUTTON), 1, _conditions= condition("bt")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.BREAD), 1, _conditions= condition("shipwreck")),
+        WeightedOption(HealthHungerOption(HealthOption.FULL_HEALTH, HungerOption.ROTTEN_FLESH), 1, _conditions= condition("desert_temple")),
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(0, 1),
+        WeightedOption(0, 1, _conditions = condition("fire_res_used")),
+        WeightedOption(160, 2, _conditions = invCondition("fire_res_used")),
+        WeightedOption(140, 2, _conditions = invCondition("fire_res_used")),
+        WeightedOption(120, 2, _conditions = invCondition("fire_res_used")),
+        WeightedOption(80, 1, _conditions = invCondition("fire_res_used")),
     )))
 
-    private val allRandomiserLinkLabels = hashSetOf("gcarrot", "flesh", "pork", "bread", "salmon")
+    private val allRandomiserLinkLabels = hashSetOf("rp", "rp_nofood", "desert_temple", "shipwreck", "bt", "village", "fire_res_used")
 
     val barrel get() = BarrelItem("Fortress", PracticeTypeOption.FORTRESS, GamemodeOption.SURVIVAL, DifficultyOption.EASY, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
 }
