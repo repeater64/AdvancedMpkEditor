@@ -81,6 +81,7 @@ fun JunkPopup(
         },
         leftColumnContent = { weightedOption ->
             SimpleSingleItemChooser(weightedOption, null)
-        }
+        },
+        canDuplicateRows = false
     )
 }

@@ -47,6 +47,11 @@ class WeightedOption<T>(
         return WeightedOption(this.option, newWeight, this.label, this.conditions)
     }
 
+    fun deepCopy(): WeightedOption<T> {
+        // Rather than implementing a proper deep copy which would require changes to many classes, just serialize + deserialize. This isn't efficient but this doesn't particularly need to be, it's ok if we freeze the GUI for a moment when someone duplicates a row
+        return deserializeFromPages(serializeToPages(this as WeightedOption<Any>)) as WeightedOption<T>
+    }
+
     companion object : BookSerializable<WeightedOption<Any>> {
         override val className: String = "WeightedOption"
 

@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,6 +34,7 @@ import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.RandomiserLinkRemovableChip
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.RandomiserLinksPopup
+import kotlin.Boolean
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +60,8 @@ fun <T> WeightedOptionListPopup(
     width: Int = 500,
 
     hasRandomiserLinks: Boolean = true,
-    showAvailableForRandomItemsIfApplicable: Boolean = false
+    showAvailableForRandomItemsIfApplicable: Boolean = false,
+    canDuplicateRows: Boolean = true
 ) {
 
     fun closePopup() {
@@ -102,6 +106,7 @@ fun <T> WeightedOptionListPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(Modifier.width(24.dp)) // To make up for the "delete" buttons in every row
+                    if (canDuplicateRows) Spacer(Modifier.width(24.dp)) // To make up for the "duplicate" button in every row
                     Box(modifier = Modifier.weight(col1Weight), contentAlignment = Alignment.Center) {
                         Text(
                             text = firstColumnHeading,
@@ -135,6 +140,7 @@ fun <T> WeightedOptionListPopup(
                         val option = options[index]
                         WeightedOptionRow(
                             option = option,
+                            indexInList = index,
                             leftColumnContent = leftColumnContent,
                             wholeList = options,
                             allLabels = allLabels,
@@ -156,6 +162,7 @@ fun <T> WeightedOptionListPopup(
                             },
                             hasRandomiserLinks = hasRandomiserLinks,
                             showAvailableForRandomItemsIfApplicable = showAvailableForRandomItemsIfApplicable,
+                            canDuplicateRows = canDuplicateRows,
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     }
@@ -231,6 +238,7 @@ fun <T> WeightedOptionListPopup(
 @Composable
 fun <T> WeightedOptionRow(
     option: WeightedOptionEitherType<T>,
+    indexInList: Int,
     leftColumnContent: @Composable BoxScope.(WeightedOptionEitherType<T>) -> Unit,
     wholeList: SnapshotStateList<WeightedOptionEitherType<T>>,
     allLabels: MutableSet<String>,
@@ -240,7 +248,8 @@ fun <T> WeightedOptionRow(
     col3Weight: Float,
     onDelete: () -> Unit,
     hasRandomiserLinks: Boolean,
-    showAvailableForRandomItemsIfApplicable: Boolean
+    showAvailableForRandomItemsIfApplicable: Boolean,
+    canDuplicateRows: Boolean
 ) {
 
     // Check if this is a "available for random items" slot
@@ -262,6 +271,20 @@ fun <T> WeightedOptionRow(
     ) {
         // Delete icon
         DeleteIconAndTooltip(onDelete)
+
+        if (canDuplicateRows) {
+            // Duplicate icon
+            SmallIconAndTooltip(
+                onClick = {
+                    if (option is WeightedOption<*>) { // Should be true, as we should only set canDuplicateRows to be true on lists that use a real WeightedOption
+                        val newOption = option.deepCopy()
+                        wholeList.add(indexInList, newOption as WeightedOption<T>)
+                    }
+                },
+                tooltipText = "Duplicate Row",
+                icon = Icons.Default.ContentCopy
+            )
+        }
 
         // Item column
         Box(modifier = Modifier.weight(col1Weight), contentAlignment = Alignment.Center) {
