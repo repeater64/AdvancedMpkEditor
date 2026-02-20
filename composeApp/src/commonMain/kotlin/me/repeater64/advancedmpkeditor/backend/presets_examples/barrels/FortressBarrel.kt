@@ -364,11 +364,11 @@ object FortressBarrel {
     )))
 
     private val fireResSettings get() = FireResSettings(WeightedOptionList(mutableListOf(
-        WeightedOption(0, 1, _conditions = condition("fire_res_used")),
-        WeightedOption(160, 2, _conditions = invCondition("fire_res_used")),
-        WeightedOption(140, 2, _conditions = invCondition("fire_res_used")),
-        WeightedOption(120, 2, _conditions = invCondition("fire_res_used")),
-        WeightedOption(80, 1, _conditions = invCondition("fire_res_used")),
+        WeightedOption(0, 1, _conditions = invCondition("fire_res_used")),
+        WeightedOption(160, 2, _conditions = condition("fire_res_used")),
+        WeightedOption(140, 2, _conditions = condition("fire_res_used")),
+        WeightedOption(120, 2, _conditions = condition("fire_res_used")),
+        WeightedOption(80, 1, _conditions = condition("fire_res_used")),
     )))
 
     private val allRandomiserLinkLabels = hashSetOf("rp", "rp_nofood", "desert_temple", "shipwreck", "bt", "village", "fire_res_used")
