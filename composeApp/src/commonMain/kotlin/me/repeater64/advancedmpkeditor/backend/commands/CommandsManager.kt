@@ -17,49 +17,13 @@ object CommandsManager {
 
         val randomisers = hashMapOf<String, Int>() // Map of randomiser identifier to total weight
         val unprocessedLabelsMap = hashMapOf<String, MutableList<Pair<CommandCondition, Set<RandomiserCondition>>>>() // Maps a label to all the states that would trigger it - each state is a pair of the processed condition so far, and a set of randomiserConditions that must also all be true
+
+        val processedRandomSlotsCommands = mutableListOf<Triple<String, CommandObjectiveRange, Set<RandomiserCondition>>>()
         val processedCommands = mutableListOf<Triple<String, CommandObjectiveRange, Set<RandomiserCondition>>>()
-        val processedCommandsAtEnd = mutableListOf<Triple<String, CommandObjectiveRange, Set<RandomiserCondition>>>() // Same as above but will be executed after all the processedCommands
+
         var currentRandomiserIndex = 0
 
-
-        // FIXED SLOTS (not incl floating inv slots)
-        val fixedSlotsData = settings.fixedSlotsData
-        for (fixedSlotData in fixedSlotsData.getAllSlotsExceptFloatingInvSlots()) {
-            currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
-                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
-                "Warning - fixed slot data with no item options ($fixedSlotData)",
-                randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
-        }
-
-        // FLOATING INV SLOTS
-        var tempItemIndex = 0
-        var topLeftInvPosition = 0
-        for (fixedSlotData in fixedSlotsData.getFloatingInvSlots()) {
-
-            while (topLeftInvPosition in fixedSlotsData.getNonFloatingInvSlotInventoryPositions()) {
-                topLeftInvPosition++
-            }
-
-            // This bit is pretty weird. The way we handle this, broadly speaking, is to move the (random) item currently in the target slot to the top left of the inventory,
-            // where it will be replacing a barrier (put there by HotbarFillingChest). Then we can safely /replaceitem the target slot with the wanted item.
-            // The way we actually do this is to spawn an item at the player's location, modify its data so that it's a copy of the item in the target slot, then
-            // clear the top left slot that we want to put it in, so that it gets picked up by the player the next tick in that slot. (we can also /replaceitem the target slot as soon as we've copied the data away)
-
-            // These first 3 commands will be the same regardless of which option is chosen, can add them as unconditional commands
-            processedCommandsAtEnd.add(unconditionalProcessedCommand("execute at @p run summon item ~ ~ ~ {Tags:[\"temp_item${tempItemIndex}\"],Item:{id:\"minecraft:stone\",Count:1b},PickupDelay:0s}"))
-            processedCommandsAtEnd.add(unconditionalProcessedCommand("execute at @p run data modify entity @e[type=item,tag=temp_item${tempItemIndex},limit=1,sort=nearest] Item set from entity @p Inventory[{Slot:${fixedSlotData.inventoryPosition+9}b}]"))
-            processedCommandsAtEnd.add(unconditionalProcessedCommand("replaceitem entity @p container.${topLeftInvPosition+9} minecraft:air"))
-            tempItemIndex++
-
-            currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
-                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
-                "Warning - fixed slot data with no item options ($fixedSlotData)",
-                randomisers, unprocessedLabelsMap, processedCommandsAtEnd, currentRandomiserIndex) // Note we pass in processedCommandsAtEnd instead of processedCommands so we get these executing at the end
-
-            topLeftInvPosition++
-        }
-
-        // RANDOM SLOTS
+        // RANDOM SLOTS (these commands will go at very start)
         val randomSlotsData = settings.randomSlotsData
 
         var removedBedrockIndex = 0
@@ -95,12 +59,22 @@ object CommandsManager {
                     return@handleWeightedList commands
                 } ,
                 "Warning - random slot set with no item options ($randomSlotOptionsSet)",
-                randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+                randomisers, unprocessedLabelsMap, processedRandomSlotsCommands, currentRandomiserIndex)
 
             removedBedrockIndex += maxStacks
         }
 
-        // HEALTH+HUNGER
+
+        // FIXED SLOTS (not incl floating inv slots) (These commands will go in the main middle section)
+        val fixedSlotsData = settings.fixedSlotsData
+        for (fixedSlotData in fixedSlotsData.getAllSlotsExceptFloatingInvSlots()) {
+            currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
+                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
+                "Warning - fixed slot data with no item options ($fixedSlotData)",
+                randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+        }
+
+        // HEALTH+HUNGER (These commands will go in the main middle section)
         val healthHungerSettings = settings.healthHungerSettings
         processedCommands.add(unconditionalProcessedCommand("scoreboard objectives add extradmg dummy"))
         processedCommands.add(unconditionalProcessedCommand("scoreboard players set @p extradmg 0"))
@@ -108,15 +82,43 @@ object CommandsManager {
             {it.option.healthOption.commands + it.option.hungerOption.commands},
             "Warning - Health hunger options has no options set", randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
 
-        // FIRE RES
+        // FIRE RES (These commands will go in the main middle section)
         val fireResSettings = settings.fireResSettings
         currentRandomiserIndex = handleWeightedList(fireResSettings.options,
             {if (it.option > 0) listOf("effect give @p fire_resistance ${it.option} 0") else emptyList()},
             "Warning - Fire res settings has no options set", randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
 
+        // FLOATING INV SLOTS (These commands will go at the end of the main middle section)
+        var tempItemIndex = 0
+        var topLeftInvPosition = 0
+        for (fixedSlotData in fixedSlotsData.getFloatingInvSlots()) {
 
-        val commands = mutableListOf<String>()
-        val commandsAtEnd = mutableListOf<String>()
+            while (topLeftInvPosition in fixedSlotsData.getNonFloatingInvSlotInventoryPositions()) {
+                topLeftInvPosition++
+            }
+
+            // This bit is pretty weird. The way we handle this, broadly speaking, is to move the (random) item currently in the target slot to the top left of the inventory,
+            // where it will be replacing a barrier (put there by HotbarFillingChest). Then we can safely /replaceitem the target slot with the wanted item.
+            // The way we actually do this is to spawn an item at the player's location, modify its data so that it's a copy of the item in the target slot, then
+            // clear the top left slot that we want to put it in, so that it gets picked up by the player the next tick in that slot. (we can also /replaceitem the target slot as soon as we've copied the data away)
+
+            // These first 3 commands will be the same regardless of which option is chosen, can add them as unconditional commands
+            processedCommands.add(unconditionalProcessedCommand("execute at @p run summon item ~ ~ ~ {Tags:[\"temp_item${tempItemIndex}\"],Item:{id:\"minecraft:stone\",Count:1b},PickupDelay:0s}"))
+            processedCommands.add(unconditionalProcessedCommand("execute at @p run data modify entity @e[type=item,tag=temp_item${tempItemIndex},limit=1,sort=nearest] Item set from entity @p Inventory[{Slot:${fixedSlotData.inventoryPosition+9}b}]"))
+            processedCommands.add(unconditionalProcessedCommand("replaceitem entity @p container.${topLeftInvPosition+9} minecraft:air"))
+            tempItemIndex++
+
+            currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
+                { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
+                "Warning - fixed slot data with no item options ($fixedSlotData)",
+                randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+
+            topLeftInvPosition++
+        }
+
+
+        val randomSlotCommands = mutableListOf<String>()
+        val mainCommands = mutableListOf<String>()
 
         // Attempt to process unprocessedLabelsMap
         val processedLabelsMap = hashMapOf<String, CommandCondition>() // Maps a randomiser label to the full condition
@@ -181,10 +183,10 @@ object CommandsManager {
         // Add all commands
         var addedBedrockIndex = 27
         val actuallyUsedRandomisers: MutableSet<String> = hashSetOf() // Set of randomiser objectives
-        for ((index, triple) in (processedCommands + processedCommandsAtEnd).withIndex()) {
+        for ((index, triple) in (processedRandomSlotsCommands + processedCommands).withIndex()) {
             val (command, objectiveRange, conditionSet) = triple
-            val atEnd = index >= processedCommands.size
-            val commandsListToAddTo = if (atEnd) commandsAtEnd else commands
+            val mainSection = index >= processedRandomSlotsCommands.size
+            val commandsListToAddTo = if (mainSection) mainCommands else randomSlotCommands
 
             if (command.endsWith("intentionally_invalid_command")) {
                 // This command won't do anything, skip it
@@ -226,47 +228,48 @@ object CommandsManager {
         }
 
         // JUNK
+        val junkCommands = mutableListOf<String>()
         val junkSettings = settings.junkSettings
         if (junkSettings.enableJunk) {
             val actualJunkList = junkSettings.getActualJunkList()
             // Create scoreboard objective to store clear command result
-            commands.add("scoreboard objectives add clear dummy")
+            junkCommands.add("scoreboard objectives add clear dummy")
 
             var i = 0
             for (bedrockIndex in 0..addedBedrockIndex) {
                 val junkItem = actualJunkList[i % actualJunkList.size]
 
-                commands.add("execute store result score @p clear run clear @p minecraft:bedrock{a:$bedrockIndex}")
-                commands.addAll(junkItem.getGiveCommands(if (junkSettings.makeJunkNonStackable) i else null).map { "execute unless score @p clear matches 0 run $it" })
+                junkCommands.add("execute store result score @p clear run clear @p minecraft:bedrock{a:$bedrockIndex}")
+                junkCommands.addAll(junkItem.getGiveCommands(if (junkSettings.makeJunkNonStackable) i else null).map { "execute unless score @p clear matches 0 run $it" })
 
                 i++
             }
         }
 
 
-        var commandsAtStart = mutableListOf<String>()
-        commandsAtStart.add("tellraw @p [{\"text\":\"MPK Setup Created With \",\"color\":\"aqua\"},{\"text\":\"repeater64.github.io/AdvancedMpkEditor\",\"bold\":true,\"color\":\"dark_aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://repeater64.github.io/AdvancedMpkEditor/\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Click to open editor website!\"}}]")
+        val initialSetupCommands = mutableListOf<String>()
+        initialSetupCommands.add("tellraw @p [{\"text\":\"MPK Setup Created With \",\"color\":\"aqua\"},{\"text\":\"repeater64.github.io/AdvancedMpkEditor\",\"bold\":true,\"color\":\"dark_aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://repeater64.github.io/AdvancedMpkEditor/\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Click to open editor website!\"}}]")
 
         // Potential stronghold portal flag
-        commandsAtStart.add("scoreboard objectives add shportal dummy")
+        initialSetupCommands.add("scoreboard objectives add shportal dummy")
         if (settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD) {
-            commandsAtStart.add("scoreboard players set @p shportal 1")
+            initialSetupCommands.add("scoreboard players set @p shportal 1")
         } else {
-            commandsAtStart.add("scoreboard players set @p shportal 0")
+            initialSetupCommands.add("scoreboard players set @p shportal 0")
         }
 
         // Generate randomiser commands
         for (randomiserIdentifier in actuallyUsedRandomisers) {
             val totalWeight = randomisers[randomiserIdentifier]!!
             if (totalWeight == 1) continue // Not needed
-            commandsAtStart.add("scoreboard objectives add $randomiserIdentifier dummy")
-            commandsAtStart.add("scoreboard players set !m $randomiserIdentifier $totalWeight")
-            commandsAtStart.add("execute store result score @p $randomiserIdentifier run data get entity @e[limit=1,sort=random] UUID[0]")
-            commandsAtStart.add("scoreboard players operation @p $randomiserIdentifier %= !m $randomiserIdentifier")
+            initialSetupCommands.add("scoreboard objectives add $randomiserIdentifier dummy")
+            initialSetupCommands.add("scoreboard players set !m $randomiserIdentifier $totalWeight")
+            initialSetupCommands.add("execute store result score @p $randomiserIdentifier run data get entity @e[limit=1,sort=random] UUID[0]")
+            initialSetupCommands.add("scoreboard players operation @p $randomiserIdentifier %= !m $randomiserIdentifier")
         }
 
 
-        return Triple((commandsAtStart + commands + commandsAtEnd), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
+        return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
     }
 
     private fun <T> handleWeightedList(options: WeightedOptionList<T>, commandsGetter: (WeightedOption<T>) -> List<String>, ifEmptyMessage: String,

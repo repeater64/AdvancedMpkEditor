@@ -109,8 +109,6 @@ instant damage 1 0 - down 3 hearts
 instant damage 1 1 - down 6 hearts
 
 
-TODO make fixed slot items go in after random slot items (and even after junk?)
-
 
 Processing command conditions plan:
 
