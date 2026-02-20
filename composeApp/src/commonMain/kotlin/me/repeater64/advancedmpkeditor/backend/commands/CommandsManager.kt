@@ -77,7 +77,7 @@ object CommandsManager {
                     for (item in itemsList) {
                         val stacks = item.numStacks
                         totalActualStacks += stacks
-                        for (i in 0 until stacks) {
+                        repeat(stacks) {
                             commands.add("clear @p minecraft:bedrock{a:$bedrockIndex}")
                             bedrockIndex++
                         }

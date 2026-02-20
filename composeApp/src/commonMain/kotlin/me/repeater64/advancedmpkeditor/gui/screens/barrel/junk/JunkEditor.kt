@@ -48,14 +48,30 @@ fun ColumnScope.JunkEditor(
     Text("Junk Settings", style = MaterialTheme.typography.headlineLarge)
     Spacer(Modifier.height(15.dp))
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = junkSettings.enableJunk,
-            onCheckedChange = {junkSettings.enableJunk = it},
-            modifier = Modifier.size(20.dp),
-        )
-        Spacer(Modifier.width(6.dp))
-        Text("Fill Inventory With Junk Items", style = MaterialTheme.typography.titleMedium)
+    val tooltipState0 = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(modifier=Modifier.width(350.dp)) { Text(text = "If enabled, any spare spots in your inventory (not including ones that are set to be forced empty slots) will be filled with junk items from the junk list below. Tip - If you want to have junk, but still have some random empty slots, add a \"Forced Empty Slot\" item to the junk list. You can increase its weight to increase the average number of empty slots you'll have.") }
+        },
+        state = tooltipState0,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = junkSettings.enableJunk,
+                onCheckedChange = { junkSettings.enableJunk = it },
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text("Fill Inventory With Junk Items", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Hover for Info",
+                tint = if (junkSettings.enableJunk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha=0.38f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 
     Spacer(Modifier.height(15.dp))
@@ -64,7 +80,7 @@ fun ColumnScope.JunkEditor(
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
-            PlainTooltip { Text(text = "If enabled, junk items will be given dummy NBT data to make them not able to stack with other item stacks. This is recommended, as it means your inventory will always get actually filled even if the same junk item is chosen twice. However, depending on how you like to sort your inventory and if you ever use any junk items for search crafting, you may want to disable this option.") }
+            PlainTooltip(modifier=Modifier.width(350.dp)) { Text(text = "If enabled, junk items will be given dummy NBT data to make them not able to stack with other item stacks. This is recommended, as it means your inventory will always get actually filled even if the same junk item is chosen twice. However, depending on how you like to sort your inventory and if you ever use any junk items for search crafting, you may want to disable this option.") }
         },
         state = tooltipState1,
     ) {

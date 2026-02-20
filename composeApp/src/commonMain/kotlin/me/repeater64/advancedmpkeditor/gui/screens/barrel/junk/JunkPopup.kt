@@ -8,7 +8,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.junk.JunkSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
@@ -43,9 +43,9 @@ fun JunkPopup(
         },
         firstColumnHeading = "Item",
         typeOfThing = "item",
-        toAddWhenOnlyOptionRemoved = { WeightedOptionNoLinks(DontReplaceMinecraftItem(true)) },
+        toAddWhenOnlyOptionRemoved = { WeightedOptionNoLinks(ForcedEmptyMinecraftItem()) },
         addNewRowClicked = {
-            junkSettings.junkList.add(WeightedOptionNoLinks(DontReplaceMinecraftItem(true)))
+            junkSettings.junkList.add(WeightedOptionNoLinks(ForcedEmptyMinecraftItem()))
         },
         showAddPresetButton = { true },
         addPresetText = "Add Items from Preset",
@@ -60,7 +60,7 @@ fun JunkPopup(
                         ).ContentsOnly()
                     },
                     onClick = {
-                        if (junkSettings.junkList.size == 1 && junkSettings.junkList[0].option is DontReplaceMinecraftItem) {
+                        if (junkSettings.junkList.size == 1 && junkSettings.junkList[0].option is ForcedEmptyMinecraftItem) {
                             junkSettings.junkList.clear()
                         }
                         junkSettings.junkList.addAll(preset.optionsGetter())
@@ -72,7 +72,7 @@ fun JunkPopup(
             Button(
                 onClick = {
                     junkSettings.junkList.clear()
-                    junkSettings.junkList.add(WeightedOptionNoLinks(DontReplaceMinecraftItem()))
+                    junkSettings.junkList.add(WeightedOptionNoLinks(ForcedEmptyMinecraftItem()))
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
@@ -80,7 +80,7 @@ fun JunkPopup(
             }
         },
         leftColumnContent = { weightedOption ->
-            SimpleSingleItemChooser(weightedOption, null) { null }
+            SimpleSingleItemChooser(weightedOption, null)
         }
     )
 }

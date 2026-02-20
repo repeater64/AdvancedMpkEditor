@@ -108,8 +108,6 @@ sat 1 4      - 15 sat   (golden carrot)
 instant damage 1 0 - down 3 hearts
 instant damage 1 1 - down 6 hearts
 
-TODO shuffle items in random set
-TODO can put forced empty item in junk list. Put some in presets. Add a hint about using this
 
 
 Processing command conditions plan:

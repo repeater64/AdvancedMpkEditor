@@ -41,13 +41,9 @@ fun mapIntToAlpha(n: Int): String {
     var num = n
 
     do {
-        // Get the remainder to find the current character (0=a, 1=b...)
         val remainder = num % 26
         result.append('a' + remainder)
 
-        // Move to the next "digit"
-        // We subtract 1 for subsequent digits because 'aa' represents 26,
-        // effectively shifting the logic for multi-character strings.
         num = (num / 26) - 1
     } while (num >= 0)
 
