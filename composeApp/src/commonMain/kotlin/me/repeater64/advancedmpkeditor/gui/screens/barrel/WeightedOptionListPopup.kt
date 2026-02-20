@@ -363,7 +363,7 @@ fun <T> WeightedOptionRow(
                                 Spacer(Modifier.width(10.dp))
                                 SmallIconAndTooltip(
                                     onClick = { showPopup = true },
-                                    tooltipText = "Click to Add Condition",
+                                    tooltipText = "Click to Add Randomiser Link",
                                     icon = Icons.Default.Add
                                 )
                             }
@@ -372,7 +372,7 @@ fun <T> WeightedOptionRow(
                     if (!onlyOne) {
                         SmallIconAndTooltip(
                             onClick = { showPopup = true },
-                            tooltipText = "Click to Add Condition",
+                            tooltipText = "Click to Add Randomiser Link",
                             icon = Icons.Default.Add
                         )
                     }
