@@ -28,6 +28,7 @@ Detailed instructions on how to use it are provided on the website itself!
 - Fill inventory with junk - for mid/endgame splits, you can have empty spots in your inventory filled with random configurable junk items.
 - Easily add fire resistance potion effect, and can randomise the duration
 - Health + hunger settings - can adjust starting health, hunger and saturation
+- Jump to enter end mode - if you like, rather than being teleported to the end straight away, you can jump to enter.
 - Linked randomisers - you can link the results of any one random choice to others. See below for the kind of things this makes possible
 
 ### Examples of what can be done with this website
