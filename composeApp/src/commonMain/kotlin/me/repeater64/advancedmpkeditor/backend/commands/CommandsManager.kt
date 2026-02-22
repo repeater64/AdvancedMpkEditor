@@ -339,6 +339,10 @@ object CommandsManager {
             finalCommands.add("execute if score @p numtnt matches 10.. run say TNT: 10+")
         }
 
+        if (settings.practiceTypeOption == PracticeTypeOption.END_ENTER_MANUAL) {
+            finalCommands.add("execute at @a run setblock ~ ~2 ~ end_portal")
+        }
+
         return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands + finalCommands), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
     }
 

@@ -334,31 +334,33 @@ class BarrelItem(
                                                     barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet("Random Piglin Barters", WeightedOptionList(mutableListOf(WeightedOption(listOf(RandomBarterItem(amount)).toMutableStateList())))))
                                                 }
                                             }
+                                        }
+                                    }
+                                }
+                            }
 
-                                            // Check actual book contents to see if it sets offhand item
-                                            if (innerTag.containsKey("pages")) {
-                                                val pagesTag = innerTag["pages"]
-                                                if (pagesTag is NbtList<*>) {
-                                                    for (pageTag in pagesTag) {
-                                                        if (pageTag is NbtString) {
-                                                            val cmd = pageTag.value
-                                                            if (cmd.contains("replaceitem entity") && cmd.contains("weapon.offhand ")) {
-                                                                // We appear to be setting offhand item
-                                                                val endBit = cmd.split("weapon.offhand ")[1]
-                                                                val split = endBit.split(" ")
-                                                                if (split.size != 0) {
-                                                                    val id = split[0].removePrefix("minecraft:")
-                                                                    val amount = if (split.size > 1) split[1].toIntOrNull() ?: 0 else 0
+                            // Check actual book contents to see if it sets offhand item
+                            if (innerTag.containsKey("pages")) {
+                                val pagesTag = innerTag["pages"]
+                                if (pagesTag is NbtList<*>) {
+                                    for (pageTag in pagesTag) {
+                                        if (pageTag is NbtString) {
+                                            val cmd = pageTag.value
+                                            if (cmd.contains("replaceitem entity") && cmd.contains("weapon.offhand ")) {
+                                                // We appear to be setting offhand item
+                                                val endBit = cmd.split("weapon.offhand ")[1]
+                                                val split = endBit.split(" ")
+                                                if (split.size != 0) {
+                                                    val id = split[0].removePrefix("minecraft:")
+                                                    val amount = if (split.size > 1) split[1].toIntOrNull() ?: 0 else 0
 
-                                                                    if (!foundAnyOffhandItems) {
-                                                                        barrel.fixedSlotsData.offhandSlotData.itemOptions.options.clear()
-                                                                    }
-                                                                    barrel.fixedSlotsData.offhandSlotData.itemOptions.options.add(WeightedOption(SimpleMinecraftItem(id, amount)))
-                                                                }
-                                                            }
-                                                        }
+                                                    if (!foundAnyOffhandItems) {
+                                                        barrel.fixedSlotsData.offhandSlotData.itemOptions.options.clear()
                                                     }
+                                                    barrel.fixedSlotsData.offhandSlotData.itemOptions.options.add(WeightedOption(SimpleMinecraftItem(id, amount)))
                                                 }
+                                            } else if (cmd.endsWith("run setblock ~ ~2 ~ end_portal") || cmd.endsWith("run setblock ~ ~2 ~ minecraft:end_portal")) {
+                                                practiceTypeOption = PracticeTypeOption.END_ENTER_MANUAL
                                             }
                                         }
                                     }
@@ -523,7 +525,7 @@ class BarrelItem(
                         is SoulSpeedBookItem -> true
                         is EnchantedBootsItem -> true
                         is LootingSwordItem -> false
-                        is FireResItem, is SplashFireResItem -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD || practiceType == PracticeTypeOption.STRONGHOLD_NO_PORTAL
+                        is FireResItem, is SplashFireResItem -> practiceType.isStrongholdOrLater
                         is SimpleMinecraftItem -> {
                             if (item.id.endsWith("_sapling")) return true
                             if (item.id.endsWith("_door")) return true // Junk by these later splits
@@ -542,7 +544,7 @@ class BarrelItem(
                                 "tnt" -> practiceType.isBlindOrLater
                                 "nether_brick_fence" -> true
                                 "bone" -> true
-                                "iron_ingot", "gold_ingot", "diamond" -> practiceType == PracticeTypeOption.END_ENTER || practiceType == PracticeTypeOption.STRONGHOLD || practiceType == PracticeTypeOption.STRONGHOLD_NO_PORTAL
+                                "iron_ingot", "gold_ingot", "diamond" -> practiceType.isStrongholdOrLater
                                 "emerald" -> true
                                 "basalt" -> true
                                 else -> false
