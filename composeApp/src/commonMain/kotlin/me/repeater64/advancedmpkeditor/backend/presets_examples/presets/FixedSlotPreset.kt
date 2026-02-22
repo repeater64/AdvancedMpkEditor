@@ -4,8 +4,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsIt
 import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCategory
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.condition
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
@@ -15,6 +17,16 @@ enum class FixedSlotPreset(
     val optionsGetter: () -> WeightedOptionList<MinecraftItem>,
     val onlyIfOneCategory: MinecraftItemCategory? = null
 ) {
+    RANDOM_FOOD( "Random Food", {
+        optionList(
+            item("bread", 2, 15),
+            item("cooked_porkchop", 1, 6),
+            item("cooked_mutton", 1, 7),
+            item("golden_carrot", 1, 8),
+            item("cooked_salmon", 2, 4),
+            item("rotten_flesh", 2, 35),
+        )
+    }),
     RANDOM_BOAT( "Random Boat", {
         optionList(
             item("oak_boat", 12),

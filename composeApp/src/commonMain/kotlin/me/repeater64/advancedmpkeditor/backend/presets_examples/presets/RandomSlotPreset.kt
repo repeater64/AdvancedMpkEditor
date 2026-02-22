@@ -5,7 +5,9 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.LootingSwordItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
+import me.repeater64.advancedmpkeditor.backend.presets_examples.item
 import me.repeater64.advancedmpkeditor.backend.presets_examples.itemList
+import me.repeater64.advancedmpkeditor.backend.presets_examples.optionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.rawItem
 
 enum class RandomSlotPreset(
@@ -125,6 +127,17 @@ enum class RandomSlotPreset(
             itemList(rawItem("bucket"), weight = 1),
             itemList(rawItem("water_bucket"), weight = 1),
             itemList(availableItem().option, weight = 2)
+        ))
+    }),
+
+    RANDOM_FOOD("Random Food", rawItem("bread"), {
+        WeightedOptionList(mutableListOf(
+            itemList(rawItem("bread", 15), weight= 2),
+            itemList(rawItem("cooked_porkchop", 6), weight=1),
+            itemList(rawItem("cooked_mutton", 7), weight=1),
+            itemList(rawItem("golden_carrot", 8), weight=1),
+            itemList(rawItem("cooked_salmon", 4), weight=2),
+            itemList(rawItem("rotten_flesh", 35), weight=2),
         ))
     }),
 
