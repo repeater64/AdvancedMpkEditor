@@ -34,13 +34,21 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.commands.CircularConditionsException
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
+import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SimpleMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.AirItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelItem
 import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.CommandBlockItem
@@ -53,6 +61,7 @@ import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftItemIcon
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.SimpleDropdown
+import me.repeater64.advancedmpkeditor.gui.component.dragAutoScroll
 import me.repeater64.advancedmpkeditor.gui.component.verticalColumnScrollbar
 import me.repeater64.advancedmpkeditor.gui.platform.HotbarNbtFileManager
 import me.repeater64.advancedmpkeditor.gui.platform.PreventAppExit
@@ -181,226 +190,343 @@ fun EditorScreen(
 
         topPanel()
 
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalColumnScrollbar(scrollState).verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        // DragDropContainer for fixed + random slots, indexed by 0-8 is hotbar, 9+ is inv, 36 is offhand, 37+ is random slot itemsets, -1 is the "add new random options set" button
+        DragDropContainer(contentAlignment = Alignment.Center,
+            onSwap = { srcKey, destKey ->
+                val currentlyEditingItem = currentlyEditingItem()
+                if (currentlyEditingItem !is BarrelItem) return@DragDropContainer
+                val fixedSlotsData = currentlyEditingItem.fixedSlotsData
+                val randomSlotsData = currentlyEditingItem.randomSlotsData
 
-            // Hotbar items selector
-            DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
-                onSwap = { srcKey, destKey ->
-                    val hotbar = hotbars.hotbars[selectedHotbarIndex]
-                    val srcData = hotbar.hotbarItems[srcKey]
-                    hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
-                    hotbar.hotbarItems[destKey] = srcData
+                fun isFixedSlotKey(key: Int) = key != -1 && key <= 36
 
-                    if (currentlyEditingItemIndex == srcKey && srcData is BarrelItem) {
-                        // We moved the currently editing barrel to destKey. Follow it
-                        currentlyEditingItemIndex = destKey
-                    } else if (currentlyEditingItemIndex == destKey && hotbar.hotbarItems[srcKey] is BarrelItem) {
-                        // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
-                        currentlyEditingItemIndex = srcKey
+                if (isFixedSlotKey(srcKey) && isFixedSlotKey(destKey)) {
+                    // This is a swap between two fixed slots
+
+                    val srcSlot = if (srcKey == 36) fixedSlotsData.offhandSlotData else if (srcKey < 9) fixedSlotsData.hotbarSlotsData[srcKey] else fixedSlotsData.inventorySlotsData[srcKey - 9]
+                    val destSlot = if (destKey == 36) fixedSlotsData.offhandSlotData else if (destKey < 9) fixedSlotsData.hotbarSlotsData[destKey] else fixedSlotsData.inventorySlotsData[destKey - 9]
+
+                    var srcItems = srcSlot.itemOptions
+                    var destItems = destSlot.itemOptions
+
+                    if (srcSlot is InventorySlotData && destSlot !is InventorySlotData && srcItems.options.size == 1 && srcItems.options[0].option is DontReplaceMinecraftItem) {
+                        // Moving an "available for random items" slot out of the inventory, convert it to forced empty slot
+                        srcItems = WeightedOptionList(mutableListOf(WeightedOption(ForcedEmptyMinecraftItem(), 1)))
+                    } else if (destSlot is InventorySlotData && srcSlot !is InventorySlotData && destItems.options.size == 1 && destItems.options[0].option is DontReplaceMinecraftItem) {
+                        // Same story
+                        destItems = WeightedOptionList(mutableListOf(WeightedOption(ForcedEmptyMinecraftItem(), 1)))
                     }
-                },
-                emptyChecker = {hotbars.hotbars[selectedHotbarIndex].hotbarItems[it] is AirItem}
+
+                    srcSlot.itemOptions = destItems
+                    destSlot.itemOptions = srcItems
+                } else if (!isFixedSlotKey(srcKey) && !isFixedSlotKey(destKey)) {
+                    // Swap between two random slots
+                    val srcIndex = srcKey - 37
+                    val destIndex = destKey - 37
+
+                    val srcOptionset = randomSlotsData.optionsSets[srcIndex]
+
+                    if (destIndex < 0) {
+                        // We're trying to drag it to the bottom of the list
+                        randomSlotsData.optionsSets.removeAt(srcIndex)
+                        randomSlotsData.optionsSets.add(srcOptionset)
+                    } else {
+                        // It's a normal swap
+                        randomSlotsData.optionsSets[srcIndex] = randomSlotsData.optionsSets[destIndex]
+                        randomSlotsData.optionsSets[destIndex] = srcOptionset
+                    } // srcIndex being negative shouldn't be possible as that slot is marked as always empty, so dragging from it is not allowed
+                } else {
+                    // Swap between fixed and random slot
+                    val fixedSlotKey = if (isFixedSlotKey(srcKey)) srcKey else destKey
+                    val randomIndex = if (isFixedSlotKey(srcKey)) destKey-37 else srcKey-37
+
+                    var randomOptionsSet = if (randomIndex >= 0) randomSlotsData.optionsSets[randomIndex] else null
+                    val fixedSlot = if (fixedSlotKey == 36) fixedSlotsData.offhandSlotData else if (fixedSlotKey < 9) fixedSlotsData.hotbarSlotsData[fixedSlotKey] else fixedSlotsData.inventorySlotsData[fixedSlotKey - 9]
+
+                    // Check the random options set doesn't have more than one stack for any option
+                    if (randomOptionsSet != null && !randomOptionsSet.canAlwaysFitInOneSlot()) {
+                        if (isFixedSlotKey(srcKey)) {
+                            // We dragged from a fixed slot onto an invalid random slot. Interpret this as wanting to just insert the fixed slot data into the random slot list, but not swap
+                            randomOptionsSet = null
+                        } else {
+                            showGeneralWarning("Can't perform this swap because the random slot itemset \"${randomOptionsSet.setName}\" has options that take up more than one stack, so they can't fit in a single slot!", {}, true)
+                            return@DragDropContainer
+                        }
+                    }
+
+                    // Build the random slot options set from the fixed slots data, mapping ForcedEmptyMinecraftItem into dont replace
+                    val newRandomSlotOptionsSet = RandomSlotOptionsSet("TODO", WeightedOptionList(fixedSlot.itemOptions.options.map { weightedOption -> WeightedOption(listOf(weightedOption.option.let { if (it is ForcedEmptyMinecraftItem) DontReplaceMinecraftItem() else it }).toMutableStateList()) }.toMutableList()))
+                    newRandomSlotOptionsSet.nameSelf()
+
+                    // Build fixed slot item list from random slots data, mapping DontReplaceMinecraftItems into forced empty
+                    val newFixedItems = if (randomOptionsSet == null) {
+                        if (fixedSlot is InventorySlotData) {
+                            WeightedOptionList(mutableListOf(WeightedOption(DontReplaceMinecraftItem() as MinecraftItem)))
+                        } else {
+                            WeightedOptionList(mutableListOf(WeightedOption(ForcedEmptyMinecraftItem() as MinecraftItem)))
+                        }
+                    } else {
+                        WeightedOptionList(randomOptionsSet.options.options.map { weightedOption -> WeightedOption(weightedOption.option.first().let { if (it is DontReplaceMinecraftItem) ForcedEmptyMinecraftItem() else it }, weightedOption.weight, weightedOption.label, weightedOption.conditions) }.toMutableList())
+                    }
+
+                    // Check if the fixed slot was just empty
+                    if (fixedSlot.itemOptions.options.size == 1 && (fixedSlot.itemOptions.options[0].option is DontReplaceMinecraftItem || fixedSlot.itemOptions.options[0].option is ForcedEmptyMinecraftItem)) {
+                        // If so, just remove the random options set, unless the random set was also nothing then do nothing
+                        if (randomOptionsSet == null) return@DragDropContainer
+                        randomSlotsData.optionsSets.removeAt(randomIndex)
+                    } else {
+                        // Otherwise, proper swap
+                        if (randomIndex >= 0 && randomOptionsSet != null) {
+                            randomSlotsData.optionsSets[randomIndex] = newRandomSlotOptionsSet
+                        } else if (randomIndex >= 0) {
+                            // (Or insert)
+                            randomSlotsData.optionsSets.add(randomIndex+1, newRandomSlotOptionsSet)
+                        } else {
+                            // (or in this case add to the end)
+                            randomSlotsData.optionsSets.add(newRandomSlotOptionsSet)
+                        }
+                    }
+
+                    fixedSlot.itemOptions = newFixedItems
+                }
+
+            },
+            emptyChecker = { key ->
+                if (key == -1) return@DragDropContainer true
+                val currentlyEditingItem = currentlyEditingItem()
+                if (currentlyEditingItem !is BarrelItem) return@DragDropContainer false
+                if (key <= 36) {
+                    val fixedSlotsData = currentlyEditingItem.fixedSlotsData
+                    val slot =
+                        if (key == 36) fixedSlotsData.offhandSlotData else if (key < 9) fixedSlotsData.hotbarSlotsData[key] else fixedSlotsData.inventorySlotsData[key - 9]
+
+                    (slot is InventorySlotData && slot.itemOptions.options.size == 1 && slot.itemOptions.options[0].option is DontReplaceMinecraftItem)
+                } else {
+                    false
+                }
+            }
+        ) {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalColumnScrollbar(scrollState).verticalScroll(scrollState).dragAutoScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row {
-                    val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex].hotbarItems
-                    for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
-                        var dropdownExpanded by remember {mutableStateOf(false)}
 
-                        val onLeftClick = {
-                            if (savedHotbarItem is AirItem) { // Open dropdown with add barrel/add cmd block options
-                                dropdownExpanded = true
-                            } else if (savedHotbarItem is BarrelItem) {
-                                currentlyEditingItemIndex = i
-                            }
+                // Hotbar items selector
+                DragDropContainer(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center,
+                    onSwap = { srcKey, destKey ->
+                        val hotbar = hotbars.hotbars[selectedHotbarIndex]
+                        val srcData = hotbar.hotbarItems[srcKey]
+                        hotbar.hotbarItems[srcKey] = hotbar.hotbarItems[destKey]
+                        hotbar.hotbarItems[destKey] = srcData
+
+                        if (currentlyEditingItemIndex == srcKey && srcData is BarrelItem) {
+                            // We moved the currently editing barrel to destKey. Follow it
+                            currentlyEditingItemIndex = destKey
+                        } else if (currentlyEditingItemIndex == destKey && hotbar.hotbarItems[srcKey] is BarrelItem) {
+                            // We moved something else into the currently editing slot, so the barrel we were editing has moved to srcKey. Follow it
+                            currentlyEditingItemIndex = srcKey
                         }
-                        val onRightClick = {
-                            if (savedHotbarItem !is AirItem) {
-                                val deleteAction = {
-                                    selectedHotbarItems[i] = AirItem()
+                    },
+                    emptyChecker = {hotbars.hotbars[selectedHotbarIndex].hotbarItems[it] is AirItem}
+                ) {
+                    Row {
+                        val selectedHotbarItems = hotbars.hotbars[selectedHotbarIndex].hotbarItems
+                        for ((i, savedHotbarItem) in selectedHotbarItems.withIndex()) {
+                            var dropdownExpanded by remember {mutableStateOf(false)}
 
-                                    if (currentlyEditingItemIndex == i) {
-                                        currentlyEditingItemIndex = -1
-                                    }
-                                }
-                                if (savedHotbarItem is BarrelItem) {
-                                    showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
-                                } else {
-                                    deleteAction()
-                                }
-                            }
-                        }
-                        val onMiddleClick = {
-                            if (savedHotbarItem is BarrelItem) {
-                                // Look for blank slot to put it
-                                var targetIndex = -1
-                                for ((index, item) in selectedHotbarItems.withIndex()) {
-                                    if (item is AirItem) {
-                                        targetIndex = index
-                                        break
-                                    }
-                                }
-
-                                if (targetIndex == -1) {
-                                    // Couldn't find - pop up error
-                                    showGeneralWarning("There isn't an empty slot in this hotbar to duplicate this barrel into! Please clear out a slot.", {}, true)
-                                } else {
-                                    selectedHotbarItems[targetIndex] = savedHotbarItem.deepCopy()
+                            val onLeftClick = {
+                                if (savedHotbarItem is AirItem) { // Open dropdown with add barrel/add cmd block options
+                                    dropdownExpanded = true
+                                } else if (savedHotbarItem is BarrelItem) {
+                                    currentlyEditingItemIndex = i
                                 }
                             }
-                        }
+                            val onRightClick = {
+                                if (savedHotbarItem !is AirItem) {
+                                    val deleteAction = {
+                                        selectedHotbarItems[i] = AirItem()
 
-                        val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 80,
-                            tooltipContents = {
-                                Column {
-                                    Text(savedHotbarItem.getGuiName(), style = MaterialTheme.typography.titleSmallEmphasized, fontWeight = FontWeight.Bold)
-                                    Spacer(Modifier.height(5.dp))
-                                    when (savedHotbarItem) {
-                                        is AirItem -> Text("Click to add item", style = MaterialTheme.typography.bodyMedium)
-                                        is BarrelItem -> Text("Left Click to edit, Right Click to delete, Middle Click to duplicate", style = MaterialTheme.typography.bodyMedium)
-                                        is CommandBlockItem -> Text("Right Click to delete", style = MaterialTheme.typography.bodyMedium)
-                                    }
-                                    if (savedHotbarItem !is AirItem) {
-                                        Spacer(Modifier.height(5.dp))
-                                        Text("Click and drag to swap hotbar slots", style = MaterialTheme.typography.bodyMedium)
-                                    }
-                                }
-                            },
-                            highlighted = currentlyEditingItemIndex == i,
-                            modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
-                                .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
-                                .onClick(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onClick = onMiddleClick)
-                        )
-
-                        Spacer(Modifier.width(2.dp))
-                        Box(contentAlignment = Alignment.Center) {
-                            DragSwappable(
-                                key = i,
-                                ghostContent = { slotDisplay.ContentsOnly() },
-                                content = { isDragging -> slotDisplay.SlotDisplay(!isDragging) }
-                            )
-                            DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
-                                var subDropdownOpen by remember {mutableStateOf(false)}
-                                DropdownMenuItem(
-                                    text = { Text("Add Blank Configuration Barrel") },
-                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
-                                    onClick = {
-                                        // Add barrel to i slot
-                                        selectedHotbarItems[i] = BlankBarrel.barrel
-                                        dropdownExpanded = false
-                                        currentlyEditingItemIndex = i
-                                    }
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                DropdownMenuItem(
-                                    text = { Text("Add Configuration Barrel from Preset") },
-                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
-                                    onClick = {
-                                        // Open sub dropdown with presets
-                                        subDropdownOpen = true
-                                    },
-                                    trailingIcon = {
-                                        DropdownMenu(subDropdownOpen, onDismissRequest = { subDropdownOpen = false}) {
-                                            for (preset in BarrelPreset.entries) {
-                                                DropdownMenuItem(
-                                                    text = { Text(preset.displayName) },
-                                                    onClick = {
-                                                        // Add barrel to i slot
-                                                        selectedHotbarItems[i] = preset.barrelGetter()
-                                                        subDropdownOpen = false
-                                                        dropdownExpanded = false
-                                                        currentlyEditingItemIndex = i
-                                                    }
-                                                )
-                                            }
+                                        if (currentlyEditingItemIndex == i) {
+                                            currentlyEditingItemIndex = -1
                                         }
                                     }
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                DropdownMenuItem(
-                                    text = { Text("Add MPK Command Block") },
-                                    leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1), modifier=Modifier.size(50.dp)) },
-                                    onClick = {
-                                        // Add cmd block to i slot
-                                        selectedHotbarItems[i] = CommandBlockItem()
-                                        dropdownExpanded = false
+                                    if (savedHotbarItem is BarrelItem) {
+                                        showGeneralWarning("Are you sure you want to delete the entire configuration barrel \"${savedHotbarItem.name}\"? This can't be undone!", deleteAction)
+                                    } else {
+                                        deleteAction()
                                     }
-                                )
+                                }
                             }
+                            val onMiddleClick = {
+                                if (savedHotbarItem is BarrelItem) {
+                                    // Look for blank slot to put it
+                                    var targetIndex = -1
+                                    for ((index, item) in selectedHotbarItems.withIndex()) {
+                                        if (item is AirItem) {
+                                            targetIndex = index
+                                            break
+                                        }
+                                    }
+
+                                    if (targetIndex == -1) {
+                                        // Couldn't find - pop up error
+                                        showGeneralWarning("There isn't an empty slot in this hotbar to duplicate this barrel into! Please clear out a slot.", {}, true)
+                                    } else {
+                                        selectedHotbarItems[targetIndex] = savedHotbarItem.deepCopy()
+                                    }
+                                }
+                            }
+
+                            val slotDisplay = MinecraftSlotDisplay(savedHotbarItem.getGuiRepresentationItem(), 80,
+                                tooltipContents = {
+                                    Column {
+                                        Text(savedHotbarItem.getGuiName(), style = MaterialTheme.typography.titleSmallEmphasized, fontWeight = FontWeight.Bold)
+                                        Spacer(Modifier.height(5.dp))
+                                        when (savedHotbarItem) {
+                                            is AirItem -> Text("Click to add item", style = MaterialTheme.typography.bodyMedium)
+                                            is BarrelItem -> Text("Left Click to edit, Right Click to delete, Middle Click to duplicate", style = MaterialTheme.typography.bodyMedium)
+                                            is CommandBlockItem -> Text("Right Click to delete", style = MaterialTheme.typography.bodyMedium)
+                                        }
+                                        if (savedHotbarItem !is AirItem) {
+                                            Spacer(Modifier.height(5.dp))
+                                            Text("Click and drag to swap hotbar slots", style = MaterialTheme.typography.bodyMedium)
+                                        }
+                                    }
+                                },
+                                highlighted = currentlyEditingItemIndex == i,
+                                modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = onLeftClick)
+                                    .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = onRightClick)
+                                    .onClick(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onClick = onMiddleClick)
+                            )
+
+                            Spacer(Modifier.width(2.dp))
+                            Box(contentAlignment = Alignment.Center) {
+                                DragSwappable(
+                                    key = i,
+                                    ghostContent = { slotDisplay.ContentsOnly() },
+                                    content = { isDragging, isHovered -> slotDisplay.SlotDisplay(!isDragging, isHovered) }
+                                )
+                                DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                                    var subDropdownOpen by remember {mutableStateOf(false)}
+                                    DropdownMenuItem(
+                                        text = { Text("Add Blank Configuration Barrel") },
+                                        leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
+                                        onClick = {
+                                            // Add barrel to i slot
+                                            selectedHotbarItems[i] = BlankBarrel.barrel
+                                            dropdownExpanded = false
+                                            currentlyEditingItemIndex = i
+                                        }
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    DropdownMenuItem(
+                                        text = { Text("Add Configuration Barrel from Preset") },
+                                        leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("barrel", 1), modifier=Modifier.size(50.dp)) },
+                                        onClick = {
+                                            // Open sub dropdown with presets
+                                            subDropdownOpen = true
+                                        },
+                                        trailingIcon = {
+                                            DropdownMenu(subDropdownOpen, onDismissRequest = { subDropdownOpen = false}) {
+                                                for (preset in BarrelPreset.entries) {
+                                                    DropdownMenuItem(
+                                                        text = { Text(preset.displayName) },
+                                                        onClick = {
+                                                            // Add barrel to i slot
+                                                            selectedHotbarItems[i] = preset.barrelGetter()
+                                                            subDropdownOpen = false
+                                                            dropdownExpanded = false
+                                                            currentlyEditingItemIndex = i
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    DropdownMenuItem(
+                                        text = { Text("Add MPK Command Block") },
+                                        leadingIcon = { MinecraftItemIcon(SimpleMinecraftItem("repeating_command_block", 1), modifier=Modifier.size(50.dp)) },
+                                        onClick = {
+                                            // Add cmd block to i slot
+                                            selectedHotbarItems[i] = CommandBlockItem()
+                                            dropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(2.dp))
                         }
-                        Spacer(Modifier.width(2.dp))
                     }
                 }
+
+                Spacer(Modifier.height(12.dp))
+
+                // Barrel editor, or text telling you to select a barrel
+                key(currentlyEditingItemIndex) { Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    val currentlyEditingItem = currentlyEditingItem()
+                    if (currentlyEditingItem !is BarrelItem) {
+                        Spacer(Modifier.height(100.dp))
+                        Text(
+                            text = "Click on a barrel (or add one) to edit its configuration!",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                    else {
+                        BarrelEditor(
+                            barrelItem = currentlyEditingItem,
+                            showDialogCallback = { dialog ->
+                                showEditorDialog = true
+                                editorDialog = dialog
+                            },
+                            hideDialogCallback = {showEditorDialog = false}
+                        )
+                    }
+                }}
+
+                Spacer(Modifier.weight(1f)) // Push save button to bottom
+                Spacer(Modifier.height(24.dp)) // A bit of space even if no spare room to push save button all the way to bottom
+
+
+                Row {
+                    Spacer(Modifier.weight(1f))
+                    saveButton()
+                    Spacer(Modifier.width(50.dp))
+                }
+
+                Spacer(Modifier.height(24.dp))
             }
 
-            Spacer(Modifier.height(12.dp))
-
-            // Barrel editor, or text telling you to select a barrel
-            key(currentlyEditingItemIndex) { Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                val currentlyEditingItem = currentlyEditingItem()
-                if (currentlyEditingItem !is BarrelItem) {
-                    Spacer(Modifier.height(100.dp))
-                    Text(
-                        text = "Click on a barrel (or add one) to edit its configuration!",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-                else {
-                    BarrelEditor(
-                        barrelItem = currentlyEditingItem,
-                        showDialogCallback = { dialog ->
-                            showEditorDialog = true
-                            editorDialog = dialog
-                        },
-                        hideDialogCallback = {showEditorDialog = false}
-                    )
-                }
-            }}
-
-            Spacer(Modifier.weight(1f)) // Push save button to bottom
-            Spacer(Modifier.height(24.dp)) // A bit of space even if no spare room to push save button all the way to bottom
-
-
-            Row {
-                Spacer(Modifier.weight(1f))
-                saveButton()
-                Spacer(Modifier.width(50.dp))
+            if (showUnsavedDialog) {
+                UnsavedChangesDialog(
+                    onConfirmExit = {
+                        showUnsavedDialog = false
+                        onConfirmNavigation(pendingNavigationRequest!!)
+                    },
+                    onDismiss = {
+                        showUnsavedDialog = false
+                        onCancelNavigation() // Tell parent to clear the request
+                    }
+                )
+            } else if (showGeneralWarningDialog) {
+                GeneralWarningDialog(
+                    warningText = generalWarningDialogText,
+                    onProceed = {
+                        showGeneralWarningDialog = false
+                        generalWarningProceedAction()
+                    },
+                    onDismiss = {
+                        showGeneralWarningDialog = false
+                    },
+                    isError = generalWarningIsError
+                )
+            } else if (showEditorDialog) {
+                editorDialog()
             }
-
-            Spacer(Modifier.height(24.dp))
-        }
-
-        if (showUnsavedDialog) {
-            UnsavedChangesDialog(
-                onConfirmExit = {
-                    showUnsavedDialog = false
-                    onConfirmNavigation(pendingNavigationRequest!!)
-                },
-                onDismiss = {
-                    showUnsavedDialog = false
-                    onCancelNavigation() // Tell parent to clear the request
-                }
-            )
-        } else if (showGeneralWarningDialog) {
-            GeneralWarningDialog(
-                warningText = generalWarningDialogText,
-                onProceed = {
-                    showGeneralWarningDialog = false
-                    generalWarningProceedAction()
-                },
-                onDismiss = {
-                    showGeneralWarningDialog = false
-                },
-                isError = generalWarningIsError
-            )
-        } else if (showEditorDialog) {
-            editorDialog()
         }
     }
 }

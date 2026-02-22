@@ -1,5 +1,6 @@
 package me.repeater64.advancedmpkeditor.gui.screens.barrel.random_slot
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -37,7 +38,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlo
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.gui.component.DragSwappable
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMulti
+import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplayMultiImpl
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -51,8 +55,8 @@ fun ColumnScope.RandomSlotsEditor(
     Spacer(Modifier.height(15.dp))
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        for (optionSet in randomSlotsData.optionsSets) {
-            RandomSlotsRow(randomSlotsData, optionSet, allLabels, showDialogCallback, hideDialogCallback)
+        for ((index, optionSet) in randomSlotsData.optionsSets.withIndex()) {
+            RandomSlotsRow(randomSlotsData, index+37, optionSet, allLabels, showDialogCallback, hideDialogCallback)
         }
 
         // Add new
@@ -64,28 +68,33 @@ fun ColumnScope.RandomSlotsEditor(
             },
             state = tooltipState,
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .padding(horizontal = 50.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = (-30).dp,
-                shadowElevation = 4.dp,
-                onClick = {
-                    val newOptionsSet = RandomSlotOptionsSet("Unnamed", WeightedOptionList(mutableListOf(WeightedOption(listOf(DontReplaceMinecraftItem(true)).toMutableStateList()))))
-                    randomSlotsData.optionsSets.add(newOptionsSet)
-                    showDialogCallback { RandomSlotPopup(newOptionsSet, allLabels, hideDialogCallback, deleteCallback = {randomSlotsData.optionsSets.remove(newOptionsSet)}) }
-                },
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(60.dp)
-                    )
+            DragSwappable(key = -1,
+                accountForOffset = false,
+                ghostContent = {}) { _, isHovered ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(horizontal = 50.dp, vertical = 8.dp),
+                    border = if (isHovered) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = (-30).dp,
+                    shadowElevation = 4.dp,
+                    onClick = {
+                        val newOptionsSet = RandomSlotOptionsSet("Unnamed", WeightedOptionList(mutableListOf(WeightedOption(listOf(DontReplaceMinecraftItem(true)).toMutableStateList()))))
+                        randomSlotsData.optionsSets.add(newOptionsSet)
+                        showDialogCallback { RandomSlotPopup(newOptionsSet, allLabels, hideDialogCallback, deleteCallback = {randomSlotsData.optionsSets.remove(newOptionsSet)}) }
+                    },
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(60.dp)
+                        )
+                    }
                 }
             }
         }
@@ -96,6 +105,7 @@ fun ColumnScope.RandomSlotsEditor(
 @Composable
 fun ColumnScope.RandomSlotsRow(
     data: RandomSlotsData,
+    dragSwappableKey: Int,
     optionsSet: RandomSlotOptionsSet,
     allLabels: MutableSet<String>,
     showDialogCallback: (@Composable () -> Any) -> Any,
@@ -105,58 +115,75 @@ fun ColumnScope.RandomSlotsRow(
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
-            PlainTooltip() { Text(text = "Click to edit!") }
+            PlainTooltip() { Text(text = if (optionsSet.canAlwaysFitInOneSlot()) "Click to edit!\n\nDrag to reorder, or swap with an inventory/hotbar slot!" else "Click to edit!\n\nDrag to reorder!") }
         },
         state = tooltipState,
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .padding(horizontal = 50.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = (-30).dp,
-            shadowElevation = 4.dp,
-            onClick = {
-                showDialogCallback { RandomSlotPopup(optionsSet, allLabels, hideDialogCallback, deleteCallback = {data.optionsSets.remove(optionsSet)}) }
-            },
-        ) {
-            Column(horizontalAlignment = Alignment.Start) {
-                Text(optionsSet.setName, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(start=20.dp, top=5.dp))
+        DragSwappable(key = dragSwappableKey,
+            accountForOffset = false,
+            ghostContent = {
+                MinecraftSlotDisplayMultiImpl(optionsSet.options.options.flatMap { it.option }, 75).ContentsOnly()
+            }) { _, isHovered ->
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .padding(horizontal = 50.dp, vertical = 8.dp),
+                border = if (isHovered) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = (-30).dp,
+                shadowElevation = 4.dp,
+                onClick = {
+                    showDialogCallback {
+                        RandomSlotPopup(
+                            optionsSet,
+                            allLabels,
+                            hideDialogCallback,
+                            deleteCallback = { data.optionsSets.remove(optionsSet) })
+                    }
+                },
+            ) {
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        optionsSet.setName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(start = 20.dp, top = 5.dp)
+                    )
 
 
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    val availableWidth = maxWidth.value
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        val availableWidth = maxWidth.value
 
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        var widthSoFar = 0.0f
-                        for ((index, option) in optionsSet.options.options.withIndex()) {
-                            widthSoFar+=50 // For padding + or text
-                            widthSoFar+= 50*(option.option.size) // For items
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            var widthSoFar = 0.0f
+                            for ((index, option) in optionsSet.options.options.withIndex()) {
+                                widthSoFar += 50 // For padding + or text
+                                widthSoFar += 50 * (option.option.size) // For items
 
-                            if (widthSoFar > availableWidth-20) {
-                                Text(" ...", style = MaterialTheme.typography.bodyLarge)
-                                return@Row
-                            } else {
-                                Surface(
-                                    modifier = Modifier
-                                        .padding(horizontal = 15.dp),
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    tonalElevation = 20.dp,
-                                    shadowElevation = 6.dp,
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        for (item in option.option) {
-                                            MinecraftSlotDisplay(item, 50).ContentsOnly()
+                                if (widthSoFar > availableWidth - 20) {
+                                    Text(" ...", style = MaterialTheme.typography.bodyLarge)
+                                    return@Row
+                                } else {
+                                    Surface(
+                                        modifier = Modifier
+                                            .padding(horizontal = 15.dp),
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = MaterialTheme.colorScheme.surface,
+                                        tonalElevation = 20.dp,
+                                        shadowElevation = 6.dp,
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            for (item in option.option) {
+                                                MinecraftSlotDisplay(item, 50).ContentsOnly()
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            if (index != optionsSet.options.options.size-1) {
-                                Text("or", style = MaterialTheme.typography.bodyLarge)
+                                if (index != optionsSet.options.options.size - 1) {
+                                    Text("or", style = MaterialTheme.typography.bodyLarge)
+                                }
                             }
                         }
                     }

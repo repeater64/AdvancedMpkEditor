@@ -65,11 +65,11 @@ open class MinecraftSlotDisplayMultiImpl(val itemOptions: List<MinecraftItem>,
                                      val displayDontReplaceAsAir: Boolean = false
 ) {
     @Composable
-    fun SlotDisplay(showContents: Boolean = true) {
+    fun SlotDisplay(showContents: Boolean = true, highlightedOverride: Boolean = false) {
         Surface(
             modifier = modifier.size(size.dp),
             shape = RoundedCornerShape((size / 6.0f).dp),
-            border = if (highlighted) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null
+            border = if (highlightedOverride || highlighted) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null
         ) {
             val tooltipState = rememberTooltipState()
 

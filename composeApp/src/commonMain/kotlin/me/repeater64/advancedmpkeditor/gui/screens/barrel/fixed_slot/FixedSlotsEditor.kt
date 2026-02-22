@@ -58,33 +58,7 @@ fun ColumnScope.FixedSlotsEditor(
         Spacer(Modifier.height(15.dp))
 
         // Inventory and hotbar and offhand
-        // For the DragDropContainer, indexed by 0-8 is hotbar, 9+ is inv, 36 is offhand
-        DragDropContainer(contentAlignment = Alignment.Center,
-            onSwap = { srcKey, destKey ->
-                val srcSlot = if (srcKey == 36) fixedSlotsData.offhandSlotData else if (srcKey < 9) fixedSlotsData.hotbarSlotsData[srcKey] else fixedSlotsData.inventorySlotsData[srcKey-9]
-                val destSlot = if (destKey == 36) fixedSlotsData.offhandSlotData else if (destKey < 9) fixedSlotsData.hotbarSlotsData[destKey] else fixedSlotsData.inventorySlotsData[destKey-9]
-
-                var srcItems = srcSlot.itemOptions
-                var destItems = destSlot.itemOptions
-
-                if (srcSlot is InventorySlotData && destSlot !is InventorySlotData && srcItems.options.size == 1 && srcItems.options[0].option is DontReplaceMinecraftItem) {
-                    // Moving an "available for random items" slot out of the inventory, convert it to forced empty slot
-                    srcItems = WeightedOptionList(mutableListOf(WeightedOption(ForcedEmptyMinecraftItem(), 1)))
-                } else if (destSlot is InventorySlotData && srcSlot !is InventorySlotData && destItems.options.size == 1 && destItems.options[0].option is DontReplaceMinecraftItem) {
-                    // Same story
-                    destItems = WeightedOptionList(mutableListOf(WeightedOption(ForcedEmptyMinecraftItem(), 1)))
-                }
-
-                srcSlot.itemOptions = destItems
-                destSlot.itemOptions = srcItems
-
-            },
-            emptyChecker = { key ->
-                val slot = if (key == 36) fixedSlotsData.offhandSlotData else if (key < 9) fixedSlotsData.hotbarSlotsData[key] else fixedSlotsData.inventorySlotsData[key-9]
-
-                (slot is InventorySlotData && slot.itemOptions.options.size == 1 && slot.itemOptions.options[0].option is DontReplaceMinecraftItem)
-            }
-        ) {Column{
+        Column{
             for (row in 0 until 3) {
                 Row {
                     Spacer(Modifier.width((SLOT_SIZE + 10).dp)) // To make up for the offhand slot
@@ -123,7 +97,7 @@ fun ColumnScope.FixedSlotsEditor(
                 }
                 Spacer(Modifier.width((SLOT_SIZE + 10).dp)) // Equivalent to the offhand slot again, to force the centering we want
             }
-        }}
+        }
     }
     }
 }
@@ -143,7 +117,7 @@ fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<Str
     DragSwappable(
         key = dragSwappableKey,
         ghostContent = { minecraftSlotDisplay.ContentsOnly() },
-        content = { isDragging -> minecraftSlotDisplay.SlotDisplay(!isDragging) }
+        content = { isDragging, isHovered -> minecraftSlotDisplay.SlotDisplay(!isDragging, isHovered) }
     )
 }
 
