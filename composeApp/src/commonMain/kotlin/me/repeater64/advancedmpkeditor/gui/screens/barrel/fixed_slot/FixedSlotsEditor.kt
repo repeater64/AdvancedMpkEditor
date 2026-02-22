@@ -1,6 +1,7 @@
 package me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
@@ -108,10 +110,24 @@ fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<Str
     val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
         options = slotData.itemOptions,
         size = SLOT_SIZE,
-        modifier = Modifier.onClick(onClick = {
+        modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = {
             showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback) }
+        }).onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = {
+            if (slotData is InventorySlotData) {
+                slotData.itemOptions.options.clear()
+                slotData.itemOptions.options.add(WeightedOption(DontReplaceMinecraftItem()))
+            }
         }),
-        displayDontReplaceAsAir = true
+        displayDontReplaceAsAir = true,
+        tooltipContents = if (slotData is InventorySlotData && !slotData.isAvailableForRandomItems()) {
+            {Column{Text("Left click to edit items", style = MaterialTheme.typography.bodyMedium);Spacer(Modifier.height(2.dp));Text("Right click to clear slot", style = MaterialTheme.typography.bodyMedium);Spacer(Modifier.height(2.dp));Text("Left click and drag to swap slots", style = MaterialTheme.typography.bodyMedium)}}
+        } else {
+            if (slotData is InventorySlotData) { // This is an inv slot but empty
+                {Column{Text("Click to add items", style = MaterialTheme.typography.bodyMedium)}}
+            } else {
+                {Column{Text("Click to edit items", style = MaterialTheme.typography.bodyMedium);Spacer(Modifier.height(2.dp));Text("Click and drag to swap slots", style = MaterialTheme.typography.bodyMedium)}}
+            }
+        }
     )
 
     DragSwappable(
