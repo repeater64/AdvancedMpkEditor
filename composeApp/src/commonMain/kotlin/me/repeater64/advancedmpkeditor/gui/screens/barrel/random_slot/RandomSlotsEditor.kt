@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +55,34 @@ fun ColumnScope.RandomSlotsEditor(
     hideDialogCallback: () -> Unit
 ) {
     Text("Random Slot Items", style = MaterialTheme.typography.headlineLarge)
+    Spacer(Modifier.height(15.dp))
+
+    val tooltipState0 = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(modifier=Modifier.width(350.dp)) { Text(text = "If enabled, the number of crafted beds+anchors that you have will be announced in chat at the start. This also includes TNT, so for fortress practice you can use it to see if you have a single/double blaze bed or TNT.") }
+        },
+        state = tooltipState0,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = randomSlotsData.announceExplosives,
+                onCheckedChange = { randomSlotsData.announceExplosives = it },
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text("Announce Explosives Count", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Hover for Info",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+
     Spacer(Modifier.height(15.dp))
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {

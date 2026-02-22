@@ -12,7 +12,6 @@ import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EndEnter
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EyeSpyNotPrecraftedBarrel
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.EyeSpyPrecraftedBarrel
 import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.FortressBarrel
-import me.repeater64.advancedmpkeditor.backend.presets_examples.barrels.MyEndEnterBarrel
 
 object DefaultHotbars {
     val exampleTemplate

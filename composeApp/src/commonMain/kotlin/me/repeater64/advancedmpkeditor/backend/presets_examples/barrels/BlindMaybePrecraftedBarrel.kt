@@ -180,7 +180,7 @@ object BlindMaybePrecraftedBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(
+    private val randomSlotsData get() = RandomSlotsData(true,
         listOf(
             RandomSlotOptionsSet(
                 "Explosives Or Explosive Ingredients",

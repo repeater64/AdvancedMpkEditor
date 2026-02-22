@@ -179,7 +179,7 @@ object EndEnterHotbarUnsortedBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(
+    private val randomSlotsData get() = RandomSlotsData(true,
         listOf(
             RandomSlotOptionsSet(
                 "Explosives",

@@ -186,7 +186,7 @@ object FortressBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(
+    private val randomSlotsData get() = RandomSlotsData(false,
         listOf(
             RandomSlotOptionsSet(
                 "Blaze Bed(s) / TNT",

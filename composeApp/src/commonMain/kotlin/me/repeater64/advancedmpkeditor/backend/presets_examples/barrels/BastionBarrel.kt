@@ -180,7 +180,7 @@ object BastionBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(emptyList())
+    private val randomSlotsData get() = RandomSlotsData(false, emptyList())
 
     private val junkSettings get() = JunkSettings(false, true, listOf(
         WeightedOptionNoLinks(DontReplaceMinecraftItem()),
