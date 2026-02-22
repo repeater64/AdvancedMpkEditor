@@ -282,10 +282,18 @@ object CommandsManager {
 
         // Potential stronghold portal flag
         initialSetupCommands.add("scoreboard objectives add shportal dummy")
-        if (settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD) {
+        if (settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD || settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD_TORCH) {
             initialSetupCommands.add("scoreboard players set @p shportal 1")
         } else {
             initialSetupCommands.add("scoreboard players set @p shportal 0")
+        }
+
+        // Potential stronghold torch flag
+        initialSetupCommands.add("scoreboard objectives add shtorch dummy")
+        if (settings.practiceTypeOption == PracticeTypeOption.STRONGHOLD_TORCH) {
+            initialSetupCommands.add("scoreboard players set @p shtorch 1")
+        } else {
+            initialSetupCommands.add("scoreboard players set @p shtorch 0")
         }
 
         // Generate randomiser commands
