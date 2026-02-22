@@ -23,6 +23,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlo
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
 import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.RandomSlotPreset
+import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.RandomSlotPresetGroup
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.MinecraftItemChooserPopup
@@ -73,6 +74,35 @@ fun RandomSlotPopup(
         },
         presetDropdownContents = {
             val options = data.options.options
+            for (presetGroup in RandomSlotPresetGroup.entries) {
+                var dropdownOpen by remember { mutableStateOf(false) }
+                DropdownMenuItem(
+                    text = { Text(presetGroup.displayName) },
+                    leadingIcon = {
+                        MinecraftSlotDisplay(
+                            presetGroup.iconItem,
+                            size = 50
+                        ).ContentsOnly()
+                    },
+                    onClick = {
+                        dropdownOpen = true
+                    },
+                    trailingIcon = {
+                        DropdownMenu(dropdownOpen, onDismissRequest = {dropdownOpen = false}) {
+                            for (element in presetGroup.elements) {
+                                DropdownMenuItem(
+                                    text = { Text(element.displayName) },
+                                    onClick = {
+                                        options.clear()
+                                        options.addAll(element.optionsGetter().options)
+                                        data.setName = presetGroup.displayName
+                                    }
+                                )
+                            }
+                        }
+                    }
+                )
+            }
             for (preset in RandomSlotPreset.entries) {
                 DropdownMenuItem(
                     text = { Text(preset.displayName) },
@@ -85,9 +115,7 @@ fun RandomSlotPopup(
                     onClick = {
                         options.clear()
                         options.addAll(preset.optionsGetter().options)
-                        if (data.setName == "Unnamed") {
-                            data.setName = preset.displayName
-                        }
+                        data.setName = preset.displayName
                     }
                 )
             }

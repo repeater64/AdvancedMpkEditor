@@ -135,6 +135,15 @@ enum class FixedSlotPreset(
         )
     }),
 
+    LEFTOVER_CRYING("Leftover Crying", {
+        optionList(
+            item("crying_obsidian", 2, 2),
+            item("crying_obsidian", 2, 5),
+            item("crying_obsidian", 2, 13),
+            item("crying_obsidian", 1, 20),
+        )
+    }),
+
     EYE_SPY_OBBY_SLOT( "Eye Spy Obby Slot", {
         optionList(
             item("obsidian", 1, 1),

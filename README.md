@@ -17,7 +17,7 @@ Detailed instructions on how to use it are provided on the website itself!
 ### Helpful for anyone
 
 - Quick and easy way to edit your MPK setup, that doesn't require understanding of MPK trigger items or anything - you just set up how you want your inventory to look, and you're good to go
-- Fully configured presets for commonly practiced splits - just open up the example, drag and drop to rearrange the hotbar to your liking
+- Fully configured presets for commonly practiced splits - just open up the example, drag and drop to rearrange the hotbar to your liking. Lots of presets for individual random item types too.
 - You can add commonly used items with extra data, like fire resistance potions, soul speed boots/books, looting swords. You can also add MPK command potions like "Force Perch" and "Re-Blind on Surface"
 
 ### For advanced customisation
