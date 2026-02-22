@@ -75,6 +75,74 @@ enum class FixedSlotPreset(
         )
     }),
 
+    BLOCKS( "Random Early Game Blocks", {
+        optionList(
+            item("oak_planks", 3, 50),
+            item("acacia_planks", 1, 50),
+            item("oak_leaves", 2, 64),
+            item("birch_leaves", 1, 64),
+            item("dirt", 1, 64),
+            item("dirt", 1, 64),
+            item("cut_sandstone", 1, 64),
+        )
+    }),
+
+    NETHER_BRICKS( "Random Amount of Nether Bricks", {
+        optionList(
+            item("nether_bricks", 1, 10),
+            item("nether_bricks", 2, 18),
+            item("nether_bricks", 3, 23),
+            item("nether_bricks", 3, 26),
+            item("nether_bricks", 2, 31),
+            item("nether_bricks", 2, 37),
+            item("nether_bricks", 1, 42),
+        )
+    }),
+
+    SOUL_SAND( "Random Amount of Soul Sand", {
+        optionList(
+            item("soul_sand", 1, 55),
+            item("soul_sand", 1, 47),
+            item("soul_sand", 1, 33),
+            item("soul_sand", 1, 28),
+            item("soul_sand", 1, 19),
+        )
+    }),
+
+    GRAVEL( "Random Amount of Gravel", {
+        optionList(
+            item("gravel", 1, 55),
+            item("gravel", 1, 47),
+            item("gravel", 1, 33),
+            item("gravel", 1, 28),
+            item("gravel", 1, 19),
+        )
+    }),
+
+    PRE_BLIND_OBBY( "Pre-Blind Obby", {
+        optionList(
+            item("obsidian", 1, 20),
+            item("obsidian", 1, 21),
+            item("obsidian", 1, 25),
+        )
+    }),
+
+    POST_BLIND_OBBY( "Post-Blind Obby", {
+        optionList(
+            item("obsidian", 1, 10),
+            item("obsidian", 1, 11),
+            item("obsidian", 1, 15),
+        )
+    }),
+
+    EYE_SPY_OBBY_SLOT( "Eye Spy Obby Slot", {
+        optionList(
+            item("obsidian", 1, 1),
+            item("obsidian", 1, 5),
+            item("fire_charge", 1, 15),
+        )
+    }),
+
     RANDOM_HELMET("Random Helmet", onlyIfOneCategory = MinecraftItemCategory.ALL_HELMETS, optionsGetter = {
         optionList(
             item("golden_helmet", 6),

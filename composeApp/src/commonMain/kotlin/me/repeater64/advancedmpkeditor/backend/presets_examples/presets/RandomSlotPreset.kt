@@ -141,6 +141,18 @@ enum class RandomSlotPreset(
         ))
     }),
 
+    NETHER_BRICKS("Random Amount of Nether Bricks", rawItem("nether_bricks"), {
+        WeightedOptionList(mutableListOf(
+            itemList(rawItem("nether_bricks", 10), weight=1),
+            itemList(rawItem("nether_bricks", 18), weight=2),
+            itemList(rawItem("nether_bricks", 23), weight=3),
+            itemList(rawItem("nether_bricks", 26), weight=3),
+            itemList(rawItem("nether_bricks", 31), weight=2),
+            itemList(rawItem("nether_bricks", 37), weight=1),
+            itemList(rawItem("nether_bricks", 42), weight=1),
+        ))
+    })
+
     ;
 
 
