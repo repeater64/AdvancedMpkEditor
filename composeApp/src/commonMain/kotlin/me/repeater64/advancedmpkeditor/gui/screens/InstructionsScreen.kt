@@ -62,8 +62,8 @@ fun InstructionsScreen() {
                 You can chance the following settings for a given barrel:
                   - The practice type: Choose which split you want to practice
                   - Gamemode + Difficulty: Recommended to keep as "Survival" and "Easy"
-                  - Fixed Slot Items: There is an inventory view where you can set up all items that should go in consistent slots (ie your hotbar, offhand and armour, and optionally parts of your inventory too). Click a slot to change the items that can go in it.
-                  - Random Slot Items: Here you set up items that should go into random spots in your inventory. ONE set of items will be chosen from each of the sections here. Take a look at the example templates to get an idea of how this works.
+                  - Fixed Slot Items: There is an inventory view where you can set up all items that should go in consistent slots (ie your hotbar, offhand and armour, and optionally parts of your inventory too). Click a slot to change the items that can go in it. If you're editing an empty slot, you'll have the option to add from a preset which might save you time.
+                  - Random Slot Items: Here you set up items that should go into random spots in your inventory. ONE set of items will be chosen from each of the sections here. Take a look at the example templates to get an idea of how this works. If you add a new blank random slot item set, you can choose to add from a preset which might save you time.
                   - Junk Settings: You can turn on/off the option to fill empty spots in your inventory with junk items. You can customise the list of items that junk is picked from.
                   - Health + Hunger Settings: You can customise your health and your hunger+saturation that you'll have upon starting.
                   - Fire Res Settings: You can set up the duration of fire resistance effect that you'll have, or zero for no fire resistance.
