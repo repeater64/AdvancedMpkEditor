@@ -10,7 +10,7 @@ If you want to start using MPK for the first time, this website will help you ge
 
 If you're experienced with MPK, switching to this editor will let you make your practice splits much more realistic, so they genuinely resemble in-game scenarios.
 
-Detailed instructions on how to use it are provided on the website itself!
+Detailed instructions on how to use it are provided on the website itself in text form, or as a video at the bottom of this readme.
 
 ## Features
 
@@ -42,3 +42,8 @@ Detailed instructions on how to use it are provided on the website itself!
 - And much more!
 
 Note that all the above is technically possible with standard MPK, but would involve manually writing a lot of commands into books (in some cases several hundred). The website fully automates this without you needing to think about commands.
+
+Guide video:
+
+
+[![Video](https://img.youtube.com/vi/o1AwsJ3adso/0.jpg)](https://www.youtube.com/watch?v=o1AwsJ3adso)
