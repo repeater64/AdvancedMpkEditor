@@ -214,7 +214,7 @@ object CommandsManager {
 
             var overallCondition: CommandCondition = objectiveRange
             for (randomiserCondition in conditionSet) {
-                var logicalCondition = processedLabelsMap[randomiserCondition.conditionLabel]!!
+                var logicalCondition = processedLabelsMap[randomiserCondition.conditionLabel] ?: CommandConditionImpossible()
                 if (randomiserCondition.isInverted) logicalCondition = !logicalCondition
 
                 overallCondition = overallCondition and logicalCondition

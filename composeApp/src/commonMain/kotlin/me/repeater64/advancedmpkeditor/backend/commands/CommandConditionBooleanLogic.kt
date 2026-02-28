@@ -104,6 +104,12 @@ class CommandConditionOr(val a: CommandCondition, val b: CommandCondition) : Com
     }
 }
 
+class CommandConditionImpossible() : CommandCondition {
+    override fun getOrListOfAnds(): List<List<CommandObjectiveRange>> {
+        return emptyList()
+    }
+}
+
 class CommandConditionNot(val condition: CommandCondition) : CommandCondition {
     override fun getOrListOfAnds(): List<List<CommandObjectiveRange>> {
         val originalOrs = condition.getOrListOfAnds()
@@ -159,62 +165,4 @@ fun simplifyChain(chain: List<CommandObjectiveRange>): List<CommandObjectiveRang
         result.add(CommandObjectiveRange(objName, currentStart..currentEnd, weight))
     }
     return result
-}
-
-fun main() {
-    val total = 100
-
-    // Helper to create ranges quickly
-    fun range(name: String, start: Int, end: Int) =
-        CommandObjectiveRange(name, start..end, total)
-
-    // Helper to visualize the complex output
-    fun printResult(label: String, condition: CommandCondition) {
-        println("--- $label ---")
-        val dnf = condition.getOrListOfAnds()
-
-        if (dnf.isEmpty()) {
-            println("FALSE (Impossible)")
-        } else {
-            dnf.forEachIndexed { index, chain ->
-                val chainStr = if (chain.isEmpty()) "TRUE" else chain.joinToString(" AND ")
-                println("Option ${index + 1}: $chainStr")
-            }
-        }
-        println()
-    }
-
-    // --- TEST SCENARIOS ---
-
-    val condA = range("Score", 0, 10)
-    val condB = range("Score", 40, 60)
-    val condC = range("Health", 80, 90)
-
-    // 1. Direct Usage (No Wrapper)
-    printResult("1. Single Range (Score 0-10)", condA)
-
-    // 2. AND Logic
-    // Must satisfy Score 0-10 AND Health 80-90
-    val andCond = CommandConditionAnd(condA, condC)
-    printResult("2. AND (Score 0-10 && Health 80-90)", andCond)
-
-    // 3. OR Logic
-    // Can satisfy Score 0-10 OR Score 40-60
-    val orCond = CommandConditionOr(condA, condB)
-    printResult("3. OR (Score 0-10 || Score 40-60)", orCond)
-
-    // 4. Negation of OR (De Morgan's)
-    // NOT(Score 0-10 || Score 40-60)
-    // Should result in ranges that are NOT 0-10 AND NOT 40-60
-    // Expected: 11-39 AND 61-99
-    val notOr = CommandConditionNot(orCond)
-    printResult("4. NOT (A || B) -> Expect gaps between A and B", notOr)
-
-    // 5. Complex Nesting
-    // (A OR B) AND NOT(C)
-    val complex = CommandConditionAnd(
-        orCond,
-        CommandConditionNot(condC)
-    )
-    printResult("5. (A || B) && !C", complex)
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
@@ -137,6 +138,11 @@ fun EditorScreen(
                 } catch (e: CircularConditionsException) {
                     isSaving = false
                     showGeneralWarning("Circular randomiser link dependency! You've set up randomiser links that are impossible to resolve due to a circular dependency, in barrel: ${e.barrelName}. This is caused by a situation like: One list has an option that triggers A, and an option that depends on B, and another list has an option that triggers B and an option that depends on A. The relevant condition labels in your circular dependency are: ${e.problematicLabels}",
+                        {}, true)
+                } catch (e: Exception) {
+                    isSaving = false
+                    trackEvent("error_download", "Failed Download")
+                    showGeneralWarning("An unexpected error occured whilst trying to download hotbar.nbt! This is a bug of some kind, please copy/paste the below error message and send it to \"repeater64\" on discord (or create a github issue).\n\n: ${e.stackTraceToString()}",
                         {}, true)
                 }
             },
@@ -566,7 +572,15 @@ fun GeneralWarningDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (isError) "Error" else "Warning") },
-        text = { Text(warningText) },
+        text = {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier.padding(10.dp).verticalColumnScrollbar(scrollState).verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(warningText)
+            }
+             },
         confirmButton = {
             Button(
                 onClick = onProceed,
