@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
-import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.randomiser_links.RandomiserLinkRemovableChip
@@ -51,6 +50,9 @@ fun <T> WeightedOptionListPopup(
     showAddPresetButton: () -> Boolean,
     addPresetText: String = "Use a Preset",
     presetDropdownContents: @Composable ColumnScope.() -> Unit,
+    showAddAmountRangeButton: Boolean = false,
+    amountRangeAllowMoreThanOneStack: Boolean = false,
+    amountRangeAddedCallback: (item: MinecraftItem, min: Int, max: Int, num: Int) -> Unit = {_, _, _, _ -> },
     footerLeftSideContent: @Composable RowScope.() -> Unit,
     leftColumnContent: @Composable BoxScope.(WeightedOptionEitherType<T>) -> Unit,
 
@@ -208,7 +210,28 @@ fun <T> WeightedOptionListPopup(
                                 }
                             }
                         }
+                    }
 
+                    if (showAddAmountRangeButton) {
+                        item {
+                            var showPopup by remember { mutableStateOf(false) }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .clickable {
+                                        showPopup = true
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Add Item with Amount Range", style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
+
+                                if (showPopup) {
+                                    MinecraftItemChooserPopup({showPopup = false}, {}, true, amountRangeAddedCallback, amountRangeAllowMoreThanOneStack, null)
+                                }
+                            }
+                        }
                     }
                 }
 

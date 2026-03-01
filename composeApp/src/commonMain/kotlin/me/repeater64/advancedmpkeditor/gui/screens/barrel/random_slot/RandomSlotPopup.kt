@@ -18,7 +18,9 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemWithAmount
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
@@ -28,6 +30,7 @@ import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 import me.repeater64.advancedmpkeditor.gui.component.SmallIconAndTooltip
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.MinecraftItemChooserPopup
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.WeightedOptionListPopup
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -118,6 +121,23 @@ fun RandomSlotPopup(
                         data.setName = preset.displayName
                     }
                 )
+            }
+        },
+        showAddAmountRangeButton = true,
+        amountRangeAllowMoreThanOneStack = true,
+        amountRangeAddedCallback = {item, min, max, num ->
+            val options = data.options.options
+            if (options.size == 1 && (options[0].option.size == 1 && options[0].option[0] is DontReplaceMinecraftItem)) {
+                options.clear()
+            }
+
+            val stepSize = (max-min).toDouble() / (if (num == 1) 1 else num-1) // If num is 1, stepsize is irrelevant so just avoid dividing by zero
+            var currentlyAt = min.toDouble()
+            repeat(num) {
+                val amount = currentlyAt.roundToInt()
+                val itemToAdd = (item as MinecraftItemWithAmount).copyWithAmount(amount)
+                options.add(WeightedOption(listOf(itemToAdd).toMutableStateList()))
+                currentlyAt += stepSize
             }
         },
         footerLeftSideContent = {

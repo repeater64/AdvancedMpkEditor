@@ -33,6 +33,8 @@ import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
 fun MinecraftItemChooserPopup(
     onDismiss: () -> Unit,
     onItemChosen: (MinecraftItem) -> Unit,
+    range: Boolean = false,
+    onItemRangeChosen: (item: MinecraftItem, min: Int, max: Int, num: Int) -> Unit = {_, _, _, _ -> },
     allowMoreThanAStack: Boolean,
     initiallySelectedItem: MinecraftItem?,
     itemToAlwaysPutAtStart: () -> MinecraftItem? = { ForcedEmptyMinecraftItem() },
@@ -44,9 +46,17 @@ fun MinecraftItemChooserPopup(
     var amountText by remember { mutableStateOf(initiallySelectedItem?.amount?.toString() ?: "1") }
     var selectedItem by remember { mutableStateOf(initiallySelectedItem) }
 
+    var minText by remember { mutableStateOf("10") }
+    var maxText by remember { mutableStateOf("50") }
+    var numOptionsText by remember { mutableStateOf("11") }
+
     fun getItems(): List<MinecraftItem> {
-        val itemAtStart = itemToAlwaysPutAtStart()
-        return (itemAtStart?.let {listOf(it)} ?: emptyList()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
+        if (range) {
+            return (if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }).let { if (!allowMoreThanAStack) it.filter { item -> item.stackSize > 1 && item is MinecraftItemWithAmount} else it }
+        } else {
+            val itemAtStart = itemToAlwaysPutAtStart()
+            return (itemAtStart?.let {listOf(it)} ?: emptyList()) + if (searchText.isBlank()) selectedCategory.items else selectedCategory.items.filter { it.displayName.contains(searchText, true) }
+        }
     }
 
     fun trySetItemThenDismiss() {
@@ -67,10 +77,23 @@ fun MinecraftItemChooserPopup(
         onDismiss()
     }
 
+    fun trySetItemRangeThenDismiss() {
+        if (selectedItem == null) {
+            return
+        }
+
+        val min = if (allowMoreThanAStack) { (minText.toIntOrNull() ?: 1) } else { (minText.toIntOrNull() ?: 1).coerceAtMost(selectedItem!!.stackSize) }
+        val max = (if (allowMoreThanAStack) { (maxText.toIntOrNull() ?: 1) } else { (maxText.toIntOrNull() ?: 1).coerceAtMost(selectedItem!!.stackSize) }).coerceAtLeast(min)
+        val num = (numOptionsText.toIntOrNull() ?: 1).coerceAtLeast(1)
+
+        onItemRangeChosen(selectedItem!!, min, max, num)
+        onDismiss()
+    }
+
     Popup(
         alignment = Alignment.TopCenter,
         offset = IntOffset(0, -100),
-        onDismissRequest = { trySetItemThenDismiss() },
+        onDismissRequest = { if (range) onDismiss() else trySetItemThenDismiss() },
         properties = PopupProperties(focusable = true)
     ) {
         Surface(
@@ -88,7 +111,7 @@ fun MinecraftItemChooserPopup(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Choose Item",
+                    text = if (range) "Choose Item (Amount Range)" else "Choose Item",
                     style = MaterialTheme.typography.titleLarge,
                 )
 
@@ -151,8 +174,13 @@ fun MinecraftItemChooserPopup(
                             highlighted = selectedItem?.equalsIgnoringAmount(item) ?: false,
                             modifier = Modifier.onClick(onClick = {
                                 selectedItem = item
-                                if (amountText.isNotBlank() && !allowMoreThanAStack && amountText.toInt() > item.stackSize) {
-                                    amountText = item.stackSize.toString()
+                                if (range) {
+                                    if (minText.isNotBlank() && !allowMoreThanAStack && minText.toInt() > item.stackSize) { minText = item.stackSize.toString() }
+                                    if (maxText.isNotBlank() && !allowMoreThanAStack && maxText.toInt() > item.stackSize) { maxText = item.stackSize.toString() }
+                                } else {
+                                    if (amountText.isNotBlank() && !allowMoreThanAStack && amountText.toInt() > item.stackSize) {
+                                        amountText = item.stackSize.toString()
+                                    }
                                 }
                             })
                         ).SlotDisplay()
@@ -166,36 +194,61 @@ fun MinecraftItemChooserPopup(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = if (range) Arrangement.Start else Arrangement.SpaceBetween
                 ) {
-                    // Amount Input
-                    OutlinedTextField(
-                        value = amountText,
-                        onValueChange = { input ->
-                            // Validation: Only allow digits
-                            if (input.all { it.isDigit() }) {
-                                if (input.isEmpty()) amountText = input // Allow deleting all characters to type more
-                                else if (allowMoreThanAStack || (selectedItem != null && input.toInt() <= selectedItem!!.stackSize)) {
-                                    amountText = input
-                                }
-                            }
-                        },
-                        label = { Text("Amount") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                        modifier = Modifier.width(120.dp)
-                    )
+                    if (range) {
+                        // Input Fields
+                        NumberInputField("Min", 80, minText, {minText = it}, if (allowMoreThanAStack) 1000 else if (selectedItem == null) 0 else selectedItem!!.stackSize)
+                        Spacer(Modifier.width(20.dp))
+                        NumberInputField("Max", 80, maxText, {maxText = it}, if (allowMoreThanAStack) 1000 else if (selectedItem == null) 0 else selectedItem!!.stackSize)
+                        Spacer(Modifier.width(20.dp))
+                        NumberInputField("Num Options", 130, numOptionsText, {numOptionsText = it}, 32)
 
-                    // Ok Button
-                    Button(
-                        onClick = {
-                            trySetItemThenDismiss()
+                        Spacer(Modifier.weight(1f))
+
+                        // Ok Button
+                        Button(
+                            onClick = {
+                                trySetItemRangeThenDismiss()
+                            }
+                        ) {
+                            Text("Add")
                         }
-                    ) {
-                        Text("Choose Item")
+                    } else {
+                        // Amount Input
+                        NumberInputField("Amount", 120, amountText, {amountText = it}, if (allowMoreThanAStack) 1000 else if (selectedItem == null) 0 else selectedItem!!.stackSize)
+
+                        // Ok Button
+                        Button(
+                            onClick = {
+                                trySetItemThenDismiss()
+                            }
+                        ) {
+                            Text("Choose Item")
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun NumberInputField(label: String, width: Int, numText: String, numTextSetter: (String) -> Unit, maxValue: Int) {
+    OutlinedTextField(
+        value = numText,
+        onValueChange = { input ->
+            // Validation: Only allow digits
+            if (input.all { it.isDigit() }) {
+                if (input.isEmpty()) numTextSetter(input) // Allow deleting all characters to type more
+                else if (input.toInt() <= maxValue) {
+                    numTextSetter(input)
+                }
+            }
+        },
+        label = { Text(label) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true,
+        modifier = Modifier.width(width.dp)
+    )
 }
