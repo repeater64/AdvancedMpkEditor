@@ -9,10 +9,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.gui.platform.openUrl
 
 @Composable
 fun InstructionsScreen() {
+
+    val linkStyle = SpanStyle(
+        color = Color(0xFF0000EE),
+        textDecoration = TextDecoration.Underline
+    )
+
+    val textLinkStyles = TextLinkStyles(style = linkStyle)
+
+    fun createLink(url: String): LinkAnnotation.Url {
+        return LinkAnnotation.Url(
+            url = url,
+            styles = textLinkStyles,
+            linkInteractionListener = { openUrl(url) }
+        )
+    }
 
     BasicFullyScrollableScreen(Modifier.fillMaxWidth()) {
         Column(Modifier.width(1200.dp)) {
@@ -23,6 +46,12 @@ fun InstructionsScreen() {
             )
 
             Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = buildAnnotatedString { append("Video Tutorial: "); withLink(createLink("https://www.youtube.com/watch?v=o1AwsJ3adso")) { append("Click Here") } }
+            )
+
+            Spacer(Modifier.height(15.dp))
 
             Text(
                 text = "The Basic Idea",
