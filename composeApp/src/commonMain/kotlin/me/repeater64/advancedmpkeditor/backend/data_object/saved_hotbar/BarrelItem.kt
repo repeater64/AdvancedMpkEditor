@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.commands.CommandsManager
+import me.repeater64.advancedmpkeditor.backend.commands.CustomCommandSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.AllCommandsSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
@@ -66,7 +67,8 @@ class BarrelItem(
     _junkSettings: JunkSettings,
     _healthHungerSettings: HealthHungerSettings,
     _fireResSettings: FireResSettings,
-    val allRandomiserLinkLabels: MutableSet<String>
+    val allRandomiserLinkLabels: MutableSet<String>,
+    _customCommandSettings: CustomCommandSettings = CustomCommandSettings(emptyList(), emptyList(), emptyList())
 )
     : SavedHotbarItem() {
 
@@ -79,6 +81,7 @@ class BarrelItem(
     val junkSettings by mutableStateOf(_junkSettings)
     val healthHungerSettings by mutableStateOf(_healthHungerSettings)
     val fireResSettings by mutableStateOf(_fireResSettings)
+    val customCommandSettings by mutableStateOf(_customCommandSettings)
 
 
     override fun contentHash(): Int {
@@ -92,6 +95,7 @@ class BarrelItem(
             junkSettings.contentHash(),
             healthHungerSettings.contentHash(),
             fireResSettings.contentHash(),
+            customCommandSettings.contentHash(),
             // Doesn't need to include allRandomiserLinkLabels as if randomiser link labels are changed, that will mean there have been changes elsewhere
         )
     }
@@ -102,7 +106,7 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList()), name)
+        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList(), customCommandSettings), name)
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -123,7 +127,9 @@ class BarrelItem(
                         add(practiceTypeOption.getItemNBT(3))
                         add(gamemodeOption.getItemNBT(4))
                         add(difficultyOption.getItemNBT(5))
-                        add(WrittenBookItem(info).getNbt(26))
+                        add(WrittenBookItem(info).getNbt(6))
+                        add(WritableAutoBookItem(customCommandSettings.preItemsCommands.toList(), earlyAuto=true).getNbt(8))
+                        add(WritableAutoBookItem(customCommandSettings.postTeleportCommands.toList(), lateAuto=true).getNbt(7))
                     }
                 }
             }
@@ -159,7 +165,7 @@ class BarrelItem(
 
             val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
 
-            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings, allCommandsSettings.allRandomiserLinkLabels.toMutableSet())
+            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings, allCommandsSettings.allRandomiserLinkLabels.toMutableSet(), allCommandsSettings.customCommandSettings)
         }
 
         private fun fromTagOtherBarrel(tag: NbtCompound): SavedHotbarItem {
@@ -199,6 +205,7 @@ class BarrelItem(
             var forcePerchBook = false
             var surfaceBlindBook = false
             var shPortalBookFound = false
+            val miscAutoCommands = mutableListOf<String>()
 
             for (triggerItem in items) {
                 ItemBasedOptionEnum.tryGetFromNbt(triggerItem as NbtCompound, PracticeTypeOption.entries)?.let { practiceTypeOption = it as PracticeTypeOption; continue; }
@@ -272,16 +279,82 @@ class BarrelItem(
                         val bookName = nameTag.value
 
                         if (bookName.contains("AUTO")) {
-                            // Auto book - check for common books or commands
-                            if (displayTag.contains("Lore")) {
-                                val loreTag = displayTag["Lore"]
-                                if (loreTag is NbtList<*>) {
-                                    if (loreTag.size == 1) {
-                                        if (loreTag[0] is NbtString) {
-                                            val loreText = (loreTag[0] as NbtString).value
+                            // Auto book
 
-                                            if (loreText.contains("fire resistance and post-bastion")) {
-                                                // This is probably the default MPK "give fire resistance and post bastion armor" book
+                            // Go through book contents
+                            if (innerTag.containsKey("pages")) {
+                                val pagesTag = innerTag["pages"]
+                                if (pagesTag is NbtList<*>) {
+                                    val pages = mutableListOf<String>()
+
+                                    // Collect pages together first
+                                    for (pageTag in pagesTag) {
+                                        if (pageTag is NbtString) {
+                                            pages.add(pageTag.value)
+                                        }
+                                    }
+
+                                    // Go through pages
+                                    var i = 0
+                                    fun hasNMorePages(n: Int): Boolean {
+                                        return pages.lastIndex >= i+n-1 // Minus one because i is already incremented (see line 2 of loops)
+                                    }
+                                    fun getPageNAhead(n: Int): String {
+                                        return pages[i+n-1] // Minus one for same reason
+                                    }
+                                    fun skipNPages(n: Int) {
+                                        i += n
+                                    }
+
+
+                                    while (i < pages.size) {
+                                        val cmd = pages[i]
+                                        i++
+                                        if (cmd.startsWith("#") || cmd.isBlank()) {
+                                            // This is a comment or blank command, skip
+                                            continue
+                                        } else if (cmd.startsWith("item replace")) {
+                                            // This is a 1.17+ command that's just in there in case, ignore it since advanced MPK editor is for 1.16 only
+                                            continue
+                                        } else if (cmd.contains("replaceitem entity") && cmd.contains("weapon.offhand ")) {
+                                            // We appear to be setting offhand item
+                                            val endBit = cmd.split("weapon.offhand ")[1]
+                                            val split = endBit.split(" ")
+                                            if (split.size != 0) {
+                                                val id = split[0].removePrefix("minecraft:")
+                                                val amount = if (split.size > 1) split[1].toIntOrNull() ?: 0 else 0
+
+                                                if (!foundAnyOffhandItems) {
+                                                    barrel.fixedSlotsData.offhandSlotData.itemOptions.options.clear()
+                                                }
+                                                barrel.fixedSlotsData.offhandSlotData.itemOptions.options.add(WeightedOption(SimpleMinecraftItem(id, amount)))
+                                            }
+                                            continue
+                                        } else if (cmd.endsWith("run setblock ~ ~2 ~ end_portal") || cmd.endsWith("run setblock ~ ~2 ~ minecraft:end_portal")) {
+                                            practiceTypeOption = PracticeTypeOption.END_ENTER_MANUAL
+                                            continue
+                                        } else if (cmd.startsWith("data merge storage barters {count:")) {
+                                            // This is likely the start of the give barters book
+                                            // First check if it actually is the full thing
+                                            if (hasNMorePages(6) && getPageNAhead(6) == "execute as @p[scores={pk=1..}] run data modify storage pk I[0] set from storage pk J") {
+                                                skipNPages(6)
+                                                // Find number of barters from first cmd
+                                                val amount = cmd.split("count:")[1].split("}")[0].toInt()
+                                                barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet("Random Piglin Barters", WeightedOptionList(mutableListOf(WeightedOption(listOf(RandomBarterItem(amount)).toMutableStateList())))))
+                                                continue
+                                            }
+                                        } else if (cmd == "data merge storage pk {H:1}") {
+                                            // This is likely the simulate double travel portal book
+                                            if (hasNMorePages(34) && getPageNAhead(34) == "kill @e[tag=p]") {
+                                                skipNPages(34)
+                                                shPortalBookFound = true
+                                                continue
+                                            }
+                                        } else if (cmd == "scoreboard players set !m pk 3") {
+                                            // This is likely the "Give fire resistance and post-bastion armor" book
+                                            if (hasNMorePages(23) && getPageNAhead(23) == "item replace entity @p[scores={pk=6..}] armor.feet with iron_boots{Enchantments:[{id:soul_speed,lvl:3}]}") {
+                                                skipNPages(23)
+
                                                 // Give fire res for either 120, 150 or 180s
                                                 barrel.fireResSettings.options.options.clear()
                                                 barrel.fireResSettings.options.options.add(WeightedOption(120))
@@ -308,61 +381,12 @@ class BarrelItem(
                                                 barrel.fixedSlotsData.bootsSlotData.itemOptions.options.add(WeightedOption(EnchantedBootsItem(true, 1), 2))
                                                 barrel.fixedSlotsData.bootsSlotData.itemOptions.options.add(WeightedOption(EnchantedBootsItem(true, 2), 3))
                                                 barrel.fixedSlotsData.bootsSlotData.itemOptions.options.add(WeightedOption(EnchantedBootsItem(true, 3), 4))
-                                            } else if (loreText.contains("double travel portal")) {
-                                                // This is probably the default MPK "simulate double travel portal" book
-                                                shPortalBookFound = true
-                                            } else if (loreText.contains("piglin barters")) {
-                                                // This is probably the default MPK "Give piglin barters" book
-                                                // Check actual book contents to find amount
-                                                var amount = 0
-                                                if (innerTag.containsKey("pages")) {
-                                                    val pagesTag = innerTag["pages"]
-                                                    if (pagesTag is NbtList<*>) {
-                                                        for (pageTag in pagesTag) {
-                                                            if (pageTag is NbtString) {
-                                                                val cmd = pageTag.value
-                                                                if (cmd.startsWith("data merge storage barters {count:")) {
-                                                                    amount = cmd.split("count:")[1].split("}")[0].toInt()
-                                                                    break
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
 
-                                                if (amount > 0) {
-                                                    barrel.randomSlotsData.optionsSets.add(RandomSlotOptionsSet("Random Piglin Barters", WeightedOptionList(mutableListOf(WeightedOption(listOf(RandomBarterItem(amount)).toMutableStateList())))))
-                                                }
+                                                continue
                                             }
                                         }
-                                    }
-                                }
-                            }
-
-                            // Check actual book contents to see if it sets offhand item
-                            if (innerTag.containsKey("pages")) {
-                                val pagesTag = innerTag["pages"]
-                                if (pagesTag is NbtList<*>) {
-                                    for (pageTag in pagesTag) {
-                                        if (pageTag is NbtString) {
-                                            val cmd = pageTag.value
-                                            if (cmd.contains("replaceitem entity") && cmd.contains("weapon.offhand ")) {
-                                                // We appear to be setting offhand item
-                                                val endBit = cmd.split("weapon.offhand ")[1]
-                                                val split = endBit.split(" ")
-                                                if (split.size != 0) {
-                                                    val id = split[0].removePrefix("minecraft:")
-                                                    val amount = if (split.size > 1) split[1].toIntOrNull() ?: 0 else 0
-
-                                                    if (!foundAnyOffhandItems) {
-                                                        barrel.fixedSlotsData.offhandSlotData.itemOptions.options.clear()
-                                                    }
-                                                    barrel.fixedSlotsData.offhandSlotData.itemOptions.options.add(WeightedOption(SimpleMinecraftItem(id, amount)))
-                                                }
-                                            } else if (cmd.endsWith("run setblock ~ ~2 ~ end_portal") || cmd.endsWith("run setblock ~ ~2 ~ minecraft:end_portal")) {
-                                                practiceTypeOption = PracticeTypeOption.END_ENTER_MANUAL
-                                            }
-                                        }
+                                        // If we haven't "continue"d by now, this is an unrecognised auto command. Add it to custom
+                                        miscAutoCommands.add(cmd.removePrefix("/"))
                                     }
                                 }
                             }
@@ -426,6 +450,8 @@ class BarrelItem(
                 // Ensure we don't have an empty junk list, but disable junk if we didn't find any
                 barrel.junkSettings.junkList.add(WeightedOptionNoLinks(DontReplaceMinecraftItem()))
                 barrel.junkSettings.enableJunk = false
+            } else {
+                barrel.junkSettings.enableJunk = true
             }
 
 
@@ -433,6 +459,9 @@ class BarrelItem(
             barrel.gamemodeOption = gamemodeOption
             barrel.difficultyOption = difficultyOption
             barrel.name = name
+
+            barrel.customCommandSettings.postTeleportCommands.clear()
+            barrel.customCommandSettings.postTeleportCommands.addAll(miscAutoCommands)
 
             return barrel
         }

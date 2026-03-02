@@ -7,7 +7,7 @@ import net.benwoodworth.knbt.put
 import net.benwoodworth.knbt.putNbtCompound
 import net.benwoodworth.knbt.putNbtList
 
-data class WritableAutoBookItem(override val pages: List<String>) : BookItem(pages) {
+data class WritableAutoBookItem(override val pages: List<String>, val lateAuto: Boolean = false, var earlyAuto: Boolean = false) : BookItem(pages) {
     override fun getNbt(slot: Int): NbtCompound {
         return buildNbtCompound {
             put("Count", 1.toByte())
@@ -18,7 +18,7 @@ data class WritableAutoBookItem(override val pages: List<String>) : BookItem(pag
                     pages.forEach { add(it) }
                 }
                 putNbtCompound("display") {
-                    put("Name", "{\"text\":\"AUTO\"}")
+                    put("Name", "{\"text\":\"${if (lateAuto) "LATEAUTO" else if (earlyAuto) "EARLYAUTO" else "AUTO"}\"}")
                     putNbtList("Lore") {
                         add("{\"text\":\"repeater64's Advanced MPK Editor - Generated Commands - Don't Edit\"}")
                         add("{\"text\":\"repeater64.github.io/AdvancedMpkEditor\"}")

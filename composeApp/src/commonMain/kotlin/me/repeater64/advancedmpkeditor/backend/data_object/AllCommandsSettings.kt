@@ -1,5 +1,6 @@
 package me.repeater64.advancedmpkeditor.backend.data_object
 
+import me.repeater64.advancedmpkeditor.backend.commands.CustomCommandSettings
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializableString
 import me.repeater64.advancedmpkeditor.backend.data_object.fire_res.FireResSettings
@@ -16,13 +17,14 @@ data class AllCommandsSettings(
     val junkSettings: JunkSettings,
     val healthHungerSettings: HealthHungerSettings,
     val fireResSettings: FireResSettings,
-    val allRandomiserLinkLabels: List<String>
+    val allRandomiserLinkLabels: List<String>,
+    val customCommandSettings: CustomCommandSettings,
 ) {
     companion object : BookSerializable<AllCommandsSettings> {
         override val className = "AllCommandsSettings"
 
         override fun serializeToPages(it: AllCommandsSettings): List<String> {
-            return listOf(it.practiceTypeOption.name) + FixedSlotsData.serialize(it.fixedSlotsData) + RandomSlotsData.serialize(it.randomSlotsData) + JunkSettings.serialize(it.junkSettings) + HealthHungerSettings.serialize(it.healthHungerSettings) + FireResSettings.serialize(it.fireResSettings) + BookSerializable.serializeList(it.allRandomiserLinkLabels.map { BookSerializableString(it) }, BookSerializableString)
+            return listOf(it.practiceTypeOption.name) + FixedSlotsData.serialize(it.fixedSlotsData) + RandomSlotsData.serialize(it.randomSlotsData) + JunkSettings.serialize(it.junkSettings) + HealthHungerSettings.serialize(it.healthHungerSettings) + FireResSettings.serialize(it.fireResSettings) + BookSerializable.serializeList(it.allRandomiserLinkLabels.map { BookSerializableString(it) }, BookSerializableString) + CustomCommandSettings.serialize(it.customCommandSettings)
         }
 
         override fun deserializeFromPages(pages: List<String>): AllCommandsSettings {
@@ -32,8 +34,13 @@ data class AllCommandsSettings(
             val (junkSettings, pages3) = BookSerializable.getObjectAndRemainingPages(pages2, JunkSettings)
             val (healthHungerSettings, pages4) = BookSerializable.getObjectAndRemainingPages(pages3, HealthHungerSettings)
             val (fireResSettings, pages5) = BookSerializable.getObjectAndRemainingPages(pages4, FireResSettings)
-            val allRandomiserLinkLabels = BookSerializable.getListAndRemainingPages(pages5, BookSerializableString).first.map { it.string }
-            return AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels)
+            val (allRandomiserLinkLabels, pages6) = (BookSerializable.getListAndRemainingPages(pages5, BookSerializableString))
+            val customCommandSettings = if (pages6.isEmpty()) {
+                CustomCommandSettings(listOf(), listOf(), listOf()) // Loading from old data before custom commands settings were added
+            } else {
+                BookSerializable.getObjectAndRemainingPages(pages6, CustomCommandSettings).first
+            }
+            return AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.map { it.string }, customCommandSettings)
         }
 
     }

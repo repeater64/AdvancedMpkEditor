@@ -20,6 +20,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar.BarrelIt
 import me.repeater64.advancedmpkeditor.gui.component.CenteredRowWithOverflow
 import me.repeater64.advancedmpkeditor.gui.component.SimpleDropdown
 import me.repeater64.advancedmpkeditor.gui.component.SimpleTextField
+import me.repeater64.advancedmpkeditor.gui.screens.barrel.custom_commands.CustomCommandsEditor
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fire_res.FireResEditor
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot.FixedSlotsEditor
 import me.repeater64.advancedmpkeditor.gui.screens.barrel.fixed_slot.InventorySlotKey
@@ -104,4 +105,6 @@ fun ColumnScope.BarrelEditor(
     HealthHungerEditor(barrelItem.healthHungerSettings, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
     Spacer(Modifier.height(25.dp))
     FireResEditor(barrelItem.fireResSettings, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
+    Spacer(Modifier.height(25.dp))
+    CustomCommandsEditor(barrelItem.customCommandSettings, showDialogCallback, hideDialogCallback)
 }

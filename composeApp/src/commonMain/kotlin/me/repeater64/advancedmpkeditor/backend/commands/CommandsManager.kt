@@ -351,7 +351,9 @@ object CommandsManager {
             finalCommands.add("execute at @a run setblock ~ ~2 ~ end_portal")
         }
 
-        return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands + finalCommands), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
+        val customCommands = settings.customCommandSettings
+
+        return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands + finalCommands + customCommands.postItemsCommands), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
     }
 
     private fun <T> handleWeightedList(options: WeightedOptionList<T>, commandsGetter: (WeightedOption<T>) -> List<String>, ifEmptyMessage: String,

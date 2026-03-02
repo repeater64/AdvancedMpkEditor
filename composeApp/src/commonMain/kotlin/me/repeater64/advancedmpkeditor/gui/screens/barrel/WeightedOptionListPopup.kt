@@ -235,7 +235,7 @@ fun <T> WeightedOptionListPopup(
                     }
                 }
 
-                // Footer with ok button on right, and potential other content on left (used for fixed inventory slots)
+                // Footer with ok button on right, and potential other content on left (used for fixed inventory slots and copy paste stuff)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
