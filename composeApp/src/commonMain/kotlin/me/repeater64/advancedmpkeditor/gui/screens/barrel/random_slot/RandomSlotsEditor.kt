@@ -36,6 +36,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotsData
@@ -52,7 +53,9 @@ fun ColumnScope.RandomSlotsEditor(
     randomSlotsData: RandomSlotsData,
     allLabels: MutableSet<String>,
     showDialogCallback: (@Composable () -> Any) -> Any,
-    hideDialogCallback: () -> Unit
+    hideDialogCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
 ) {
     Text("Random Slot Items", style = MaterialTheme.typography.headlineLarge)
     Spacer(Modifier.height(15.dp))
@@ -87,7 +90,7 @@ fun ColumnScope.RandomSlotsEditor(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         for ((index, optionSet) in randomSlotsData.optionsSets.withIndex()) {
-            RandomSlotsRow(randomSlotsData, index+37, optionSet, allLabels, showDialogCallback, hideDialogCallback)
+            RandomSlotsRow(randomSlotsData, index+37, optionSet, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
         }
 
         // Add new
@@ -115,7 +118,7 @@ fun ColumnScope.RandomSlotsEditor(
                     onClick = {
                         val newOptionsSet = RandomSlotOptionsSet("Unnamed", WeightedOptionList(mutableListOf(WeightedOption(listOf(DontReplaceMinecraftItem(true)).toMutableStateList()))))
                         randomSlotsData.optionsSets.add(newOptionsSet)
-                        showDialogCallback { RandomSlotPopup(newOptionsSet, allLabels, hideDialogCallback, deleteCallback = {randomSlotsData.optionsSets.remove(newOptionsSet)}) }
+                        showDialogCallback { RandomSlotPopup(newOptionsSet, allLabels, hideDialogCallback, deleteCallback = {randomSlotsData.optionsSets.remove(newOptionsSet)}, getClipboardCallback, setClipboardCallback) }
                     },
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
@@ -140,7 +143,9 @@ fun ColumnScope.RandomSlotsRow(
     optionsSet: RandomSlotOptionsSet,
     allLabels: MutableSet<String>,
     showDialogCallback: (@Composable () -> Any) -> Any,
-    hideDialogCallback: () -> Unit
+    hideDialogCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
 ) {
     val tooltipState = rememberTooltipState()
     TooltipBox(
@@ -171,7 +176,9 @@ fun ColumnScope.RandomSlotsRow(
                             optionsSet,
                             allLabels,
                             hideDialogCallback,
-                            deleteCallback = { data.optionsSets.remove(optionsSet) })
+                            deleteCallback = { data.optionsSets.remove(optionsSet) },
+                            getClipboardCallback = getClipboardCallback,
+                            setClipboardCallback = setClipboardCallback)
                     }
                 },
             ) {

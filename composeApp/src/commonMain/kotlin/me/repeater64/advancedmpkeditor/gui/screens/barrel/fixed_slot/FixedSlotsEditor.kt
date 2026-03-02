@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotsData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
@@ -41,7 +42,9 @@ fun ColumnScope.FixedSlotsEditor(
     fixedSlotsData: FixedSlotsData,
     allLabels: MutableSet<String>,
     showDialogCallback: (@Composable () -> Any) -> Any,
-    hideDialogCallback: () -> Unit
+    hideDialogCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text("Fixed Slot Items", style = MaterialTheme.typography.headlineLarge)
@@ -49,13 +52,13 @@ fun ColumnScope.FixedSlotsEditor(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
-            ArmorSlotDisplay(fixedSlotsData.helmetSlotData, "empty_helmet_slot", MinecraftItemCategory.ALL_HELMETS, allLabels, showDialogCallback, hideDialogCallback)
+            ArmorSlotDisplay(fixedSlotsData.helmetSlotData, "empty_helmet_slot", MinecraftItemCategory.ALL_HELMETS, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.chestplateSlotData, "empty_chestplate_slot", MinecraftItemCategory.ALL_CHESTPLATES, allLabels, showDialogCallback, hideDialogCallback)
+            ArmorSlotDisplay(fixedSlotsData.chestplateSlotData, "empty_chestplate_slot", MinecraftItemCategory.ALL_CHESTPLATES, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.leggingsSlotData, "empty_leggings_slot", MinecraftItemCategory.ALL_LEGGINGS, allLabels, showDialogCallback, hideDialogCallback)
+            ArmorSlotDisplay(fixedSlotsData.leggingsSlotData, "empty_leggings_slot", MinecraftItemCategory.ALL_LEGGINGS, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
             Spacer(Modifier.width(10.dp))
-            ArmorSlotDisplay(fixedSlotsData.bootsSlotData, "empty_boots_slot", MinecraftItemCategory.ALL_BOOTS, allLabels, showDialogCallback, hideDialogCallback)
+            ArmorSlotDisplay(fixedSlotsData.bootsSlotData, "empty_boots_slot", MinecraftItemCategory.ALL_BOOTS, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
         }
         Spacer(Modifier.height(15.dp))
 
@@ -69,7 +72,7 @@ fun ColumnScope.FixedSlotsEditor(
 
                         val invPosition = row*9 + col
                         val slotData = fixedSlotsData.inventorySlotsData[invPosition]
-                        FixedSlotDisplay(slotData, allLabels, invPosition+9, showDialogCallback, hideDialogCallback)
+                        FixedSlotDisplay(slotData, allLabels, invPosition+9, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
 
                         Spacer(Modifier.width(2.dp))
                     }
@@ -84,7 +87,7 @@ fun ColumnScope.FixedSlotsEditor(
             Row {
                 // Offhand
                 val offhandSlotData = fixedSlotsData.offhandSlotData
-                FixedSlotDisplay(offhandSlotData, allLabels, 36, showDialogCallback, hideDialogCallback)
+                FixedSlotDisplay(offhandSlotData, allLabels, 36, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
 
                 Spacer(Modifier.width(10.dp))
 
@@ -93,7 +96,7 @@ fun ColumnScope.FixedSlotsEditor(
                     Spacer(Modifier.width(2.dp))
 
                     val slotData = fixedSlotsData.hotbarSlotsData[hotbarSlot]
-                    FixedSlotDisplay(slotData, allLabels, hotbarSlot, showDialogCallback, hideDialogCallback)
+                    FixedSlotDisplay(slotData, allLabels, hotbarSlot, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
 
                     Spacer(Modifier.width(2.dp))
                 }
@@ -106,12 +109,12 @@ fun ColumnScope.FixedSlotsEditor(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<String>, dragSwappableKey: Int, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit) {
+fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<String>, dragSwappableKey: Int, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit, getClipboardCallback: () -> CopyPasteable<*>?, setClipboardCallback: (CopyPasteable<*>?) -> Unit) {
     val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
         options = slotData.itemOptions,
         size = SLOT_SIZE,
         modifier = Modifier.onClick(matcher = PointerMatcher.mouse(PointerButton.Primary), onClick = {
-            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback) }
+            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback, getClipboardCallback, setClipboardCallback) }
         }).onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary), onClick = {
             if (slotData is InventorySlotData) {
                 slotData.itemOptions.options.clear()
@@ -139,14 +142,14 @@ fun RowScope.FixedSlotDisplay(slotData: FixedSlotData, allLabels: MutableSet<Str
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun RowScope.ArmorSlotDisplay(slotData: FixedSlotData, ifEmpty: String, itemCategory: MinecraftItemCategory, allLabels: MutableSet<String>, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit) {
+fun RowScope.ArmorSlotDisplay(slotData: FixedSlotData, ifEmpty: String, itemCategory: MinecraftItemCategory, allLabels: MutableSet<String>, showDialogCallback: (@Composable () -> Any) -> Any, hideDialogCallback: () -> Unit, getClipboardCallback: () -> CopyPasteable<*>?, setClipboardCallback: (CopyPasteable<*>?) -> Unit) {
     val minecraftSlotDisplay = MinecraftSlotDisplayMulti(
         options = slotData.itemOptions,
         size = SLOT_SIZE,
         ifEmpty = ifEmpty,
         tooltipContents = {Text("Click to edit items", style = MaterialTheme.typography.bodyMedium)},
         modifier = Modifier.onClick(onClick = {
-            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback, onlyOneItemCategory = itemCategory) }
+            showDialogCallback { FixedSlotPopup(slotData, allLabels, hideDialogCallback, getClipboardCallback, setClipboardCallback, onlyOneItemCategory = itemCategory) }
         }),
         displayDontReplaceAsAir = true
     )

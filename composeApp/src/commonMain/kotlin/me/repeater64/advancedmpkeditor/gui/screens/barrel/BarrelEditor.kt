@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.DifficultyOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.GamemodeOption
 import me.repeater64.advancedmpkeditor.backend.data_object.misc_options.PracticeTypeOption
@@ -30,7 +31,9 @@ import me.repeater64.advancedmpkeditor.gui.screens.barrel.random_slot.RandomSlot
 fun ColumnScope.BarrelEditor(
     barrelItem: BarrelItem,
     showDialogCallback: (@Composable () -> Any) -> Any,
-    hideDialogCallback: () -> Unit
+    hideDialogCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
 ) {
 
 
@@ -74,7 +77,7 @@ fun ColumnScope.BarrelEditor(
         modifier = Modifier.fillMaxWidth(),
         spacing = 0.dp,
         mainContent = {
-            FixedSlotsEditor(barrelItem.fixedSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
+            FixedSlotsEditor(barrelItem.fixedSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
         },
         trailingContent = {
             // Sits to the right of FixedSlotsEditor if space, or if not, below it
@@ -94,7 +97,7 @@ fun ColumnScope.BarrelEditor(
 
 
 
-    RandomSlotsEditor(barrelItem.randomSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback)
+    RandomSlotsEditor(barrelItem.randomSlotsData, barrelItem.allRandomiserLinkLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)
     Spacer(Modifier.height(50.dp))
     JunkEditor(barrelItem.junkSettings, barrelItem.randomSlotsData, showDialogCallback, hideDialogCallback)
     Spacer(Modifier.height(50.dp))

@@ -14,9 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
@@ -24,6 +29,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemWit
 import me.repeater64.advancedmpkeditor.backend.data_object.random_slot.RandomSlotOptionsSet
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.RandomSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.RandomSlotPresetGroup
 import me.repeater64.advancedmpkeditor.gui.component.MinecraftSlotDisplay
@@ -38,7 +44,9 @@ fun RandomSlotPopup(
     data: RandomSlotOptionsSet,
     allLabels: MutableSet<String>,
     closePopupInputCallback: () -> Unit,
-    deleteCallback: () -> Unit
+    deleteCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
 ) {
     WeightedOptionListPopup(
         data.options.options as SnapshotStateList<WeightedOptionEitherType<SnapshotStateList<MinecraftItem>>>, allLabels, closePopupInputCallback,
@@ -149,6 +157,48 @@ fun RandomSlotPopup(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text("Delete")
+            }
+
+            Spacer(Modifier.width(10.dp))
+
+            // Copy button
+            val options = data.options.options
+            if (!(options.size == 1 && (options[0].option.size == 1 && options[0].option[0] is DontReplaceMinecraftItem))) {
+                var copied by remember { mutableStateOf(false) }
+
+                LaunchedEffect(copied) {
+                    if (copied) {
+                        delay(2000L)
+                        copied = false
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        val clipboardSlot = RandomSlotOptionsSet("Doesn't Matter", WeightedOptionList(mutableListOf()))
+                        data.copyInto(clipboardSlot)
+                        setClipboardCallback(clipboardSlot)
+                        copied = true
+                    }
+                ) {
+                    Text(if (copied) "Copied!" else "Copy All")
+                }
+
+                Spacer(Modifier.width(10.dp))
+            }
+
+            // Paste button
+            val clipboard = getClipboardCallback()
+            val canPaste = clipboard?.typeMatches(data) == true
+            Button(
+                enabled = canPaste,
+                onClick = {
+                    if (!canPaste) return@Button
+
+                    (clipboard as CopyPasteable<Any>).copyInto(data)
+                }
+            ) {
+                Text("Paste Into This List", modifier = if (canPaste) Modifier else Modifier.alpha(0.38f))
             }
         },
         leftColumnContent = { weightedOption ->

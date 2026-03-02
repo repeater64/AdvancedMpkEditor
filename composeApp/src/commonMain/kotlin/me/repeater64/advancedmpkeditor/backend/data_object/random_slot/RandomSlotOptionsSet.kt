@@ -6,14 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.book_serialization.BookSerializable
+import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.util.hash
 
 @Stable
-class RandomSlotOptionsSet(_setName: String, _options: WeightedOptionList<SnapshotStateList<MinecraftItem>>) : ContentHashable {
+class RandomSlotOptionsSet(_setName: String, _options: WeightedOptionList<SnapshotStateList<MinecraftItem>>) : ContentHashable, CopyPasteable<RandomSlotOptionsSet> {
     var setName by mutableStateOf(_setName)
     val options by mutableStateOf(_options)
 
@@ -70,5 +73,17 @@ class RandomSlotOptionsSet(_setName: String, _options: WeightedOptionList<Snapsh
         override fun deserializeFromPages(pages: List<String>): RandomSlotOptionsSet {
             return RandomSlotOptionsSet(pages[0], BookSerializable.getObjectAndRemainingPages(pages.drop(1), WeightedOptionList).first as WeightedOptionList<SnapshotStateList<MinecraftItem>>)
         }
+    }
+
+    override fun copyInto(other: RandomSlotOptionsSet) {
+        if (other.options.options.size == 1 && (other.options.options[0].option.size == 1 && other.options.options[0].option[0] is DontReplaceMinecraftItem)) {
+            other.options.options.clear()
+        }
+
+        other.options.options.addAll(this.options.options.map { it.deepCopy() })
+    }
+
+    override fun typeMatches(other: Any): Boolean {
+        return other is RandomSlotOptionsSet
     }
 }

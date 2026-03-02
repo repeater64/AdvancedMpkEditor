@@ -10,8 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.FixedSlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
@@ -21,6 +24,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemCat
 import me.repeater64.advancedmpkeditor.backend.data_object.item.MinecraftItemWithAmount
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionEitherType
+import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
 import me.repeater64.advancedmpkeditor.backend.presets_examples.presets.FixedSlotPreset
 import me.repeater64.advancedmpkeditor.backend.presets_examples.availableItem
 import me.repeater64.advancedmpkeditor.backend.presets_examples.emptyItem
@@ -36,6 +40,8 @@ fun FixedSlotPopup(
     fixedSlotData: FixedSlotData,
     allLabels: MutableSet<String>,
     closePopupInputCallback: () -> Unit,
+    getClipboardCallback: () -> CopyPasteable<*>?,
+    setClipboardCallback: (CopyPasteable<*>?) -> Unit,
     onlyOneItemCategory: MinecraftItemCategory? = null
 ) {
     WeightedOptionListPopup(
@@ -117,7 +123,7 @@ fun FixedSlotPopup(
                             fixedSlotData.itemOptions.options.add(emptyItem())
                         }
                     ) {
-                        Text("Switch to Forced Empty Slot")
+                        Text("Force Empty Slot")
                     }
                 } else {
                     // Button to switch to available for random items
@@ -125,10 +131,52 @@ fun FixedSlotPopup(
                         onClick = {
                             fixedSlotData.itemOptions.options.clear()
                             fixedSlotData.itemOptions.options.add(availableItem())
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Clear All")
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+            }
+            if (onlyOneItemCategory == null) {
+                // Copy button
+                if (!(fixedSlotData.itemOptions.options.size == 1 && fixedSlotData.itemOptions.options[0].option is DontReplaceMinecraftItem)) {
+                    var copied by remember { mutableStateOf(false) }
+
+                    LaunchedEffect(copied) {
+                        if (copied) {
+                            delay(2000L)
+                            copied = false
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            val clipboardSlot = InventorySlotData(-1, WeightedOptionList(mutableListOf()))
+                            fixedSlotData.copyInto(clipboardSlot)
+                            setClipboardCallback(clipboardSlot)
+                            copied = true
                         }
                     ) {
-                        Text("Make Slot Available for Random Items${if (fixedSlotData.itemOptions.options.size == 1 && fixedSlotData.itemOptions.options[0].option is ForcedEmptyMinecraftItem) "" else " (Clears All)"}")
+                        Text(if (copied) "Copied!" else "Copy Slot")
                     }
+
+                    Spacer(Modifier.width(10.dp))
+                }
+
+                // Paste button
+                val clipboard = getClipboardCallback()
+                val canPaste = clipboard?.typeMatches(fixedSlotData) == true
+                Button(
+                    enabled = canPaste,
+                    onClick = {
+                        if (!canPaste) return@Button
+
+                        (clipboard as CopyPasteable<Any>).copyInto(fixedSlotData)
+                    }
+                ) {
+                    Text("Paste Into Slot", modifier = if (canPaste) Modifier else Modifier.alpha(0.38f))
                 }
             }
         },

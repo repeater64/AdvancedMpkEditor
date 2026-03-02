@@ -42,6 +42,7 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.repeater64.advancedmpkeditor.backend.commands.CircularConditionsException
+import me.repeater64.advancedmpkeditor.backend.data_object.CopyPasteable
 import me.repeater64.advancedmpkeditor.backend.data_object.fixed_slot.InventorySlotData
 import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinecraftItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcedEmptyMinecraftItem
@@ -102,6 +103,12 @@ fun EditorScreen(
 
     var currentlyEditingItemIndex by remember { mutableStateOf(-1) }
     fun currentlyEditingItem(): SavedHotbarItem = if (currentlyEditingItemIndex >= 0) hotbars.hotbars[selectedHotbarIndex].hotbarItems[currentlyEditingItemIndex] else AirItem()
+
+    var clipboard by remember { mutableStateOf<CopyPasteable<*>?>(null)}
+
+    fun getClipboard(): CopyPasteable<*>? = clipboard
+    fun setClipboard(it: CopyPasteable<*>?) { clipboard = it }
+
 
 
     PreventAppExit(!isSaved)
@@ -489,7 +496,9 @@ fun EditorScreen(
                                 showEditorDialog = true
                                 editorDialog = dialog
                             },
-                            hideDialogCallback = {showEditorDialog = false}
+                            hideDialogCallback = {showEditorDialog = false},
+                            getClipboardCallback = { getClipboard() },
+                            setClipboardCallback = { setClipboard(it) },
                         )
                     }
                 }}
