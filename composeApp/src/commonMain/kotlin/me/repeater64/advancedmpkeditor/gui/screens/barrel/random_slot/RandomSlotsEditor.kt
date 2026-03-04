@@ -88,6 +88,34 @@ fun ColumnScope.RandomSlotsEditor(
 
     Spacer(Modifier.height(15.dp))
 
+    val tooltipStateBow = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(modifier=Modifier.width(350.dp)) { Text(text = "If enabled, you will get a message in chat at the start telling you if you have a bow/crossbow/arrows or not.") }
+        },
+        state = tooltipStateBow,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = randomSlotsData.announceBow,
+                onCheckedChange = { randomSlotsData.announceBow = it },
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text("Announce Bow/Crossbow/Arrows", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Hover for Info",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+
+    Spacer(Modifier.height(15.dp))
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         for ((index, optionSet) in randomSlotsData.optionsSets.withIndex()) {
             RandomSlotsRow(randomSlotsData, index+37, optionSet, allLabels, showDialogCallback, hideDialogCallback, getClipboardCallback, setClipboardCallback)

@@ -31,6 +31,20 @@ object CommandsManager {
         return null
     }
 
+    fun getBowsCountCommandForCommand(command: String): String? {
+        if (command.contains("crossbow ")) {
+            val amount = command.split("crossbow ")[1].toIntOrNull() ?: 1
+            return "scoreboard players add @p numcrossbows $amount"
+        } else if (command.contains("bow ")) {
+            val amount = command.split("bow ")[1].toIntOrNull() ?: 1
+            return "scoreboard players add @p numbows $amount"
+        } else if (command.contains("arrow ")) {
+            val amount = command.split("arrow ")[1].toIntOrNull() ?: 1
+            return "scoreboard players add @p numarrows $amount"
+        }
+        return null
+    }
+
     fun generateCommands(settings: AllCommandsSettings, barrelName: String) : Triple<List<String>, List<String>, Int> { // Returns commands book pages, serialization book pages, numTopLeftInvSlotsToFillLikeHotbar
 
         val randomisers = hashMapOf<String, Int>() // Map of randomiser identifier to total weight
@@ -44,6 +58,7 @@ object CommandsManager {
         // RANDOM SLOTS (these commands will go at very start)
         val randomSlotsData = settings.randomSlotsData
         val countExplosives = randomSlotsData.announceExplosives
+        val countBows = randomSlotsData.announceBow
 
         var removedBedrockIndex = 0
         for (randomSlotOptionsSet in randomSlotsData.getReorderedOptionsSets()) {
@@ -78,7 +93,7 @@ object CommandsManager {
                     return@handleWeightedList commands
                 } ,
                 "Warning - random slot set with no item options ($randomSlotOptionsSet)",
-                countExplosives, randomisers, unprocessedLabelsMap, processedRandomSlotsCommands, currentRandomiserIndex)
+                countExplosives, countBows, randomisers, unprocessedLabelsMap, processedRandomSlotsCommands, currentRandomiserIndex)
 
             removedBedrockIndex += maxStacks
         }
@@ -90,7 +105,7 @@ object CommandsManager {
             currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
                 { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
                 "Warning - fixed slot data with no item options ($fixedSlotData)",
-                countExplosives, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+                countExplosives, countBows, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
         }
 
         // HEALTH+HUNGER (These commands will go in the main middle section)
@@ -99,13 +114,13 @@ object CommandsManager {
         processedCommands.add(unconditionalProcessedCommand("scoreboard players set @p extradmg 0"))
         currentRandomiserIndex = handleWeightedList(healthHungerSettings.options,
             {it.option.healthOption.commands + it.option.hungerOption.commands},
-            "Warning - Health hunger options has no options set", false, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+            "Warning - Health hunger options has no options set", false, false, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
 
         // FIRE RES (These commands will go in the main middle section)
         val fireResSettings = settings.fireResSettings
         currentRandomiserIndex = handleWeightedList(fireResSettings.options,
             {if (it.option > 0) listOf("effect give @p fire_resistance ${it.option} 0") else emptyList()},
-            "Warning - Fire res settings has no options set", false, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+            "Warning - Fire res settings has no options set", false, false, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
 
         // FLOATING INV SLOTS (These commands will go at the end of the main middle section)
         var tempItemIndex = 0
@@ -130,7 +145,7 @@ object CommandsManager {
             currentRandomiserIndex = handleWeightedList(fixedSlotData.itemOptions,
                 { listOf(it.option.getReplaceitemCommand(fixedSlotData.minecraftSlotID)) } ,
                 "Warning - fixed slot data with no item options ($fixedSlotData)",
-                countExplosives, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
+                countExplosives, countBows, randomisers, unprocessedLabelsMap, processedCommands, currentRandomiserIndex)
 
             topLeftInvPosition++
         }
@@ -279,6 +294,14 @@ object CommandsManager {
             initialSetupCommands.add("scoreboard objectives add numtnt dummy")
             initialSetupCommands.add("scoreboard players set @p numtnt 0")
         }
+        if (countBows) {
+            initialSetupCommands.add("scoreboard objectives add numbows dummy")
+            initialSetupCommands.add("scoreboard players set @p numbows 0")
+            initialSetupCommands.add("scoreboard objectives add numcrossbows dummy")
+            initialSetupCommands.add("scoreboard players set @p numcrossbows 0")
+            initialSetupCommands.add("scoreboard objectives add numarrows dummy")
+            initialSetupCommands.add("scoreboard players set @p numarrows 0")
+        }
 
         // Potential stronghold portal flag
         initialSetupCommands.add("scoreboard objectives add shportal dummy")
@@ -346,6 +369,15 @@ object CommandsManager {
             finalCommands.add("execute if score @p numtnt matches 9 run say TNT: 9")
             finalCommands.add("execute if score @p numtnt matches 10.. run say TNT: 10+")
         }
+        if (countBows) {
+            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 0 run say No Bow/Crossbow")
+            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Bow + Crossbow + Arrows")
+            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 1.. run say Bow + Arrows")
+            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Crossbow + Arrows")
+            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Bow + Crossbow (No Arrows)")
+            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 0 run say Bow (No Arrows)")
+            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Crossbow (No Arrows)")
+        }
 
         if (settings.practiceTypeOption == PracticeTypeOption.END_ENTER_MANUAL) {
             finalCommands.add("execute at @a run setblock ~ ~2 ~ end_portal")
@@ -357,7 +389,7 @@ object CommandsManager {
     }
 
     private fun <T> handleWeightedList(options: WeightedOptionList<T>, commandsGetter: (WeightedOption<T>) -> List<String>, ifEmptyMessage: String,
-                                       countExplosives: Boolean,
+                                       countExplosives: Boolean, countBows: Boolean,
                                        randomisers: HashMap<String, Int>,
                                        unprocessedLabelsMap: HashMap<String, MutableList<Pair<CommandCondition, Set<RandomiserCondition>>>>,
                                        processedCommands: MutableList<Triple<String, CommandObjectiveRange, Set<RandomiserCondition>>>,
@@ -378,6 +410,9 @@ object CommandsManager {
             }
             if (countExplosives) {
                 processedCommands.addAll(commands.mapNotNull { cmd -> getExplosiveCountCommandForCommand(cmd) }.map {unconditionalProcessedCommand(it)})
+            }
+            if (countBows) {
+                processedCommands.addAll(commands.mapNotNull { cmd -> getBowsCountCommandForCommand(cmd) }.map {unconditionalProcessedCommand(it)})
             }
             return currentRandomiserIndex
         }
@@ -401,6 +436,9 @@ object CommandsManager {
                 }
                 if (countExplosives) {
                     processedCommands.addAll(commands.mapNotNull { cmd -> getExplosiveCountCommandForCommand(cmd) }.map {Triple(it, commandCondition, conditionSet.toSet())})
+                }
+                if (countBows) {
+                    processedCommands.addAll(commands.mapNotNull { cmd -> getBowsCountCommandForCommand(cmd) }.map {Triple(it, commandCondition, conditionSet.toSet())})
                 }
 
                 if (option.label != null) {

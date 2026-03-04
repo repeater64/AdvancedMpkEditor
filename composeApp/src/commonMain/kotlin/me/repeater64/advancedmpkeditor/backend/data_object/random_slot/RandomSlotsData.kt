@@ -12,9 +12,10 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.RandomBarterItem
 import me.repeater64.advancedmpkeditor.util.hash
 
 @Stable
-class RandomSlotsData(_announceExplosives: Boolean, _optionsSets: List<RandomSlotOptionsSet>) : ContentHashable {
+class RandomSlotsData(_announceExplosives: Boolean, _announceBow: Boolean, _optionsSets: List<RandomSlotOptionsSet>) : ContentHashable {
     val optionsSets = _optionsSets.toMutableStateList()
     var announceExplosives by mutableStateOf(_announceExplosives)
+    var announceBow by mutableStateOf(_announceBow)
 
     override fun contentHash() = hash(optionsSets.map { it.contentHash() })
 
@@ -24,15 +25,23 @@ class RandomSlotsData(_announceExplosives: Boolean, _optionsSets: List<RandomSlo
         override val className = "RandomSlotsData"
 
         override fun serializeToPages(it: RandomSlotsData): List<String> {
-            return listOf(it.announceExplosives.toString()) + BookSerializable.serializeList(it.optionsSets, RandomSlotOptionsSet)
+            return listOf(it.announceExplosives.toString(), it.announceBow.toString()) + BookSerializable.serializeList(it.optionsSets, RandomSlotOptionsSet)
         }
 
         override fun deserializeFromPages(pages: List<String>): RandomSlotsData {
             // A little bit of backwards compatibility since I made this change since semi-releasing the website
             if (pages.size != 0 && pages[0].toBooleanStrictOrNull() != null) {
-                return RandomSlotsData(pages[0].toBoolean(), BookSerializable.getListAndRemainingPages(pages.drop(1), RandomSlotOptionsSet).first)
+                // Even more backwards compatibility since I made the announceBow addition subsequently, so there are 3 possible versioning situations to handle
+                if (pages.size != 1 && pages[1].toBooleanStrictOrNull() != null) {
+                    // announceExplosives and announceBow both saved
+                    return RandomSlotsData(pages[0].toBoolean(), pages[1].toBoolean(), BookSerializable.getListAndRemainingPages(pages.drop(2), RandomSlotOptionsSet).first)
+                } else {
+                    // Only announceExplosives saved
+                    return RandomSlotsData(pages[0].toBoolean(), false, BookSerializable.getListAndRemainingPages(pages.drop(1), RandomSlotOptionsSet).first)
+                }
             } else {
-                return RandomSlotsData(false, BookSerializable.getListAndRemainingPages(pages, RandomSlotOptionsSet).first)
+                // Neither saved
+                return RandomSlotsData(false, false, BookSerializable.getListAndRemainingPages(pages, RandomSlotOptionsSet).first)
             }
         }
 

@@ -179,7 +179,7 @@ object BlindNotPrecraftedBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(false,
+    private val randomSlotsData get() = RandomSlotsData(false, false,
         listOf(
             RandomSlotOptionsSet(
                 "Explosive Ingredients",

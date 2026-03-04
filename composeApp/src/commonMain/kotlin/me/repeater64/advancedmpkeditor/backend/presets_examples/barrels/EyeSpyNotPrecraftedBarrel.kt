@@ -182,7 +182,7 @@ object EyeSpyNotPrecraftedBarrel {
         ),
     )
 
-    private val randomSlotsData get() = RandomSlotsData(false,
+    private val randomSlotsData get() = RandomSlotsData(false, false,
         listOf(
             RandomSlotOptionsSet(
                 "Blaze Rods",
