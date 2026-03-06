@@ -1,6 +1,9 @@
 package me.repeater64.advancedmpkeditor.backend.data_object.saved_hotbar
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import me.repeater64.advancedmpkeditor.backend.data_object.ContentHashable
 import me.repeater64.advancedmpkeditor.backend.io.NBT.nbt
@@ -22,6 +25,11 @@ class SavedHotbars(_hotbars: List<SavedHotbar> = emptyList()) : ContentHashable 
     override fun contentHash(): Int {
         return hash(hotbars.map { it.contentHash() })
     }
+
+    val loadedFromAdvancedMpkData: Boolean
+        get() {
+            return hotbars.any { hotbar -> hotbar.hotbarItems.any { it is BarrelItem && it.loadedFromAdvancedMpkData } }
+        }
 
     @OptIn(OkioApi::class)
     fun encodeToNbtSink(sink: Sink) {

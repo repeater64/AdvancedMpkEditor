@@ -96,6 +96,11 @@ fun MainApp(fileManager: HotbarNbtFileManager) {
                             fileManager = fileManager,
                             onHotbarsLoaded = { hotbars ->
                                 trackEvent("import", "Import")
+                                if (hotbars.loadedFromAdvancedMpkData) {
+                                    trackEvent("import_advancedmpk", "Import AdvancedMPK")
+                                } else {
+                                    trackEvent("import_other", "Import Other")
+                                }
                                 currentScreen = Screen.Editor(hotbars)
                             }
                         )

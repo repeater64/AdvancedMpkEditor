@@ -83,6 +83,8 @@ class BarrelItem(
     val fireResSettings by mutableStateOf(_fireResSettings)
     val customCommandSettings by mutableStateOf(_customCommandSettings)
 
+    var loadedFromAdvancedMpkData by mutableStateOf(false)
+
 
     override fun contentHash(): Int {
         return hash(
@@ -148,24 +150,6 @@ class BarrelItem(
             } catch (_: Exception) {
                 fromTagOtherBarrel(tag)
             }
-        }
-
-        private fun fromTagAdvancedMpkEditorGeneratedBarrel(tag: NbtCompound): BarrelItem {
-            val blockEntityTag = (tag["tag"] as NbtCompound)["BlockEntityTag"] as NbtCompound
-
-            val customName = (blockEntityTag["CustomName"] as NbtString).value
-            val name = customName.substring(9..(customName.length-3))
-
-            val items = blockEntityTag["Items"] as NbtList<*>
-            val practiceTypeOption = ItemBasedOptionEnum.getFromNbt(items[3] as NbtCompound, PracticeTypeOption.entries) as PracticeTypeOption
-            val gamemodeOption = ItemBasedOptionEnum.getFromNbt(items[4] as NbtCompound, GamemodeOption.entries) as GamemodeOption
-            val difficultyOption = ItemBasedOptionEnum.getFromNbt(items[5] as NbtCompound, DifficultyOption.entries) as DifficultyOption
-
-            val serializedPages = ((((items[6] as NbtCompound)["tag"]) as NbtCompound)["pages"] as NbtList<*>).map { it as NbtString }.map { it.value }
-
-            val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
-
-            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings, allCommandsSettings.allRandomiserLinkLabels.toMutableSet(), allCommandsSettings.customCommandSettings)
         }
 
         private fun fromTagOtherBarrel(tag: NbtCompound): SavedHotbarItem {
@@ -463,6 +447,8 @@ class BarrelItem(
             barrel.customCommandSettings.postTeleportCommands.clear()
             barrel.customCommandSettings.postTeleportCommands.addAll(miscAutoCommands)
 
+            barrel.loadedFromAdvancedMpkData = true
+
             return barrel
         }
 
@@ -480,6 +466,24 @@ class BarrelItem(
 
             return items.toList() as List<NbtCompound>
         }
+        private fun fromTagAdvancedMpkEditorGeneratedBarrel(tag: NbtCompound): BarrelItem {
+            val blockEntityTag = (tag["tag"] as NbtCompound)["BlockEntityTag"] as NbtCompound
+
+            val customName = (blockEntityTag["CustomName"] as NbtString).value
+            val name = customName.substring(9..(customName.length-3))
+
+            val items = blockEntityTag["Items"] as NbtList<*>
+            val practiceTypeOption = ItemBasedOptionEnum.getFromNbt(items[3] as NbtCompound, PracticeTypeOption.entries) as PracticeTypeOption
+            val gamemodeOption = ItemBasedOptionEnum.getFromNbt(items[4] as NbtCompound, GamemodeOption.entries) as GamemodeOption
+            val difficultyOption = ItemBasedOptionEnum.getFromNbt(items[5] as NbtCompound, DifficultyOption.entries) as DifficultyOption
+
+            val serializedPages = ((((items[6] as NbtCompound)["tag"]) as NbtCompound)["pages"] as NbtList<*>).map { it as NbtString }.map { it.value }
+
+            val allCommandsSettings = CommandsManager.loadSettings(serializedPages)
+
+            return BarrelItem(name, practiceTypeOption, gamemodeOption, difficultyOption, allCommandsSettings.fixedSlotsData, allCommandsSettings.randomSlotsData, allCommandsSettings.junkSettings, allCommandsSettings.healthHungerSettings, allCommandsSettings.fireResSettings, allCommandsSettings.allRandomiserLinkLabels.toMutableSet(), allCommandsSettings.customCommandSettings)
+        }
+
 
         private fun getMinecraftItem(item: NbtCompound) : MinecraftItem? {
             val id = (item["id"] as NbtString).value
