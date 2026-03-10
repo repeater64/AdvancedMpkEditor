@@ -45,7 +45,7 @@ object CommandsManager {
         return null
     }
 
-    fun generateCommands(settings: AllCommandsSettings, barrelName: String) : Triple<List<String>, List<String>, Int> { // Returns commands book pages, serialization book pages, numTopLeftInvSlotsToFillLikeHotbar
+    fun generateCommands(settings: AllCommandsSettings, barrelName: String) : Triple<List<String>, List<String>, Int> { // Returns commands book pages, lateauto book pages, numTopLeftInvSlotsToFillLikeHotbar
 
         val randomisers = hashMapOf<String, Int>() // Map of randomiser identifier to total weight
         val unprocessedLabelsMap = hashMapOf<String, MutableList<Pair<CommandCondition, Set<RandomiserCondition>>>>() // Maps a label to all the states that would trigger it - each state is a pair of the processed condition so far, and a set of randomiserConditions that must also all be true
@@ -329,63 +329,63 @@ object CommandsManager {
             initialSetupCommands.add("scoreboard players operation @p $randomiserIdentifier %= !m $randomiserIdentifier")
         }
 
-        val finalCommands = mutableListOf<String>()
+        val lateautoCommands = mutableListOf<String>()
         if (countExplosives) {
-            finalCommands.add("say Crafted Explosives Count:")
-            finalCommands.add("execute if score @p numbeds matches 0 run say Beds: 0")
-            finalCommands.add("execute if score @p numbeds matches 1 run say Beds: 1")
-            finalCommands.add("execute if score @p numbeds matches 2 run say Beds: 2")
-            finalCommands.add("execute if score @p numbeds matches 3 run say Beds: 3")
-            finalCommands.add("execute if score @p numbeds matches 4 run say Beds: 4")
-            finalCommands.add("execute if score @p numbeds matches 5 run say Beds: 5")
-            finalCommands.add("execute if score @p numbeds matches 6 run say Beds: 6")
-            finalCommands.add("execute if score @p numbeds matches 7 run say Beds: 7")
-            finalCommands.add("execute if score @p numbeds matches 8 run say Beds: 8")
-            finalCommands.add("execute if score @p numbeds matches 9 run say Beds: 9")
-            finalCommands.add("execute if score @p numbeds matches 10.. run say Beds: 10+")
+            lateautoCommands.add("say Crafted Explosives Count:")
+            lateautoCommands.add("execute if score @p numbeds matches 0 run say Beds: 0")
+            lateautoCommands.add("execute if score @p numbeds matches 1 run say Beds: 1")
+            lateautoCommands.add("execute if score @p numbeds matches 2 run say Beds: 2")
+            lateautoCommands.add("execute if score @p numbeds matches 3 run say Beds: 3")
+            lateautoCommands.add("execute if score @p numbeds matches 4 run say Beds: 4")
+            lateautoCommands.add("execute if score @p numbeds matches 5 run say Beds: 5")
+            lateautoCommands.add("execute if score @p numbeds matches 6 run say Beds: 6")
+            lateautoCommands.add("execute if score @p numbeds matches 7 run say Beds: 7")
+            lateautoCommands.add("execute if score @p numbeds matches 8 run say Beds: 8")
+            lateautoCommands.add("execute if score @p numbeds matches 9 run say Beds: 9")
+            lateautoCommands.add("execute if score @p numbeds matches 10.. run say Beds: 10+")
 
-            finalCommands.add("execute if score @p numanchors > @p numglowstone run scoreboard players operation @p numanchors = @p numglowstone")
+            lateautoCommands.add("execute if score @p numanchors > @p numglowstone run scoreboard players operation @p numanchors = @p numglowstone")
 
-            finalCommands.add("execute if score @p numanchors matches 0 run say Anchors: 0")
-            finalCommands.add("execute if score @p numanchors matches 1 run say Anchors: 1")
-            finalCommands.add("execute if score @p numanchors matches 2 run say Anchors: 2")
-            finalCommands.add("execute if score @p numanchors matches 3 run say Anchors: 3")
-            finalCommands.add("execute if score @p numanchors matches 4 run say Anchors: 4")
-            finalCommands.add("execute if score @p numanchors matches 5 run say Anchors: 5")
-            finalCommands.add("execute if score @p numanchors matches 6 run say Anchors: 6")
-            finalCommands.add("execute if score @p numanchors matches 7 run say Anchors: 7")
-            finalCommands.add("execute if score @p numanchors matches 8 run say Anchors: 8")
-            finalCommands.add("execute if score @p numanchors matches 9 run say Anchors: 9")
-            finalCommands.add("execute if score @p numanchors matches 10.. run say Anchors: 10+")
+            lateautoCommands.add("execute if score @p numanchors matches 0 run say Anchors: 0")
+            lateautoCommands.add("execute if score @p numanchors matches 1 run say Anchors: 1")
+            lateautoCommands.add("execute if score @p numanchors matches 2 run say Anchors: 2")
+            lateautoCommands.add("execute if score @p numanchors matches 3 run say Anchors: 3")
+            lateautoCommands.add("execute if score @p numanchors matches 4 run say Anchors: 4")
+            lateautoCommands.add("execute if score @p numanchors matches 5 run say Anchors: 5")
+            lateautoCommands.add("execute if score @p numanchors matches 6 run say Anchors: 6")
+            lateautoCommands.add("execute if score @p numanchors matches 7 run say Anchors: 7")
+            lateautoCommands.add("execute if score @p numanchors matches 8 run say Anchors: 8")
+            lateautoCommands.add("execute if score @p numanchors matches 9 run say Anchors: 9")
+            lateautoCommands.add("execute if score @p numanchors matches 10.. run say Anchors: 10+")
 
-            finalCommands.add("execute if score @p numtnt matches 1 run say TNT: 1")
-            finalCommands.add("execute if score @p numtnt matches 2 run say TNT: 2")
-            finalCommands.add("execute if score @p numtnt matches 3 run say TNT: 3")
-            finalCommands.add("execute if score @p numtnt matches 4 run say TNT: 4")
-            finalCommands.add("execute if score @p numtnt matches 5 run say TNT: 5")
-            finalCommands.add("execute if score @p numtnt matches 6 run say TNT: 6")
-            finalCommands.add("execute if score @p numtnt matches 7 run say TNT: 7")
-            finalCommands.add("execute if score @p numtnt matches 8 run say TNT: 8")
-            finalCommands.add("execute if score @p numtnt matches 9 run say TNT: 9")
-            finalCommands.add("execute if score @p numtnt matches 10.. run say TNT: 10+")
+            lateautoCommands.add("execute if score @p numtnt matches 1 run say TNT: 1")
+            lateautoCommands.add("execute if score @p numtnt matches 2 run say TNT: 2")
+            lateautoCommands.add("execute if score @p numtnt matches 3 run say TNT: 3")
+            lateautoCommands.add("execute if score @p numtnt matches 4 run say TNT: 4")
+            lateautoCommands.add("execute if score @p numtnt matches 5 run say TNT: 5")
+            lateautoCommands.add("execute if score @p numtnt matches 6 run say TNT: 6")
+            lateautoCommands.add("execute if score @p numtnt matches 7 run say TNT: 7")
+            lateautoCommands.add("execute if score @p numtnt matches 8 run say TNT: 8")
+            lateautoCommands.add("execute if score @p numtnt matches 9 run say TNT: 9")
+            lateautoCommands.add("execute if score @p numtnt matches 10.. run say TNT: 10+")
         }
         if (countBows) {
-            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 0 run say No Bow/Crossbow")
-            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Bow + Crossbow + Arrows")
-            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 1.. run say Bow + Arrows")
-            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Crossbow + Arrows")
-            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Bow + Crossbow (No Arrows)")
-            finalCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 0 run say Bow (No Arrows)")
-            finalCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Crossbow (No Arrows)")
+            lateautoCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 0 run say No Bow/Crossbow")
+            lateautoCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Bow + Crossbow + Arrows")
+            lateautoCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 1.. run say Bow + Arrows")
+            lateautoCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 1.. run say Crossbow + Arrows")
+            lateautoCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Bow + Crossbow (No Arrows)")
+            lateautoCommands.add("execute if score @p numbows matches 1 if score @p numcrossbows matches 0 if score @p numarrows matches 0 run say Bow (No Arrows)")
+            lateautoCommands.add("execute if score @p numbows matches 0 if score @p numcrossbows matches 1 if score @p numarrows matches 0 run say Crossbow (No Arrows)")
         }
 
         if (settings.practiceTypeOption == PracticeTypeOption.END_ENTER_MANUAL) {
-            finalCommands.add("execute at @a run setblock ~ ~2 ~ end_portal")
+            lateautoCommands.add("execute at @a run setblock ~ ~2 ~ end_portal")
         }
 
         val customCommands = settings.customCommandSettings
 
-        return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands + finalCommands + customCommands.postItemsCommands), AllCommandsSettings.serializeToPages(settings), fixedSlotsData.numInvSlotsWithItems())
+        return Triple((initialSetupCommands + randomSlotCommands + junkCommands + mainCommands + customCommands.postItemsCommands), lateautoCommands + customCommands.postTeleportCommands, fixedSlotsData.numInvSlotsWithItems())
     }
 
     private fun <T> handleWeightedList(options: WeightedOptionList<T>, commandsGetter: (WeightedOption<T>) -> List<String>, ifEmptyMessage: String,

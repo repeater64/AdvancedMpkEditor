@@ -108,7 +108,9 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val (commands, info, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList(), customCommandSettings), name)
+        val settings = AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList(), customCommandSettings)
+        val (commands, lateautoCommands, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(settings, name)
+        val serialized = AllCommandsSettings.serializeToPages(settings)
         return buildNbtCompound {
             put("Count", 1.toByte())
             put("id", "minecraft:barrel")
@@ -129,9 +131,9 @@ class BarrelItem(
                         add(practiceTypeOption.getItemNBT(3))
                         add(gamemodeOption.getItemNBT(4))
                         add(difficultyOption.getItemNBT(5))
-                        add(WrittenBookItem(info).getNbt(6))
+                        add(WrittenBookItem(serialized).getNbt(6))
                         add(WritableAutoBookItem(customCommandSettings.preItemsCommands.toList(), earlyAuto=true).getNbt(8))
-                        add(WritableAutoBookItem(customCommandSettings.postTeleportCommands.toList(), lateAuto=true).getNbt(7))
+                        add(WritableAutoBookItem(lateautoCommands, lateAuto=true).getNbt(7))
                     }
                 }
             }
