@@ -15,8 +15,8 @@ object CommandsManager {
     }
 
     fun getExplosiveCountCommandForCommand(command: String): String? {
-        if (command.contains("white_bed ")) {
-            val amount = command.split("white_bed ")[1].toIntOrNull() ?: 1
+        if (command.contains("_bed ")) {
+            val amount = command.split("_bed ")[1].toIntOrNull() ?: 1
             return "scoreboard players add @p numbeds $amount"
         } else if (command.contains("respawn_anchor ")) {
             val amount = command.split("respawn_anchor ")[1].toIntOrNull() ?: 1
