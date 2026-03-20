@@ -14,6 +14,7 @@ import androidx.compose.ui.window.PopupProperties
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.RandomiserCondition
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOption
 import me.repeater64.advancedmpkeditor.backend.data_object.randomiser.WeightedOptionList
+import me.repeater64.advancedmpkeditor.gui.component.DeleteIconAndTooltip
 
 enum class RandomiserLinkType(val displayName: String, val tooltipText: String) {
     ONLY_IF("Only If", "This option will only be added to the pool of possible options if an option elsewhere, which triggers the specified condition, gets chosen."),
@@ -171,6 +172,12 @@ fun <T> RandomiserLinksPopup(
                                         onClick = {
                                             selectedLabel = option
                                             labelExpanded = false
+                                        },
+                                        trailingIcon = {
+                                            DeleteIconAndTooltip {
+                                                allLabels.remove(option)
+                                                labelExpanded = false
+                                            }
                                         }
                                     )
                                 }

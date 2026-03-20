@@ -108,7 +108,20 @@ class BarrelItem(
     override fun getGuiName() = name
 
     override fun getTag(): NbtCompound {
-        val settings = AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allRandomiserLinkLabels.toMutableList(), customCommandSettings)
+        // Generate allRandomiserLinkLabels from, well, all randomiser link labels
+        val allActuallyUsedRandomiserLinkLabels = mutableSetOf<String>()
+        collectAllLabelsInWeightedList(fixedSlotsData.bootsSlotData.itemOptions, allActuallyUsedRandomiserLinkLabels)
+        collectAllLabelsInWeightedList(fixedSlotsData.leggingsSlotData.itemOptions, allActuallyUsedRandomiserLinkLabels)
+        collectAllLabelsInWeightedList(fixedSlotsData.chestplateSlotData.itemOptions, allActuallyUsedRandomiserLinkLabels)
+        collectAllLabelsInWeightedList(fixedSlotsData.helmetSlotData.itemOptions, allActuallyUsedRandomiserLinkLabels)
+        collectAllLabelsInWeightedList(fixedSlotsData.offhandSlotData.itemOptions, allActuallyUsedRandomiserLinkLabels)
+        fixedSlotsData.inventorySlotsData.forEach { collectAllLabelsInWeightedList(it.itemOptions, allActuallyUsedRandomiserLinkLabels) }
+        fixedSlotsData.hotbarSlotsData.forEach { collectAllLabelsInWeightedList(it.itemOptions, allActuallyUsedRandomiserLinkLabels) }
+        randomSlotsData.optionsSets.forEach { collectAllLabelsInWeightedList(it.options, allActuallyUsedRandomiserLinkLabels) }
+        collectAllLabelsInWeightedList(healthHungerSettings.options, allActuallyUsedRandomiserLinkLabels)
+        collectAllLabelsInWeightedList(fireResSettings.options, allActuallyUsedRandomiserLinkLabels)
+
+        val settings = AllCommandsSettings(practiceTypeOption, fixedSlotsData, randomSlotsData, junkSettings, healthHungerSettings, fireResSettings, allActuallyUsedRandomiserLinkLabels.toMutableList(), customCommandSettings)
         val (commands, lateautoCommands, numTopLeftInvSlotsToFillLikeHotbar) = CommandsManager.generateCommands(settings, name)
         val serialized = AllCommandsSettings.serializeToPages(settings)
         return buildNbtCompound {
@@ -138,6 +151,11 @@ class BarrelItem(
                 }
             }
         }
+    }
+
+    private fun collectAllLabelsInWeightedList(list: WeightedOptionList<*>, setToAddTo: MutableSet<String>) {
+        setToAddTo.addAll(list.options.mapNotNull { it.label })
+        list.options.forEach { option -> option.conditions.forEach { setToAddTo.add(it.conditionLabel) } }
     }
 
     fun deepCopy(): BarrelItem {
