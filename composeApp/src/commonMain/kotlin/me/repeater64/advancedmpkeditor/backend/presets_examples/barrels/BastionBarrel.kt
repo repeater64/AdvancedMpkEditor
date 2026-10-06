@@ -15,6 +15,7 @@ import me.repeater64.advancedmpkeditor.backend.data_object.item.DontReplaceMinec
 import me.repeater64.advancedmpkeditor.backend.data_object.item.EnchantedBootsItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.FireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.ForcePerchPotionItem
+import me.repeater64.advancedmpkeditor.backend.data_object.item.KillZombiePigsPotionItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SoulSpeedBookItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SplashFireResItem
 import me.repeater64.advancedmpkeditor.backend.data_object.item.SurfaceBlindPotionItem
@@ -134,7 +135,7 @@ object BastionBarrel {
             invSlot(5, optionList(availableItem())),
             invSlot(6, optionList(availableItem())),
             invSlot(7, optionList(availableItem())),
-            invSlot(8, optionList(availableItem())),
+            invSlot(8, optionList(WeightedOption(KillZombiePigsPotionItem()))),
             invSlot(9, optionList(availableItem())),
             invSlot(10, optionList(availableItem())),
             invSlot(11, optionList(availableItem())),
